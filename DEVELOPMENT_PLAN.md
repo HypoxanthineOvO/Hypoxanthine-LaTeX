@@ -99,15 +99,14 @@ Hypoxanthine-LaTeX/
 ### 6.2 label（显式优先；自动 label 计划）
 
 - v0.3.4（已落地）：显式 label 参数，用于 `\\label/\\ref`（自动带前缀 def:/ex:/note:）。
-- 自动 label（计划，拟 v0.3.5）：
+- 自动 label（计划，拟 v0.3.6）：
   - 仅当标题为 ASCII 且可归一化：小写 + 空格转 `_` + 去掉不安全字符。
   - 中文等非 ASCII：默认不自动生成 label（避免不可记忆的 hash）。
 
 ### 6.3 Box 与 Refs 的连接方式（避免联动修改）
 
-- 引入“注册宏”桥接：例如 `\\HypoRegisterCref{definition}{定义}{定义}`。
-- Box 文件只负责调用注册宏；Refs 模块负责实现注册宏到 `\\crefname`。
-- 若未加载 Refs 模块：注册宏应为 no-op（不报错）。
+- v0.3.5 先落地最小实现：Refs 模块直接为 tcolorbox theorem counter（如 `tcb@cnt@definition`）配置 `\\crefname`/`\\creflabelformat`。
+- 后续增强（计划）：引入“注册宏”桥接（例如 `\\HypoRegisterCref{definition}{定义}{定义}`），让 Box 侧不感知 cleveref。
 
 
 ## 7. 模块职责（拆分依据：你的集成文件）
@@ -167,8 +166,9 @@ Hypoxanthine-LaTeX/
 - `v0.3.2`：Step H（颜色体系重整：专业配色 + 浅/中/深系列）
 - `v0.3.3`：Step I（Note 盒子补齐）
 - `v0.3.4`：Step J（显式 label 参数 + 可引用）
-- `v0.3.5`：Step K（ASCII 标题自动 label）
-- `v0.4.0`：Step L（Refs 注册宏接入：box 改动不联动 refs）
+- `v0.3.5`：Step K（Refs：cleveref 输出格式 "XXX: 0.1"）
+- `v0.3.6`：Step L（ASCII 标题自动 label）
+- `v0.4.0`：Step M（Manual 自举 + README 对齐 + 文档闭环）
 
 
 ## 9. 任务清单（按优先级）
@@ -192,5 +192,5 @@ P1（接口闭环）：
 ## 附录 A：当前仓库现状（2026-01-12）
 
 - 已有：`sty/core/`（Base/Colors/Fonts/Math）、`sty/modules/Hypo-Code.sty`、`make/Hypoxanthine.mk`、`templates/Makefile`。
-- 缺失：`sty/classes/note/Hypo-Note.sty`、`sty/classes/sheet/Hypo-Sheet.sty`、manual 入口与示例。
+- manual：入口文件已存在（manual/Manual.tex），待补齐内容（v0.4.0）。
 

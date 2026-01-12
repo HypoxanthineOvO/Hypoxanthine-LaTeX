@@ -13,6 +13,7 @@
 ## 全局选项（拟定）
 - indent=true/false：控制段首缩进策略（两入口一致）
 - boxes=true/false：是否启用盒子环境（两入口一致，默认开启）
+- refs=true/false：是否启用引用模块（hyperref + cleveref，两入口一致，默认开启）
 - outputdir=...：给 minted 等模块使用的输出目录（由 Hypo-Base 导出）
 
 ## 速写开关（拟定）
@@ -34,8 +35,8 @@
 - 数集符号（\R, \N, \Z, \Q, \C）：可选能力；不作为“速写重点”，默认不强依赖
 - \Set / \Paren / \Brack：属于“可读性命令”，是否保留/是否提供更短别名（待你偏好决定）
 
-## 图片命令
-- \img{<path>}{<caption>}：插图（sheet 下宽度自适应栏宽；note 下可用较宽比例）
+## 图片命令（计划）
+- \img{<path>}{<caption>}：插图快捷命令（尚未实现，拟在 v0.5+ 完成）
 
 ## 内容层级（拟定）
 - detail 环境：sheet 下默认隐藏；note 下显示（样式可后定）
@@ -62,5 +63,5 @@
 - 自动 label（计划）：仅对 ASCII 标题做可读的 slug；中文/非 ASCII 默认不自动生成（避免不可记忆的 hash）
 
 ## 引用与链接（拟定）
-- hyperref + cleveref：统一由注册宏机制接入
-- box 定义时注册 cref 名称，避免手动同步维护映射表
+- v0.3.5 起：入口默认加载 hyperref + cleveref（可通过 `refs=false` 关闭）
+- 建议用法：用 `\\cref{...}` 输出 "Definition: 0.1" 这类格式

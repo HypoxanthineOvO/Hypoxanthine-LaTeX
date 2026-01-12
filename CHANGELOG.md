@@ -51,3 +51,8 @@
 - Box：definition/example/note 支持显式 label（用于 `\\label/\\ref`），label 前缀分别为 `def:` / `ex:` / `note:`
 - tests：补充主线用例的显式引用验证
 
+## v0.3.5
+- Refs：新增 Hypo-Refs 模块（hyperref + cleveref），入口新增 `refs=true/false`（默认开启）
+- 引用格式：使用 `\\cref{...}` 时输出 "Definition: 0.1" / "Example: 0.1" / "Note: 0.1" 这类格式
+- tests：主线用例切换为 `\\cref` 验证输出
+
