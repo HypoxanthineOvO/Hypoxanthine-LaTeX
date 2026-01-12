@@ -1,20 +1,8 @@
 \documentclass{article}
 
-% 说明：这里是隔离测试入口。
-% 后续当 Hypo-Note/Hypo-Sheet 落地后，可以把这里改成：
-% \usepackage{../sty/classes/note/Hypo-Note}
-
-% v0.2.0 Step A：只测字体层（避免引入 Box/Code/Refs 等变量）
-\usepackage{../sty/core/Hypo-Fonts}
-
-% v0.2.1 Step B：只测颜色层（验证色名可用）
-\usepackage{../sty/core/Hypo-Colors}
-
-% v0.2.2 Step C：只测 Base 参数导出（FinalOutputDir）
-\usepackage[outputdir=build]{../sty/core/Hypo-Base}
-
-% v0.2.3 Step D：数学与速写（默认开启；可通过 \HypoDisableShorthand 关闭）
-\usepackage{../sty/core/Hypo-Math}
+% 主线：通过入口包验证“切入口尽量只改引入文件”
+% v0.2.4 Step E：入口骨架（Hypo-Note / Hypo-Sheet）
+\usepackage[outputdir=build]{Hypo-Note}
 
 \begin{document}
 \section*{Fonts Test}

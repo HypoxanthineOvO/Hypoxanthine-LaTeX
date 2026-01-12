@@ -9,6 +9,12 @@ TOOL    ?= latexmk
 # 关键：-outdir 指定输出目录，-file-line-error 方便 VS Code 捕获错误
 FLAGS   ?= -xelatex -synctex=1 -interaction=nonstopmode -file-line-error -outdir=$(OUT_DIR)
 
+# 让 TeX 能通过包名找到 sty/ 下的本地包（例如 \usepackage{Hypo-Note}）
+# 末尾的冒号用于保留 TeX 默认搜索路径。
+HYPO_PATH ?= .
+TEXINPUTS ?= .:$(HYPO_PATH)/sty//:
+export TEXINPUTS
+
 # 2. 伪目标定义
 .PHONY: all clean watch help prepare
 

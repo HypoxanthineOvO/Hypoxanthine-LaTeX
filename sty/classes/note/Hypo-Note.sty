@@ -1,0 +1,30 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{Hypo-Note}[2026/01/12 Hypoxanthine Note Entry]
+
+\RequirePackage{kvoptions}
+
+\SetupKeyvalOptions{family=HypoNote, prefix=HypoNote@}
+
+% 对外接口：两入口保持一致
+\DeclareBoolOption[true]{shorthand}
+\DeclareBoolOption[true]{indent}
+\DeclareStringOption[build]{outputdir}
+\ProcessKeyvalOptions*
+
+% shorthand=false 时，用宏关闭 Hypo-Math 内置速写（不额外引入独立包）
+\ifHypoNote@shorthand
+\else
+    \def\HypoDisableShorthand{}
+\fi
+
+% indent=false 时，关闭段首缩进（不额外修改 parskip，保持最小行为）
+\ifHypoNote@indent
+\else
+    \setlength{\parindent}{0pt}
+\fi
+
+% Core 能力（无版式）
+\RequirePackage{Hypo-Fonts}
+\RequirePackage{Hypo-Colors}
+\RequirePackage[outputdir=\HypoNote@outputdir]{Hypo-Base}
+\RequirePackage{Hypo-Math}

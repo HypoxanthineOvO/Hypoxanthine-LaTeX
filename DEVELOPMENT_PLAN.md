@@ -67,6 +67,7 @@ Hypoxanthine-LaTeX/
 
 - 选项：
   - `shorthand`：**默认开启**，允许 `shorthand=false` 关闭（用于排查冲突/兼容其他包）。
+    - 实现约定：入口内部通过预先定义 `\HypoDisableShorthand` 来关闭 Hypo-Math 内置速写（不单独拆分 Shorthand 包）。
   - `indent`：段首缩进开关（`true/false`，两入口一致）。
   - `outputdir`：给 minted 等使用（由 core 导出）。
 

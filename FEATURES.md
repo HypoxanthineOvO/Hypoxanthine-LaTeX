@@ -8,13 +8,16 @@
 - Hypo-Sheet：小抄入口（版式偏紧凑/多栏）
 - 目标：两者导出的命令/环境尽量一致，切换入口时正文无需大改。
 
+当前状态：已提供入口骨架（可加载 core 能力与统一选项）。
+
 ## 全局选项（拟定）
 - indent=true/false：控制段首缩进策略（两入口一致）
 - outputdir=...：给 minted 等模块使用的输出目录（由 Hypo-Base 导出）
 
 ## 速写开关（拟定）
 - 默认启用大写速写命令（例如 \TX, \TBF, \MB, \MC, \BS）。
-- 如需关闭（用于规避命名冲突）：在加载 Hypo-Math（或入口类）之前定义 \HypoDisableShorthand。
+- 对外接口：入口支持 `shorthand=true/false`。
+- 内部实现：入口在加载 Hypo-Math 前通过定义 \HypoDisableShorthand 来关闭速写。
 
 ## 速写命令（拟定，需确认冲突风险）
 - \TX{...}：等价于 \text{...}（避免 \T 这类短命令冲突）

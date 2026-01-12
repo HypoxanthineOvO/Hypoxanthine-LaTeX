@@ -23,3 +23,8 @@
 - Math 层增强：Hypo-Math 内置大写速写命令（默认启用）
 - 速写开关：可通过预先定义 \HypoDisableShorthand 关闭速写（用于规避命名冲突）
 - tests：默认只跑主线用例；边缘用例通过 `make -C tests edge` 单独运行
+
+## v0.2.4
+- 新增入口骨架：Hypo-Note 与 Hypo-Sheet（两入口对外选项一致）
+- 入口选项透传：`outputdir/indent/shorthand`（`shorthand=false` 通过内部宏关闭 Hypo-Math 速写）
+- 构建增强：默认通过 `TEXINPUTS` 支持用包名加载本地 `sty/` 下的 Hypo-* 文件
