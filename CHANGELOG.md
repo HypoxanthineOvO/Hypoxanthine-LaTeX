@@ -10,3 +10,7 @@
 ## v0.2.0
 - 新增 tests 隔离测试入口：用于验证 corner cases，不污染 manual
 - Fonts 层增强：Hypo-Fonts 增加字体缺失时的自动降级策略
+
+## v0.2.1
+- Colors 层可用：Hypo-Colors 提供基础色名体系
+- tests：增加颜色可用性验证用例

@@ -7,10 +7,20 @@
 % v0.2.0 Step A：只测字体层（避免引入 Box/Code/Refs 等变量）
 \usepackage{../sty/core/Hypo-Fonts}
 
+% v0.2.1 Step B：只测颜色层（验证色名可用）
+\usepackage{../sty/core/Hypo-Colors}
+
 \begin{document}
 \section*{Fonts Test}
 
 English: The quick brown fox jumps over the lazy dog.
 
 中文：这是一个字体测试用例。用于验证 XeLaTeX + xeCJK 能正常工作。
+
+\section*{Colors Test}
+{\color{HypoOrange}HypoOrange}\quad
+{\color{HypoCyan}HypoCyan}\quad
+{\color{HypoRed}HypoRed}\quad
+{\color{HypoBlue}HypoBlue}\quad
+{\color{HypoDarkBlue}HypoDarkBlue}
 \end{document}
