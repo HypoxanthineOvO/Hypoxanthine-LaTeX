@@ -1,0 +1,174 @@
+\documentclass{article}
+
+\usepackage[outputdir=build]{Hypo-Note}
+
+\title{Hypoxanthine-LaTeX Manual}
+\author{Hypoxanthine-LaTeX Project}
+\date{v0.4.0}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Overview}
+
+Hypoxanthine-LaTeX is a modular, engineering-friendly LaTeX ecosystem.
+
+\begin{itemize}
+	\item \textbf{Classes} provide \emph{entrypoints} and user-facing options: \texttt{Hypo-Note}, \texttt{Hypo-Sheet}.
+	\item \textbf{Core} provides atomic capabilities: Fonts, Colors, Base, Math.
+	\item \textbf{Modules} provide optional plugins: Box, Refs, Code, \dots
+\end{itemize}
+
+The public interface is defined by \texttt{FEATURES.md}; this manual is a more structured explanation and set of examples.
+
+\section{Quick Start}
+
+In your document, load an entry package by \emph{package name}:
+
+\begin{verbatim}
+\documentclass{article}
+\usepackage[outputdir=build]{Hypo-Note}
+
+\begin{document}
+Hello.
+\end{document}
+\end{verbatim}
+
+If you build via this repository's Makefile template, it injects \texttt{TEXINPUTS} so that \texttt{\textbackslash usepackage\{Hypo-Note\}} resolves to the local \texttt{sty/} directory.
+
+\section{Entrypoints (Classes)}
+
+\subsection{Hypo-Note}
+
+	exttt{Hypo-Note} is the note entry (comfortable reading). It loads core capabilities and (optionally) modules.
+
+\subsection{Hypo-Sheet}
+
+	exttt{Hypo-Sheet} is the sheet/cheatsheet entry (compact layout). In the current stage it shares the same public options and loads the same core/modules.
+
+\section{Global Options}
+
+Both entrypoints accept these options:
+
+\begin{itemize}
+	\item \texttt{indent=true/false}: whether paragraphs are indented.
+	\item \texttt{shorthand=true/false}: shorthand commands (enabled by default).
+	\item \texttt{boxes=true/false}: whether box environments are loaded (enabled by default).
+	\item \texttt{refs=true/false}: whether the references module (hyperref + cleveref) is loaded (enabled by default).
+	\item \texttt{outputdir=\dots}: exported by Base as \texttt{\textbackslash FinalOutputDir}, and used by modules that need an output directory.
+\end{itemize}
+
+Example:
+
+\begin{verbatim}
+\usepackage[shorthand=false,boxes=false,refs=false,outputdir=build]{Hypo-Note}
+\end{verbatim}
+
+\section{Core}
+
+\subsection{Fonts}
+
+Fonts are configured for XeLaTeX and CJK via \texttt{xeCJK}.
+
+\subsection{Colors}
+
+Project colors are defined in \texttt{Hypo-Colors}. You can use them directly:
+
+\begin{verbatim}
+{\color{HypoBlueDark}Text}
+\end{verbatim}
+
+\subsection{Base (Output Directory)}
+
+Base exports the final output directory:\quad \texttt{\FinalOutputDir = \FinalOutputDir}.
+
+\subsection{Math and Shorthand}
+
+Shorthand is enabled by default. Common commands include:
+
+\begin{itemize}
+	\item Text: \texttt{\textbackslash TX\{\dots\}}, \texttt{\textbackslash TBF\{\dots\}}
+	\item Math: \texttt{\textbackslash MB\{\dots\}}, \texttt{\textbackslash MC\{\dots\}}, \texttt{\textbackslash BS\{\dots\}}
+	\item Delimiters: \texttt{\textbackslash Abs\{\dots\}}
+\end{itemize}
+
+Demo:
+\[
+	\MB{x} + \MC{F}(\BS{\theta})\quad\text{and}\quad \Abs{-3}=3.
+\]
+
+\section{Boxes (Module: Hypo-Box)}
+
+When \texttt{boxes=true} (default), the following environments are available:
+	exttt{definition}, \texttt{example}, \texttt{note}.
+
+\subsection{Title and Explicit Label}
+
+All box environments take two mandatory arguments:
+
+\begin{verbatim}
+\begin{definition}{Title}{label}
+	...
+\end{definition}
+\end{verbatim}
+
+The actual label is automatically prefixed:
+
+\begin{itemize}
+	\item definition: \texttt{def:}\quad (e.g. \texttt{def:group})
+	\item example: \texttt{ex:}\quad (e.g. \texttt{ex:integers})
+	\item note: \texttt{note:}\quad (e.g. \texttt{note:tips})
+\end{itemize}
+
+If you do not need references, pass an empty label argument \texttt{\{\}}.
+
+\subsection{Numbering Strategy (Advanced)}
+
+The box module supports a \texttt{numbering=none/global/section/chapter} option (default: \texttt{section}).
+
+If you want to control this option, disable boxes in the entrypoint and load \texttt{Hypo-Box} manually:
+
+\begin{verbatim}
+\usepackage[boxes=false]{Hypo-Note}
+\usepackage[numbering=global]{Hypo-Box}
+\end{verbatim}
+
+\subsection{Style Overrides}
+
+You can override styles via \texttt{tcolorbox} hooks:
+
+\begin{verbatim}
+	cbset{hypo definition box/.style={colframe=HypoRedDark,colback=HypoRedLight}}
+\end{verbatim}
+
+\subsection{Live Examples}
+
+\begin{definition}{Group}{group}
+	A group is a set with an operation satisfying closure, associativity, identity and inverse.
+\end{definition}
+
+\begin{example}{Integers}{integers}
+	$(\mathbb{Z}, +)$ is a group.
+\end{example}
+
+\begin{note}{Tip}{}
+	If you don\textquotesingle t need references, leave the label empty.
+\end{note}
+
+\section{References (Module: Hypo-Refs)}
+
+When \texttt{refs=true} (default), \texttt{hyperref} and \texttt{cleveref} are loaded.
+Use \texttt{\textbackslash cref\{\dots\}} to produce formatted references, for example:
+
+\begin{verbatim}
+See \cref{def:group}.
+\end{verbatim}
+
+In this project the default output is in the form "Definition: 0.1", "Example: 0.1", "Note: 0.1".
+
+\section{Planned Features}
+
+Some interfaces are reserved in \texttt{FEATURES.md} but not implemented yet, for example:\quad \texttt{\textbackslash img\{path\}\{caption\}}.
+
+\end{document}

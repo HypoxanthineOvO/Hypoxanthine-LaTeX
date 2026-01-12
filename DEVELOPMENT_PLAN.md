@@ -70,6 +70,7 @@ Hypoxanthine-LaTeX/
     - 实现约定：入口内部通过预先定义 `\HypoDisableShorthand` 来关闭 Hypo-Math 内置速写（不单独拆分 Shorthand 包）。
   - `indent`：段首缩进开关（`true/false`，两入口一致）。
   - `boxes`：是否启用盒子环境（`true/false`，两入口一致，默认开启）。
+  - `refs`：是否启用引用模块（`true/false`，两入口一致，默认开启）。
   - `outputdir`：给 minted 等使用（由 core 导出）。
 
 - 命令（第一批冻结）：
@@ -105,7 +106,7 @@ Hypoxanthine-LaTeX/
 
 ### 6.3 Box 与 Refs 的连接方式（避免联动修改）
 
-- v0.3.5 先落地最小实现：Refs 模块直接为 tcolorbox theorem counter（如 `tcb@cnt@definition`）配置 `\\crefname`/`\\creflabelformat`。
+- v0.3.5 先落地最小实现：Refs 模块直接为 tcolorbox theorem counter（如 `tcb@cnt@definition`）配置 `\\crefname`/`\\Crefname`，目标输出形如 "Definition: 0.1"。
 - 后续增强（计划）：引入“注册宏”桥接（例如 `\\HypoRegisterCref{definition}{定义}{定义}`），让 Box 侧不感知 cleveref。
 
 
@@ -169,6 +170,36 @@ Hypoxanthine-LaTeX/
 - `v0.3.5`：Step K（Refs：cleveref 输出格式 "XXX: 0.1"）
 - `v0.3.6`：Step L（ASCII 标题自动 label）
 - `v0.4.0`：Step M（Manual 自举 + README 对齐 + 文档闭环）
+
+### 8.3 v0.5+（长期规划，按里程碑拆分）
+
+下面是建议的中期版本分期（可随实际进度微调）。原则：每个版本都应能回归编译、能写进 CHANGELOG、并且不破坏已冻结接口。
+
+- `v0.5.0`：Step N（内容与图片最小集）
+  - 落地 `\\img{path}{caption}`（接口已在 FEATURES 声明）
+  - 落地内容层级环境 `detail` / `vital`（先最小行为；版式差异由 class 决定）
+  - 清点并修复核心大小写/路径风险（尤其 module 引用 core 的路径）
+
+- `v0.6.0`：Step O（Algorithm / Pseudocode 模块）
+  - 新增独立模块（例如 `Hypo-Algorithm`），提供算法环境（实现库可选：algorithm2e 或 algpseudocode）
+  - 明确与 `outputdir`、字体、颜色的集成方式
+
+- `v0.7.0`：Step P（Code / Listings 模块收敛）
+  - 稳定 `Hypo-Code`：明确 minted 依赖、shell-escape 策略、输出目录策略
+  - 提供最小代码块接口（面向写作，而不是把所有 minted 选项暴露出来）
+
+- `v0.8.0`：Step Q（Note 的 Cover / Contents 工作流）
+  - 为 note 入口提供可选的 cover/目录生成工作流（make 目标 + class 版式）
+  - 确保 manual 自身也能 dogfooding
+
+- `v0.9.0`：Step R（CHSH 样式与整体排版收敛）
+  - 按你偏好落地 CHSH 风格（封面/目录/标题/页眉页脚/间距体系）
+  - 对 Note 与 Sheet 的差异做清晰边界
+
+- `v1.0.0`：正式版标准（Release Criteria）
+  - 接口冻结：FEATURES 列出的能力均有实现或明确标注为计划/不支持
+  - 文档闭环：README + Manual 可自举编译；examples/tests 回归稳定
+  - 兼容性：Linux 大小写一致；默认构建不依赖外部脚本；必要依赖在文档中明确
 
 
 ## 9. 任务清单（按优先级）
