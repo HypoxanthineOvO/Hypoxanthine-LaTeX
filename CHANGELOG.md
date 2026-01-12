@@ -43,3 +43,7 @@
 - Colors：切换为更克制的“浅/中/深”专业色系，并提供成系列色名（如 HypoBlueLight/HypoBlue/HypoBlueDark）
 - Box：definition/example/note 的默认配色同步切换到新色系（仍可用 `\tcbset{hypo ... box/.style={...}}` 覆盖）
 
+## v0.3.3
+- Box：新增 note 环境（Note）
+- Box：内部设置样式时规避“tab+cbset”破坏（避免编辑器把 `\tcbset` 的 `\t` 误处理成 Tab）
+

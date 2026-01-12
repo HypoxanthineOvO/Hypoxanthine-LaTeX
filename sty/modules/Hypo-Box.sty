@@ -57,21 +57,28 @@
   after skip=6pt,
 }}
 
+% 备注：历史上多次出现编辑器/格式化器把 "\tcbset" 的 "\t" 误处理成 Tab 的问题。
+% 为了彻底规避该类破坏，这里统一通过 \csname 调用 tcbset。
+\newcommand{\HypoBoxTcbset}[1]{\csname tcbset\endcsname{#1}}
+
 % v0.3.1：每种 box 预留独立样式 hook（默认继承 hypo box）
 % v0.3.3：默认配色切换为“浅/中/深”色系（仍可被用户覆盖）
-\tcbset{hypo definition box/.style={hypo box, colframe=HypoBlueDark, colback=HypoBlueLight}}
-\tcbset{hypo example box/.style={hypo box, colframe=HypoGreenDark, colback=HypoGreenLight}}
-\tcbset{hypo note box/.style={hypo box, colframe=HypoAmberDark, colback=HypoAmberLight}}
+\HypoBoxTcbset{hypo definition box/.style={hypo box, colframe=HypoBlueDark, colback=HypoBlueLight}}
+\HypoBoxTcbset{hypo example box/.style={hypo box, colframe=HypoGreenDark, colback=HypoGreenLight}}
+\HypoBoxTcbset{hypo note box/.style={hypo box, colframe=HypoAmberDark, colback=HypoAmberLight}}
 
 % v0.3.0：definition
 % v0.3.1：example
+% v0.3.4：note
 \makeatletter
 \def\HypoBox@none{none}
 \ifx\HypoBox@within\HypoBox@none
   \newtcbtheorem[no counter]{definition}{Definition}{hypo definition box}{def}
   \newtcbtheorem[no counter]{example}{Example}{hypo example box}{ex}
+  \newtcbtheorem[no counter]{note}{Note}{hypo note box}{note}
 \else
   \newtcbtheorem[number within=\HypoBox@within]{definition}{Definition}{hypo definition box}{def}
   \newtcbtheorem[number within=\HypoBox@within]{example}{Example}{hypo example box}{ex}
+  \newtcbtheorem[number within=\HypoBox@within]{note}{Note}{hypo note box}{note}
 \fi
 \makeatother
