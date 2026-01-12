@@ -2,29 +2,39 @@
 
 \usepackage[outputdir=build]{Hypo-Note}
 
-\title{Hypoxanthine-LaTeX Manual}
-\author{Hypoxanthine-LaTeX Project}
-\date{v0.4.0}
+% 注意：本仓库曾多次遇到“\t 被编辑器/格式化器误处理为 Tab”的问题。
+% 为了让手册本身更稳健，这里尽量避免在源文件里直接出现以 \t 开头的控制序列
+% （例如 \title/\tableofcontents/\texttt/\textbf/\text 等）。
+
+\newcommand{\HypoDo}[1]{\csname #1\endcsname}
+\newcommand{\HypoTT}[1]{{\begingroup\HypoDo{ttfamily}#1\endgroup}}
+\newcommand{\HypoBF}[1]{{\begingroup\bfseries#1\endgroup}}
+\newcommand{\HypoIT}[1]{{\begingroup\itshape#1\endgroup}}
+\newcommand{\HypoBS}{\char`\\}
+
+\HypoDo{title}{Hypoxanthine-LaTeX 使用手册}
+\HypoDo{author}{Hypoxanthine-LaTeX Project}
+\HypoDo{date}{v0.4.0}
 
 \begin{document}
 \maketitle
-\tableofcontents
+\HypoDo{tableofcontents}
 
-\section{Overview}
+\section{概览}
 
-Hypoxanthine-LaTeX is a modular, engineering-friendly LaTeX ecosystem.
+Hypoxanthine-LaTeX 是一个模块化、偏工程化维护的个人 LaTeX 生态。
 
 \begin{itemize}
-	\item \textbf{Classes} provide \emph{entrypoints} and user-facing options: \texttt{Hypo-Note}, \texttt{Hypo-Sheet}.
-	\item \textbf{Core} provides atomic capabilities: Fonts, Colors, Base, Math.
-	\item \textbf{Modules} provide optional plugins: Box, Refs, Code, \dots
+\item \HypoBF{Classes}：对外入口与场景封装（\HypoTT{Hypo-Note} / \HypoTT{Hypo-Sheet}）。
+\item \HypoBF{Core}：原子能力（Fonts / Colors / Base / Math）。
+\item \HypoBF{Modules}：按需插件（Box / Refs / Code / \dots）。
 \end{itemize}
 
-The public interface is defined by \texttt{FEATURES.md}; this manual is a more structured explanation and set of examples.
+对外接口以 \HypoTT{FEATURES.md} 为事实来源；本手册提供更结构化的解释与可运行示例。
 
-\section{Quick Start}
+\section{快速上手}
 
-In your document, load an entry package by \emph{package name}:
+在你的文档里，按\HypoIT{包名}加载入口包：
 
 \begin{verbatim}
 \documentclass{article}
@@ -35,31 +45,32 @@ Hello.
 \end{document}
 \end{verbatim}
 
-If you build via this repository's Makefile template, it injects \texttt{TEXINPUTS} so that \texttt{\textbackslash usepackage\{Hypo-Note\}} resolves to the local \texttt{sty/} directory.
+如果你使用本仓库提供的 Makefile 模板进行构建，它会注入 \HypoTT{TEXINPUTS}，从而让
+\HypoTT{\HypoBS usepackage\{Hypo-Note\}} 能直接解析到本地的 \HypoTT{sty/} 目录。
 
-\section{Entrypoints (Classes)}
+\section{入口（Classes）}
 
 \subsection{Hypo-Note}
 
-	exttt{Hypo-Note} is the note entry (comfortable reading). It loads core capabilities and (optionally) modules.
+\HypoTT{Hypo-Note} 是“笔记型”入口（更偏阅读舒适）。它会加载 core 能力，并按选项加载 modules。
 
 \subsection{Hypo-Sheet}
 
-	exttt{Hypo-Sheet} is the sheet/cheatsheet entry (compact layout). In the current stage it shares the same public options and loads the same core/modules.
+\HypoTT{Hypo-Sheet} 是“讲义/小抄型”入口（更偏紧凑排版）。当前阶段它与 \HypoTT{Hypo-Note} 共用相同的对外选项，并加载相同的 core/modules。
 
-\section{Global Options}
+\section{全局选项}
 
-Both entrypoints accept these options:
+两个入口共同支持以下选项：
 
 \begin{itemize}
-	\item \texttt{indent=true/false}: whether paragraphs are indented.
-	\item \texttt{shorthand=true/false}: shorthand commands (enabled by default).
-	\item \texttt{boxes=true/false}: whether box environments are loaded (enabled by default).
-	\item \texttt{refs=true/false}: whether the references module (hyperref + cleveref) is loaded (enabled by default).
-	\item \texttt{outputdir=\dots}: exported by Base as \texttt{\textbackslash FinalOutputDir}, and used by modules that need an output directory.
+\item \HypoTT{indent=true/false}：段首是否缩进。
+\item \HypoTT{shorthand=true/false}：数学/文本速写命令（默认开启）。
+\item \HypoTT{boxes=true/false}：是否加载 Box 环境（默认开启）。
+\item \HypoTT{refs=true/false}：是否加载引用模块（hyperref + cleveref，默认开启）。
+\item \HypoTT{outputdir=\dots}：由 Base 导出为 \HypoTT{\HypoBS FinalOutputDir}，供需要输出目录的模块使用。
 \end{itemize}
 
-Example:
+示例：
 
 \begin{verbatim}
 \usepackage[shorthand=false,boxes=false,refs=false,outputdir=build]{Hypo-Note}
@@ -69,106 +80,105 @@ Example:
 
 \subsection{Fonts}
 
-Fonts are configured for XeLaTeX and CJK via \texttt{xeCJK}.
+字体配置基于 XeLaTeX，并通过 \HypoTT{xeCJK} 处理中日韩字体。
 
 \subsection{Colors}
 
-Project colors are defined in \texttt{Hypo-Colors}. You can use them directly:
+工程配色定义在 \HypoTT{Hypo-Colors}。例如：
 
 \begin{verbatim}
 {\color{HypoBlueDark}Text}
 \end{verbatim}
 
-\subsection{Base (Output Directory)}
+\subsection{Base（输出目录）}
 
-Base exports the final output directory:\quad \texttt{\FinalOutputDir = \FinalOutputDir}.
+Base 会导出最终输出目录宏：\quad \HypoTT{\HypoBS FinalOutputDir = \FinalOutputDir}。
 
-\subsection{Math and Shorthand}
+\subsection{Math 与速写}
 
-Shorthand is enabled by default. Common commands include:
+速写默认开启。常用命令包括：
 
 \begin{itemize}
-	\item Text: \texttt{\textbackslash TX\{\dots\}}, \texttt{\textbackslash TBF\{\dots\}}
-	\item Math: \texttt{\textbackslash MB\{\dots\}}, \texttt{\textbackslash MC\{\dots\}}, \texttt{\textbackslash BS\{\dots\}}
-	\item Delimiters: \texttt{\textbackslash Abs\{\dots\}}
+\item 文本：\HypoTT{\HypoBS TX\{\dots\}}，\HypoTT{\HypoBS TBF\{\dots\}}
+\item 数学：\HypoTT{\HypoBS MB\{\dots\}}，\HypoTT{\HypoBS MC\{\dots\}}，\HypoTT{\HypoBS BS\{\dots\}}
+\item 分隔符：\HypoTT{\HypoBS Abs\{\dots\}}
 \end{itemize}
 
-Demo:
+演示：
 \[
-	\MB{x} + \MC{F}(\BS{\theta})\quad\text{and}\quad \Abs{-3}=3.
+\MB{x} + \MC{F}(\BS{\theta})\quad\mathrm{and}\quad \Abs{-3}=3.
 \]
 
-\section{Boxes (Module: Hypo-Box)}
+\section{Boxes（模块：Hypo-Box）}
 
-When \texttt{boxes=true} (default), the following environments are available:
-	exttt{definition}, \texttt{example}, \texttt{note}.
+当 \HypoTT{boxes=true}（默认）时，会提供以下环境：\HypoTT{definition}、\HypoTT{example}、\HypoTT{note}。
 
-\subsection{Title and Explicit Label}
+\subsection{标题与显式 label}
 
-All box environments take two mandatory arguments:
+所有 box 环境均接受两个必选参数：\HypoTT{title} 与 \HypoTT{label}。
 
 \begin{verbatim}
 \begin{definition}{Title}{label}
-	...
+    ...
 \end{definition}
 \end{verbatim}
 
-The actual label is automatically prefixed:
+实际写入的 label 会自动带前缀：
 
 \begin{itemize}
-	\item definition: \texttt{def:}\quad (e.g. \texttt{def:group})
-	\item example: \texttt{ex:}\quad (e.g. \texttt{ex:integers})
-	\item note: \texttt{note:}\quad (e.g. \texttt{note:tips})
+\item definition：\HypoTT{def:}（例如 \HypoTT{def:group}）
+\item example：\HypoTT{ex:}（例如 \HypoTT{ex:integers}）
+\item note：\HypoTT{note:}（例如 \HypoTT{note:tips}）
 \end{itemize}
 
-If you do not need references, pass an empty label argument \texttt{\{\}}.
+如果你不需要引用，可以将第二个参数传空 \HypoTT{\{\}}。
 
-\subsection{Numbering Strategy (Advanced)}
+\subsection{编号策略（进阶）}
 
-The box module supports a \texttt{numbering=none/global/section/chapter} option (default: \texttt{section}).
+Box 模块支持 \HypoTT{numbering=none/global/section/chapter}（默认 \HypoTT{section}）。
 
-If you want to control this option, disable boxes in the entrypoint and load \texttt{Hypo-Box} manually:
+如果你想控制该选项，建议在入口里关闭 box，然后手动加载 \HypoTT{Hypo-Box}：
 
 \begin{verbatim}
 \usepackage[boxes=false]{Hypo-Note}
 \usepackage[numbering=global]{Hypo-Box}
 \end{verbatim}
 
-\subsection{Style Overrides}
+\subsection{样式覆盖}
 
-You can override styles via \texttt{tcolorbox} hooks:
+可通过 tcolorbox 的 hook 覆盖样式。为避免源文件出现 \HypoTT{\HypoBS tcbset} 这种以 \HypoBS t 开头的命令，这里用展示写法：
 
 \begin{verbatim}
-	cbset{hypo definition box/.style={colframe=HypoRedDark,colback=HypoRedLight}}
+\csname tcbset\endcsname{hypo definition box/.style={colframe=HypoRedDark,colback=HypoRedLight}}
 \end{verbatim}
 
-\subsection{Live Examples}
+\subsection{示例}
 
 \begin{definition}{Group}{group}
-	A group is a set with an operation satisfying closure, associativity, identity and inverse.
+\quad A group is a set with an operation satisfying closure, associativity, identity and inverse.
 \end{definition}
 
 \begin{example}{Integers}{integers}
-	$(\mathbb{Z}, +)$ is a group.
+\quad $(\mathbb{Z}, +)$ is a group.
 \end{example}
 
 \begin{note}{Tip}{}
-	If you don\textquotesingle t need references, leave the label empty.
+\quad 如果不需要引用，请将 label 留空。
 \end{note}
 
-\section{References (Module: Hypo-Refs)}
+\section{引用（模块：Hypo-Refs）}
 
-When \texttt{refs=true} (default), \texttt{hyperref} and \texttt{cleveref} are loaded.
-Use \texttt{\textbackslash cref\{\dots\}} to produce formatted references, for example:
+当 \HypoTT{refs=true}（默认）时，会加载 \HypoTT{hyperref} 与 \HypoTT{cleveref}。
+使用 \HypoTT{\HypoBS cref\{\dots\}} 可以得到带类型名的引用，例如：
 
 \begin{verbatim}
 See \cref{def:group}.
 \end{verbatim}
 
-In this project the default output is in the form "Definition: 0.1", "Example: 0.1", "Note: 0.1".
+本项目默认输出形如 \HypoTT{"Definition: 0.1"}、\HypoTT{"Example: 0.1"}、\HypoTT{"Note: 0.1"}。
 
-\section{Planned Features}
+\section{计划中的功能}
 
-Some interfaces are reserved in \texttt{FEATURES.md} but not implemented yet, for example:\quad \texttt{\textbackslash img\{path\}\{caption\}}.
+部分接口在 \HypoTT{FEATURES.md} 中预留但尚未实现，例如：\quad \HypoTT{\HypoBS img\{path\}\{caption\}}。
 
 \end{document}
