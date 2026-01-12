@@ -1,0 +1,50 @@
+# ========================
+# LaTeX Build Artifacts
+# ========================
+# 忽略所有 LaTeX 编译产生的中间文件
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.lot
+*.lof
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.xdv
+*.nav
+*.snm
+*.vrb
+
+# ========================
+# Build Directory
+# ========================
+# 我们的 Makefile 指定了 build 文件夹，必须忽略
+build/
+dist/
+
+# ========================
+# OS & Editors
+# ========================
+# Mac/Windows 系统文件
+.DS_Store
+Thumbs.db
+
+# ========================
+# VS Code
+# ========================
+.vscode/
+
+# ========================
+# PDF Files
+# ========================
+*.pdf
+
+# ========================
+# Temporary Files
+# ========================
+*.tmp
+*.bak
+*~
