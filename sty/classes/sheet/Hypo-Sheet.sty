@@ -9,6 +9,7 @@
 \DeclareBoolOption[true]{shorthand}
 \DeclareBoolOption[true]{indent}
 \DeclareBoolOption[true]{boxes}
+\DeclareBoolOption[true]{refs}
 \DeclareStringOption[build]{outputdir}
 \ProcessKeyvalOptions*
 
@@ -32,4 +33,9 @@
 
 \ifHypoSheet@boxes
     \RequirePackage{Hypo-Box}
+\fi
+
+% Refs（hyperref/cleveref）应尽量后置加载
+\ifHypoSheet@refs
+    \RequirePackage{Hypo-Refs}
 \fi
