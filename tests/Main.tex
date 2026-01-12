@@ -27,15 +27,20 @@ FinalOutputDir = \texttt{\FinalOutputDir}
 Math: $\MB{x} + \MC{F}(\BS{\theta})$ and $\Abs{-3} = 3$.
 
 \section*{Box Test (Definition)}
-\begin{definition}{Group}{def:group}
-A set $G$ with an operation $\cdot$ satisfying the group axioms.
+% 1. 定义一个 Definition，显式指定 label=group（最终 label 为 "def:group"）
+\begin{definition}{Group Definition}{group}
+  A group is a set...
 \end{definition}
 
-\begin{example}{Integers under addition}{ex:z-add}
-$\Z$ with $+$ is a group.
+See Definition \ref{def:group}.
+
+% 2. 定义一个 Example，显式指定 label=integers（最终 label 为 "ex:integers"）
+\begin{example}{Integers}{integers}
+  $\mathbb{Z}$ is a group...
 \end{example}
 
-\begin{note}{About notation}{note:notation}
-This is a note box.
+% 3. 如果不需要引用，标签参数留空即可（不会产生 \label）
+\begin{note}{Look at this}{}
+  Just a note.
 \end{note}
 \end{document}

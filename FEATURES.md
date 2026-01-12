@@ -55,10 +55,11 @@
 
 ### 盒子标题与 label
 - 盒子支持“标题”（例如 Definition 的名字）
-- label 规则（用于后续 cref/引用）：
-  - 优先使用你显式提供的 label（推荐用于中文标题）
-  - 若未提供 label：标题为 ASCII 时自动生成（例如 "Lemma Of Math" -> "lemma_of_math"）
-  - 中文/非 ASCII：默认不自动生成 label（避免 hash 难以记忆导致无法方便引用）；可选增强再讨论
+- 显式 label（v0.3.4）：
+  - 语法：`\\begin{definition}{Title}{label}`（example/note 同理）
+  - 实际生成的 label 会自动带前缀：definition=`def:`，example=`ex:`，note=`note:`
+  - 不需要引用时可传空：`{}`（不生成 `\\label`）
+- 自动 label（计划）：仅对 ASCII 标题做可读的 slug；中文/非 ASCII 默认不自动生成（避免不可记忆的 hash）
 
 ## 引用与链接（拟定）
 - hyperref + cleveref：统一由注册宏机制接入

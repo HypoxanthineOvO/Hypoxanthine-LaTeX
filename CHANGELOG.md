@@ -47,3 +47,7 @@
 - Box：新增 note 环境（Note）
 - Box：内部设置样式时规避“tab+cbset”破坏（避免编辑器把 `\tcbset` 的 `\t` 误处理成 Tab）
 
+## v0.3.4
+- Box：definition/example/note 支持显式 label（用于 `\\label/\\ref`），label 前缀分别为 `def:` / `ex:` / `note:`
+- tests：补充主线用例的显式引用验证
+

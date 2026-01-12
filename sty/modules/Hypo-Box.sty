@@ -1,84 +1,98 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{Hypo-Box}[2026/01/12 Hypoxanthine Boxes]
+\ProvidesPackage{Hypo-Box}[2026/01/12 v0.3.4 Hypoxanthine Boxes]
 
+% ==============================================================================
+% 1. 依赖加载
+% ==============================================================================
 \RequirePackage{kvoptions}
 \RequirePackage{xparse}
-\RequirePackage{Hypo-Colors}
 \RequirePackage[most]{tcolorbox}
+\RequirePackage{Hypo-Colors} % 确保你有这个颜色定义包
 
+% 加载 tcolorbox 定理库
 \tcbuselibrary{theorems,breakable,skins}
 
+% ==============================================================================
+% 2. 选项处理 (Numbering Logic)
+% ==============================================================================
 \SetupKeyvalOptions{family=HypoBox, prefix=HypoBox@}
 
-% 编号策略：none | global | section | chapter
+% 编号策略：none | global | section | chapter (默认 section)
 \DeclareStringOption[section]{numbering}
 \ProcessKeyvalOptions*
 
 \makeatletter
-\def\HypoBox@within{}
-\edef\HypoBox@numbering{\HypoBox@numbering}
 
-\def\HypoBox@setwithin{%
-  \def\HypoBox@within{}%
-  \edef\HypoBox@numbering{\HypoBox@numbering}%
-  \expandafter\ifx\HypoBox@numbering\@empty\else\fi
-  \edef\HypoBox@tmp{\HypoBox@numbering}%
-  \def\HypoBox@none{none}%
-  \def\HypoBox@global{global}%
-  \def\HypoBox@section{section}%
-  \def\HypoBox@chapter{chapter}%
-  \ifx\HypoBox@tmp\HypoBox@none
-    \def\HypoBox@within{none}%
-  \else\ifx\HypoBox@tmp\HypoBox@global
-    \def\HypoBox@within{}%
-  \else\ifx\HypoBox@tmp\HypoBox@section
-    \def\HypoBox@within{section}%
-  \else\ifx\HypoBox@tmp\HypoBox@chapter
-    \@ifundefined{c@chapter}{\def\HypoBox@within{section}}{\def\HypoBox@within{chapter}}%
+% 定义选项值的常量字符串，方便比较
+\def\HypoBox@val@none{none}
+\def\HypoBox@val@global{global}
+\def\HypoBox@val@section{section}
+\def\HypoBox@val@chapter{chapter}
+
+% 计算最终传给 tcolorbox 的参数
+% 结果存入 \HypoBox@TheoremOptions
+\def\HypoBox@ComputeOptions{%
+  \ifx\HypoBox@numbering\HypoBox@val@none
+    % 模式: none -> 不编号
+    \def\HypoBox@TheoremOptions{no counter}%
+  \else\ifx\HypoBox@numbering\HypoBox@val@global
+    % 模式: global -> 连续编号 (1, 2, 3...)，不随章节重置
+    \def\HypoBox@TheoremOptions{}%
+  \else\ifx\HypoBox@numbering\HypoBox@val@chapter
+    % 模式: chapter -> 随章重置 (1.1, 1.2...)
+    % 如果当前类没有 chapter (如 article)，自动降级为 section
+    \@ifundefined{c@chapter}%
+      {\def\HypoBox@TheoremOptions{number within=section}}%
+      {\def\HypoBox@TheoremOptions{number within=chapter}}%
   \else
-    \def\HypoBox@within{section}%
-  \fi\fi\fi\fi
+    % 模式: section (默认) -> 随节重置
+    \def\HypoBox@TheoremOptions{number within=section}%
+  \fi\fi\fi
 }
-\HypoBox@setwithin
+% 执行计算
+\HypoBox@ComputeOptions
 \makeatother
 
-% 样式：浅底 + 细边框
-% 注意：不在这里定义任何新颜色；默认使用 black/white，可由用户在外部通过 tcolorbox keys 覆盖。
-\tcbset{hypo box/.style={
-  enhanced,
-  breakable,
-  boxrule=0.4pt,
-  colframe=black,
-  colback=white,
-  left=1.0mm,right=1.0mm,top=0.8mm,bottom=0.8mm,
-  arc=1mm,
-  fonttitle=\bfseries,
-  before skip=6pt,
-  after skip=6pt,
-}}
+% ==============================================================================
+% 3. 样式定义 (Style Definitions)
+% ==============================================================================
+% 基础样式
+\tcbset{
+  hypo box/.style={
+    enhanced,
+    breakable,
+    boxrule=0.4pt,
+    colframe=black,
+    colback=white,
+    left=1.0mm, right=1.0mm, top=0.8mm, bottom=0.8mm,
+    arc=1mm,
+    fonttitle=\bfseries,
+    before skip=6pt,
+    after skip=6pt,
+    % 标题和编号的分隔符
+    separator sign={:},
+    % 引用时的格式 (Label 引用时显示的文字)
+    label separator={:},
+  }
+}
 
-% 备注：历史上多次出现编辑器/格式化器把 "\tcbset" 的 "\t" 误处理成 Tab 的问题。
-% 为了彻底规避该类破坏，这里统一通过 \csname 调用 tcbset。
-\newcommand{\HypoBoxTcbset}[1]{\csname tcbset\endcsname{#1}}
+% 具体的颜色样式
+\tcbset{
+  hypo definition box/.style={hypo box, colframe=HypoBlueDark, colback=HypoBlueLight},
+  hypo example box/.style={hypo box, colframe=HypoGreenDark, colback=HypoGreenLight},
+  hypo note box/.style={hypo box, colframe=HypoAmberDark, colback=HypoAmberLight}
+}
 
-% v0.3.1：每种 box 预留独立样式 hook（默认继承 hypo box）
-% v0.3.3：默认配色切换为“浅/中/深”色系（仍可被用户覆盖）
-\HypoBoxTcbset{hypo definition box/.style={hypo box, colframe=HypoBlueDark, colback=HypoBlueLight}}
-\HypoBoxTcbset{hypo example box/.style={hypo box, colframe=HypoGreenDark, colback=HypoGreenLight}}
-\HypoBoxTcbset{hypo note box/.style={hypo box, colframe=HypoAmberDark, colback=HypoAmberLight}}
+% ==============================================================================
+% 4. 定理环境定义 (Theorem Definitions)
+% ==============================================================================
+% 使用 \expandafter 展开我们上面计算好的 \HypoBox@TheoremOptions 传入宏中
+% 语法: \newtcbtheorem[init options]{env name}{display name}{style}{prefix}
 
-% v0.3.0：definition
-% v0.3.1：example
-% v0.3.4：note
 \makeatletter
-\def\HypoBox@none{none}
-\ifx\HypoBox@within\HypoBox@none
-  \newtcbtheorem[no counter]{definition}{Definition}{hypo definition box}{def}
-  \newtcbtheorem[no counter]{example}{Example}{hypo example box}{ex}
-  \newtcbtheorem[no counter]{note}{Note}{hypo note box}{note}
-\else
-  \newtcbtheorem[number within=\HypoBox@within]{definition}{Definition}{hypo definition box}{def}
-  \newtcbtheorem[number within=\HypoBox@within]{example}{Example}{hypo example box}{ex}
-  \newtcbtheorem[number within=\HypoBox@within]{note}{Note}{hypo note box}{note}
-\fi
+\expandafter\newtcbtheorem\expandafter[\HypoBox@TheoremOptions]{definition}{Definition}{hypo definition box}{def}
+\expandafter\newtcbtheorem\expandafter[\HypoBox@TheoremOptions]{example}{Example}{hypo example box}{ex}
+\expandafter\newtcbtheorem\expandafter[\HypoBox@TheoremOptions]{note}{Note}{hypo note box}{note}
 \makeatother
+
+\endinput
