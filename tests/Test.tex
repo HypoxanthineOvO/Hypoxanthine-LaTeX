@@ -4,6 +4,13 @@
 % 后续当 Hypo-Note/Hypo-Sheet 落地后，可以把这里改成：
 % \usepackage{../sty/classes/note/Hypo-Note}
 
+% v0.2.0 Step A：只测字体层（避免引入 Box/Code/Refs 等变量）
+\usepackage{../sty/core/Hypo-Fonts}
+
 \begin{document}
-Test sandbox.
+\section*{Fonts Test}
+
+English: The quick brown fox jumps over the lazy dog.
+
+中文：这是一个字体测试用例。用于验证 XeLaTeX + xeCJK 能正常工作。
 \end{document}

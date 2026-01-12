@@ -5,18 +5,37 @@
 \RequirePackage{fontspec}
 
 % 英文设置
-\setmainfont{DejaVu Serif}
-\setsansfont{DejaVu Sans}
-\setmonofont{DejaVu Sans Mono}
+\IfFontExistsTF{DejaVu Serif}{\setmainfont{DejaVu Serif}}{\setmainfont{Latin Modern Roman}}
+\IfFontExistsTF{DejaVu Sans}{\setsansfont{DejaVu Sans}}{\setsansfont{Latin Modern Sans}}
+\IfFontExistsTF{DejaVu Sans Mono}{\setmonofont{DejaVu Sans Mono}}{\setmonofont{Latin Modern Mono}}
 
 % 正文文楷，加粗黑体
-\setCJKmainfont[
-    UprightFont    = LXGW WenKai,      % 正文：文楷
-    BoldFont       = Noto Sans CJK SC, % 加粗：思源黑体
-    ItalicFont     = LXGW WenKai Mono, % 斜体：文楷 Mono
-    BoldItalicFont = Noto Sans CJK SC, % 粗斜：思源黑体
-    RawFeature     = {+palt}
-]{LXGW WenKai}
+% CJK 主字体优先级：LXGW WenKai -> Noto Serif CJK SC -> FandolSong-Regular
+\IfFontExistsTF{LXGW WenKai}{
+    \setCJKmainfont[
+        BoldFont       = Noto Sans CJK SC,
+        ItalicFont     = LXGW WenKai Mono,
+        BoldItalicFont = Noto Sans CJK SC,
+        RawFeature     = {+palt}
+    ]{LXGW WenKai}
+}{
+    \IfFontExistsTF{Noto Serif CJK SC}{
+        \setCJKmainfont[
+            BoldFont       = Noto Sans CJK SC,
+            BoldItalicFont = Noto Sans CJK SC,
+            RawFeature     = {+palt}
+        ]{Noto Serif CJK SC}
+    }{
+        \setCJKmainfont[
+            BoldFont       = FandolHei-Regular,
+            BoldItalicFont = FandolHei-Regular,
+            RawFeature     = {+palt}
+        ]{FandolSong-Regular}
+    }
+}
 
-\setCJKsansfont{Noto Sans CJK SC}
-\setCJKmonofont[AutoFakeSlant]{LXGW WenKai Mono}
+% CJK sans 优先级：Noto Sans CJK SC -> FandolHei-Regular
+\IfFontExistsTF{Noto Sans CJK SC}{\setCJKsansfont{Noto Sans CJK SC}}{\setCJKsansfont{FandolHei-Regular}}
+
+% CJK mono 优先级：LXGW WenKai Mono -> FandolFang-Regular
+\IfFontExistsTF{LXGW WenKai Mono}{\setCJKmonofont[AutoFakeSlant]{LXGW WenKai Mono}}{\setCJKmonofont[AutoFakeSlant]{FandolFang-Regular}}
