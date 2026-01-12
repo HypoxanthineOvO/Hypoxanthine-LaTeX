@@ -3,6 +3,7 @@
 
 \RequirePackage{kvoptions}
 \RequirePackage{xparse}
+\RequirePackage{Hypo-Colors}
 \RequirePackage[most]{tcolorbox}
 
 \tcbuselibrary{theorems,breakable,skins}
@@ -56,12 +57,20 @@
   after skip=6pt,
 }}
 
-% v0.3.0：只实现 definition
+% v0.3.1：每种 box 预留独立样式 hook（默认继承 hypo box）
+  \tcbset{hypo definition box/.style={hypo box, colframe=HypoDarkBlue, colback=HypoSkyBlue}}
+  \tcbset{hypo example box/.style={hypo box, colframe=HypoGreen, colback=HypoLightGreen}}
+  \tcbset{hypo note box/.style={hypo box, colframe=HypoBrown, colback=HypoYellow}}
+
+% v0.3.0：definition
+% v0.3.1：example
 \makeatletter
 \def\HypoBox@none{none}
 \ifx\HypoBox@within\HypoBox@none
-  \newtcbtheorem[no counter]{definition}{Definition}{hypo box}{def}
+  \newtcbtheorem[no counter]{definition}{Definition}{hypo definition box}{def}
+  \newtcbtheorem[no counter]{example}{Example}{hypo example box}{ex}
 \else
-  \newtcbtheorem[number within=\HypoBox@within]{definition}{Definition}{hypo box}{def}
+  \newtcbtheorem[number within=\HypoBox@within]{definition}{Definition}{hypo definition box}{def}
+  \newtcbtheorem[number within=\HypoBox@within]{example}{Example}{hypo example box}{ex}
 \fi
 \makeatother

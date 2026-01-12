@@ -35,3 +35,7 @@
 - 编号策略：Box 支持 numbering=none/global/section/chapter（默认 section）
 - 清理：移除未使用的旧入口文件 Hypo-Notes
 
+## v0.3.1
+- Box 扩展：新增 example 环境（仍沿用方案 2：浅底 + 细边框）
+- Box 默认配色：对接 Hypo-Colors（definition：HypoDarkBlue/HypoSkyBlue；example：HypoGreen/HypoLightGreen；note：预留 hypo note box 样式 hook，默认 HypoBrown/HypoYellow）
+

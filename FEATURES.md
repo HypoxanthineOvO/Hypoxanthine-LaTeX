@@ -43,8 +43,15 @@
 
 ## 盒子（当前最小集）
 - definition：定义盒子（v0.3.0 起可用）
-- example：例子盒子
+- example：例子盒子（v0.3.1 起可用）
 - note：笔记/提示盒子
+
+### 盒子默认配色（可覆盖）
+- definition：边框 HypoDarkBlue，底色 HypoSkyBlue
+- example：边框 HypoGreen，底色 HypoLightGreen
+- note：暂未实现环境，但已预留 `hypo note box` 样式 hook（默认边框 HypoBrown，底色 HypoYellow）
+
+覆盖方式：在导言区用 `\tcbset{hypo example box/.style={...}}` 等覆盖对应 hook。
 
 ### 盒子标题与 label
 - 盒子支持“标题”（例如 Definition 的名字）
