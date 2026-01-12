@@ -12,6 +12,7 @@
 
 ## 全局选项（拟定）
 - indent=true/false：控制段首缩进策略（两入口一致）
+- boxes=true/false：是否启用盒子环境（两入口一致，默认开启）
 - outputdir=...：给 minted 等模块使用的输出目录（由 Hypo-Base 导出）
 
 ## 速写开关（拟定）
@@ -41,7 +42,7 @@
 - vital 环境：强调重点（两入口一致）
 
 ## 盒子（当前最小集）
-- definition：定义盒子
+- definition：定义盒子（v0.3.0 起可用）
 - example：例子盒子
 - note：笔记/提示盒子
 

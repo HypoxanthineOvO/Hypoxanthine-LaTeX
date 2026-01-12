@@ -1,0 +1,67 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{Hypo-Box}[2026/01/12 Hypoxanthine Boxes]
+
+\RequirePackage{kvoptions}
+\RequirePackage{xparse}
+\RequirePackage[most]{tcolorbox}
+
+\tcbuselibrary{theorems,breakable,skins}
+
+\SetupKeyvalOptions{family=HypoBox, prefix=HypoBox@}
+
+% 编号策略：none | global | section | chapter
+\DeclareStringOption[section]{numbering}
+\ProcessKeyvalOptions*
+
+\makeatletter
+\def\HypoBox@within{}
+\edef\HypoBox@numbering{\HypoBox@numbering}
+
+\def\HypoBox@setwithin{%
+  \def\HypoBox@within{}%
+  \edef\HypoBox@numbering{\HypoBox@numbering}%
+  \expandafter\ifx\HypoBox@numbering\@empty\else\fi
+  \edef\HypoBox@tmp{\HypoBox@numbering}%
+  \def\HypoBox@none{none}%
+  \def\HypoBox@global{global}%
+  \def\HypoBox@section{section}%
+  \def\HypoBox@chapter{chapter}%
+  \ifx\HypoBox@tmp\HypoBox@none
+    \def\HypoBox@within{none}%
+  \else\ifx\HypoBox@tmp\HypoBox@global
+    \def\HypoBox@within{}%
+  \else\ifx\HypoBox@tmp\HypoBox@section
+    \def\HypoBox@within{section}%
+  \else\ifx\HypoBox@tmp\HypoBox@chapter
+    \@ifundefined{c@chapter}{\def\HypoBox@within{section}}{\def\HypoBox@within{chapter}}%
+  \else
+    \def\HypoBox@within{section}%
+  \fi\fi\fi\fi
+}
+\HypoBox@setwithin
+\makeatother
+
+% 样式：浅底 + 细边框
+% 注意：不在这里定义任何新颜色；默认使用 black/white，可由用户在外部通过 tcolorbox keys 覆盖。
+\tcbset{hypo box/.style={
+  enhanced,
+  breakable,
+  boxrule=0.4pt,
+  colframe=black,
+  colback=white,
+  left=1.0mm,right=1.0mm,top=0.8mm,bottom=0.8mm,
+  arc=1mm,
+  fonttitle=\bfseries,
+  before skip=6pt,
+  after skip=6pt,
+}}
+
+% v0.3.0：只实现 definition
+\makeatletter
+\def\HypoBox@none{none}
+\ifx\HypoBox@within\HypoBox@none
+  \newtcbtheorem[no counter]{definition}{Definition}{hypo box}{def}
+\else
+  \newtcbtheorem[number within=\HypoBox@within]{definition}{Definition}{hypo box}{def}
+\fi
+\makeatother

@@ -1,0 +1,16 @@
+\documentclass{article}
+
+% Edge case: disable boxes via entry option
+\usepackage[boxes=false]{Hypo-Note}
+
+\begin{document}
+\section*{Boxes Test (OFF)}
+
+% environment 定义后会存在 \definition / \enddefinition
+\ifcsname definition\endcsname
+Boxes ON (unexpected)
+\else
+Boxes OFF (expected)
+\fi
+
+\end{document}

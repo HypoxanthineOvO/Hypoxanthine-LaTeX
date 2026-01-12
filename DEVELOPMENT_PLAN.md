@@ -69,6 +69,7 @@ Hypoxanthine-LaTeX/
   - `shorthand`：**默认开启**，允许 `shorthand=false` 关闭（用于排查冲突/兼容其他包）。
     - 实现约定：入口内部通过预先定义 `\HypoDisableShorthand` 来关闭 Hypo-Math 内置速写（不单独拆分 Shorthand 包）。
   - `indent`：段首缩进开关（`true/false`，两入口一致）。
+  - `boxes`：是否启用盒子环境（`true/false`，两入口一致，默认开启）。
   - `outputdir`：给 minted 等使用（由 core 导出）。
 
 - 命令（第一批冻结）：
@@ -138,6 +139,7 @@ Hypoxanthine-LaTeX/
 
 ### V0.3：Box 最小集落地
 - definition/example/note 三个盒子 + 自动 label + cref 注册宏。
+  - 约束：颜色不在本阶段强行定稿；先提供结构与可覆盖的样式。
 
 ### V0.4：文档自举
 - manual 最小示例能编译，覆盖：速写、盒子、图片、引用/链接（若启用）。
@@ -163,7 +165,7 @@ Hypoxanthine-LaTeX/
 - `v0.2.2`：Step C（Base：参数与 `FinalOutputDir`）
 - `v0.2.3`：Step D（Shorthand：默认开启 + 可关闭；`\TX/\TBF/\MB/\MC/\BS/\Abs`）
 - `v0.2.4`：Step E（两个入口文件 `Hypo-Note/Hypo-Sheet`：先转发/组织加载，接口一致）
-- `v0.3.0`：Step F（Definition 盒子最小落地）
+- `v0.3.0`：Step F（Definition 盒子最小落地：样式方案 2；编号默认按 section；提供 numbering=none/global/section/chapter 开关）
 - `v0.3.1`：Step G（Example + Note 盒子补齐）
 - `v0.3.2`：Step H（显式 `label=...` 参数 + 可引用）
 - `v0.3.3`：Step I（ASCII 标题自动 label）

@@ -8,6 +8,7 @@
 % 对外接口：两入口保持一致
 \DeclareBoolOption[true]{shorthand}
 \DeclareBoolOption[true]{indent}
+\DeclareBoolOption[true]{boxes}
 \DeclareStringOption[build]{outputdir}
 \ProcessKeyvalOptions*
 
@@ -28,3 +29,7 @@
 \RequirePackage{Hypo-Colors}
 \RequirePackage[outputdir=\HypoSheet@outputdir]{Hypo-Base}
 \RequirePackage{Hypo-Math}
+
+\ifHypoSheet@boxes
+    \RequirePackage{Hypo-Box}
+\fi

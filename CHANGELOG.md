@@ -28,3 +28,10 @@
 - 新增入口骨架：Hypo-Note 与 Hypo-Sheet（两入口对外选项一致）
 - 入口选项透传：`outputdir/indent/shorthand`（`shorthand=false` 通过内部宏关闭 Hypo-Math 速写）
 - 构建增强：默认通过 `TEXINPUTS` 支持用包名加载本地 `sty/` 下的 Hypo-* 文件
+
+## v0.3.0
+- Box 最小集：新增 definition 环境（样式方案 2：浅底 + 细边框）
+- Box 开关：入口新增 `boxes=true/false`
+- 编号策略：Box 支持 numbering=none/global/section/chapter（默认 section）
+- 清理：移除未使用的旧入口文件 Hypo-Notes
+

@@ -17,6 +17,7 @@ main:
 
 edge:
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=ShorthandOff MAIN_FILE=edge/ShorthandOff.tex OUT_DIR=$(OUT_DIR) all
+	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=BoxesOff MAIN_FILE=edge/BoxesOff.tex OUT_DIR=$(OUT_DIR) all
 
 clean:
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) OUT_DIR=$(OUT_DIR) clean
