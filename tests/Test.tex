@@ -10,6 +10,9 @@
 % v0.2.1 Step B：只测颜色层（验证色名可用）
 \usepackage{../sty/core/Hypo-Colors}
 
+% v0.2.2 Step C：只测 Base 参数导出（FinalOutputDir）
+\usepackage[outputdir=build]{../sty/core/Hypo-Base}
+
 \begin{document}
 \section*{Fonts Test}
 
@@ -23,4 +26,7 @@ English: The quick brown fox jumps over the lazy dog.
 {\color{HypoRed}HypoRed}\quad
 {\color{HypoBlue}HypoBlue}\quad
 {\color{HypoDarkBlue}HypoDarkBlue}
+
+\section*{Base Test}
+FinalOutputDir = \texttt{\FinalOutputDir}
 \end{document}

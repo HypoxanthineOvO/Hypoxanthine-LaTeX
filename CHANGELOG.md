@@ -14,3 +14,7 @@
 ## v0.2.1
 - Colors 层可用：Hypo-Colors 提供基础色名体系
 - tests：增加颜色可用性验证用例
+
+## v0.2.2
+- Base 层可用：Hypo-Base 支持 outputdir 选项并导出 FinalOutputDir
+- tests：增加 Base 参数导出验证用例
