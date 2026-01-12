@@ -1,0 +1,21 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{Hypo-Base}[2026/01/01 Hypoxanthine Base Utils]
+
+% 1. 常用工具包
+\RequirePackage{etoolbox}  % 逻辑判断 \ifdef, \ifstrempty
+\RequirePackage{kvoptions} % 键值对参数处理
+\RequirePackage{calc}      % 长度计算
+
+% 2. 定义全局参数前缀
+\SetupKeyvalOptions{family=Hypo, prefix=Hypo@}
+
+% 3. 定义通用参数 (例如 outputdir)
+\DeclareStringOption[build]{outputdir}
+\ProcessKeyvalOptions*
+
+% 4. 导出输出目录变量 (供 Minted 等使用)
+\ifdefined\MyBuildDir
+    \let\FinalOutputDir\MyBuildDir
+\else
+    \let\FinalOutputDir\Hypo@outputdir
+\fi

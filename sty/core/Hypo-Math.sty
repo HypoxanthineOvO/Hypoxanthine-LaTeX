@@ -1,0 +1,18 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{Hypo-Math}[2026/01/01 Hypoxanthine Math]
+
+% 1. 依赖
+\RequirePackage{amsmath, amssymb, amsthm, mathtools}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{../../sty/core/hypo-colors} % 相对路径引用颜色
+
+% 2. 符号缩写 (Shortcuts)
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+
+% 3. 自动缩放括号
+\DeclarePairedDelimiter\Paren{(}{)}
+\DeclarePairedDelimiter\Brack{[}{]}
+\DeclarePairedDelimiter\Set{\{}{\}}
+\DeclarePairedDelimiter\Abs{\lvert}{\rvert}

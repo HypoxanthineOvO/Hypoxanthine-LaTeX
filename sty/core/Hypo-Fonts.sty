@@ -1,0 +1,22 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{Hypo-Fonts}[2026/01/01 Hypoxanthine Fonts]
+
+\RequirePackage{xeCJK}
+\RequirePackage{fontspec}
+
+% 英文设置
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}
+
+% 正文文楷，加粗黑体
+\setCJKmainfont[
+    UprightFont    = LXGW WenKai,      % 正文：文楷
+    BoldFont       = Noto Sans CJK SC, % 加粗：思源黑体
+    ItalicFont     = LXGW WenKai Mono, % 斜体：文楷 Mono
+    BoldItalicFont = Noto Sans CJK SC, % 粗斜：思源黑体
+    RawFeature     = {+palt}
+]{LXGW WenKai}
+
+\setCJKsansfont{Noto Sans CJK SC}
+\setCJKmonofont[AutoFakeSlant]{LXGW WenKai Mono}
