@@ -1,26 +1,61 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{Hypo-Colors}[2026/01/01 Hypoxanthine Colors]
+\ProvidesPackage{Hypo-Colors}[2026/01/12 Hypoxanthine Colors]
 
 \RequirePackage[dvipsnames, svgnames, x11names]{xcolor}
 
-% 国风配色
-% 颜色编码来自：https://www.bilibili.com/video/av225626106/?vd_source=3bbc7395fdcea11b679cb15cd7812635
-\definecolor{HypoOrange}{HTML}{ED723F} % “凌霄”
-\definecolor{HypoCyan}{HTML}{215A59} % “青绿”
-\definecolor{HypoRed}{HTML}{D80835} % “石榴裙”
-\definecolor{HypoYellow}{HTML}{EDA01F} % “桂黄”
-\definecolor{HypoBlue}{HTML}{6F9BC6} % “挼蓝”
-\definecolor{HypoPurple}{HTML}{A17200} % “雪青”
-\definecolor{HypoPink}{HTML}{F8C6B5} % “十样锦”
-\definecolor{HypoGreen}{HTML}{3D6036} % “松绿”
-\definecolor{HypoGrey}{HTML}{EDEDED} % “银灰”
-\definecolor{HypoDarkGrey}{HTML}{70695D} % “黑朱”
+% v0.3.3：专业配色（浅 / 中 / 深）
+% 目标：更克制的饱和度、更统一的明度梯度，适配浅底 + 细边框的 box 风格。
 
-% 变种颜色
-\definecolor{HypoSkyBlue}{HTML}{29AFD4} % “法蓝”
-\definecolor{HypoDarkBlue}{HTML}{1E3B7A} % “酒蓝”
-\definecolor{HypoDarkRed}{HTML}{470024} % “勃艮第红” （https://www.bilibili.com/video/BV1JW4y1175L/）
-\definecolor{HypoLightGreen}{HTML}{DEFBB4} % 春浅绿 （https://www.bilibili.com/video/BV1WR4y1z76A?vd_source=3bbc7395fdcea11b679cb15cd7812635&spm_id_from=333.788.videopod.sections）
+% Blue
+\definecolor{HypoBlueLight}{HTML}{DBEAFE}
+\definecolor{HypoBlue}{HTML}{2563EB}
+\definecolor{HypoBlueDark}{HTML}{1E40AF}
 
-% （https://www.bilibili.com/video/BV1ge4y1v75x?spm_id_from=333.788.recommend_more_video.1&trackid=web_related_0.router-related-2206146-52fdn.1768225530830.411&vd_source=3bbc7395fdcea11b679cb15cd7812635）
-\definecolor{HypoBrown}{HTML}{D48463} % “浅棕”
+% Green
+\definecolor{HypoGreenLight}{HTML}{D1FAE5}
+\definecolor{HypoGreen}{HTML}{16A34A}
+\definecolor{HypoGreenDark}{HTML}{065F46}
+
+% Amber (Yellow)
+\definecolor{HypoAmberLight}{HTML}{FEF3C7}
+\definecolor{HypoAmber}{HTML}{F59E0B}
+\definecolor{HypoAmberDark}{HTML}{B45309}
+
+% Red
+\definecolor{HypoRedLight}{HTML}{FEE2E2}
+\definecolor{HypoRed}{HTML}{DC2626}
+\definecolor{HypoRedDark}{HTML}{7F1D1D}
+
+% Cyan
+\definecolor{HypoCyanLight}{HTML}{CFFAFE}
+\definecolor{HypoCyan}{HTML}{0891B2}
+\definecolor{HypoCyanDark}{HTML}{155E75}
+
+% Neutral (Grey)
+\definecolor{HypoGreyLight}{HTML}{F3F4F6}
+\definecolor{HypoGrey}{HTML}{6B7280}
+\definecolor{HypoGreyDark}{HTML}{111827}
+
+% Orange
+\definecolor{HypoOrangeLight}{HTML}{FFEDD5}
+\definecolor{HypoOrange}{HTML}{EA580C}
+\definecolor{HypoOrangeDark}{HTML}{9A3412}
+
+% Purple
+\definecolor{HypoPurpleLight}{HTML}{EDE9FE}
+\definecolor{HypoPurple}{HTML}{7C3AED}
+\definecolor{HypoPurpleDark}{HTML}{4C1D95}
+
+% Pink
+\definecolor{HypoPinkLight}{HTML}{FCE7F3}
+\definecolor{HypoPink}{HTML}{DB2777}
+\definecolor{HypoPinkDark}{HTML}{9D174D}
+
+% 兼容旧名称（尽量保持语义一致）
+\colorlet{HypoSkyBlue}{HypoBlueLight}
+\colorlet{HypoDarkBlue}{HypoBlueDark}
+\colorlet{HypoLightGreen}{HypoGreenLight}
+\colorlet{HypoYellow}{HypoAmber}
+\colorlet{HypoBrown}{HypoAmberDark}
+\colorlet{HypoDarkRed}{HypoRedDark}
+\colorlet{HypoDarkGrey}{HypoGreyDark}

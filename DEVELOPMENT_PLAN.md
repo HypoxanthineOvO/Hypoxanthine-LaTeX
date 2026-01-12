@@ -166,10 +166,12 @@ Hypoxanthine-LaTeX/
 - `v0.2.3`：Step D（Shorthand：默认开启 + 可关闭；`\TX/\TBF/\MB/\MC/\BS/\Abs`）
 - `v0.2.4`：Step E（两个入口文件 `Hypo-Note/Hypo-Sheet`：先转发/组织加载，接口一致）
 - `v0.3.0`：Step F（Definition 盒子最小落地：样式方案 2；编号默认按 section；提供 numbering=none/global/section/chapter 开关）
-- `v0.3.1`：Step G（Example + Note 盒子补齐）
-- `v0.3.2`：Step H（显式 `label=...` 参数 + 可引用）
-- `v0.3.3`：Step I（ASCII 标题自动 label）
-- `v0.4.0`：Step J（Refs 注册宏接入：box 改动不联动 refs）
+- `v0.3.1`：Step G（Example 盒子补齐）
+- `v0.3.2`：Step H（颜色体系重整：专业配色 + 浅/中/深系列）
+- `v0.3.3`：Step I（Note 盒子补齐）
+- `v0.3.4`：Step J（显式 `label=...` 参数 + 可引用）
+- `v0.3.5`：Step K（ASCII 标题自动 label）
+- `v0.4.0`：Step L（Refs 注册宏接入：box 改动不联动 refs）
 
 
 ## 9. 任务清单（按优先级）

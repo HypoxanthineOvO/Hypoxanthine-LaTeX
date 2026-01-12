@@ -58,9 +58,10 @@
 }}
 
 % v0.3.1：每种 box 预留独立样式 hook（默认继承 hypo box）
-  \tcbset{hypo definition box/.style={hypo box, colframe=HypoDarkBlue, colback=HypoSkyBlue}}
-  \tcbset{hypo example box/.style={hypo box, colframe=HypoGreen, colback=HypoLightGreen}}
-  \tcbset{hypo note box/.style={hypo box, colframe=HypoBrown, colback=HypoYellow}}
+% v0.3.3：默认配色切换为“浅/中/深”色系（仍可被用户覆盖）
+\tcbset{hypo definition box/.style={hypo box, colframe=HypoBlueDark, colback=HypoBlueLight}}
+\tcbset{hypo example box/.style={hypo box, colframe=HypoGreenDark, colback=HypoGreenLight}}
+\tcbset{hypo note box/.style={hypo box, colframe=HypoAmberDark, colback=HypoAmberLight}}
 
 % v0.3.0：definition
 % v0.3.1：example
