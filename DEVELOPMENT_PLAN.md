@@ -89,22 +89,19 @@ Hypoxanthine-LaTeX/
 - 约束：速写必须可关闭；命名要尽量避开常见冲突（例如 `\\T` 很短，未来如遇冲突优先提供替代名并在 FEATURES 记录）。
 
 
-## 6. Box 系统（先做最小集 + 自动 label + cref 注册）
+## 6. Box 系统（先做最小集 + label + cref 注册）
 
 ### 6.1 最小盒子集合（已确认）
 
 - 仅实现：`definition`、`example`、`note`。
 - 其他 theorem/lemma/claim 等后续按需加（不提前预埋大段样式）。
 
-### 6.2 自动 label（从标题推导）
+### 6.2 label（显式优先；自动 label 计划）
 
-- 目标：标题“Lemma Of Math” → label `lemma_of_math`。
-- 规则：
-  - 若用户显式提供 `label` 参数：优先使用该参数（用于稳定 cref）。
-  - 否则，标题为 ASCII 且可归一化：小写 + 空格转 `_` + 去掉不安全字符。
-  - 否则（中文等非 ASCII）：**默认不自动生成 label**（因为 hash 虽可用但不可记忆，用户无法方便地 `\\cref`）。
-    - 可选增强：提供 `autolabel=hash` 模式时再启用 hash 兜底。
-    - 中文拼音/首字母：后续如确有刚需再评估引入可选依赖。
+- v0.3.4（已落地）：显式 label 参数，用于 `\\label/\\ref`（自动带前缀 def:/ex:/note:）。
+- 自动 label（计划，拟 v0.3.5）：
+  - 仅当标题为 ASCII 且可归一化：小写 + 空格转 `_` + 去掉不安全字符。
+  - 中文等非 ASCII：默认不自动生成 label（避免不可记忆的 hash）。
 
 ### 6.3 Box 与 Refs 的连接方式（避免联动修改）
 
@@ -169,7 +166,7 @@ Hypoxanthine-LaTeX/
 - `v0.3.1`：Step G（Example 盒子补齐）
 - `v0.3.2`：Step H（颜色体系重整：专业配色 + 浅/中/深系列）
 - `v0.3.3`：Step I（Note 盒子补齐）
-- `v0.3.4`：Step J（显式 `label=...` 参数 + 可引用）
+- `v0.3.4`：Step J（显式 label 参数 + 可引用）
 - `v0.3.5`：Step K（ASCII 标题自动 label）
 - `v0.4.0`：Step L（Refs 注册宏接入：box 改动不联动 refs）
 
