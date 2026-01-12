@@ -56,3 +56,8 @@
 - 引用格式：使用 `\\cref{...}` 时输出 "Definition: 0.1" / "Example: 0.1" / "Note: 0.1" 这类格式
 - tests：主线用例切换为 `\\cref` 验证输出
 
+## v0.4.0
+- README：对齐当前工程化用法（按包名加载、Makefile 注入 TEXINPUTS、入口选项说明等）
+- manual：补齐自举式手册（覆盖入口/选项、core/modules、Box、Refs 与示例）
+- DEVELOPMENT_PLAN：补充 v0.5.0–v1.0.0 长线里程碑与 release criteria
+
