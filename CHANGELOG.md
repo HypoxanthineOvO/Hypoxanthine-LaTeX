@@ -18,3 +18,8 @@
 ## v0.2.2
 - Base 层可用：Hypo-Base 支持 outputdir 选项并导出 FinalOutputDir
 - tests：增加 Base 参数导出验证用例
+
+## v0.2.3
+- Math 层增强：Hypo-Math 内置大写速写命令（默认启用）
+- 速写开关：可通过预先定义 \HypoDisableShorthand 关闭速写（用于规避命名冲突）
+- tests：默认只跑主线用例；边缘用例通过 `make -C tests edge` 单独运行

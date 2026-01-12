@@ -13,6 +13,9 @@
 % v0.2.2 Step C：只测 Base 参数导出（FinalOutputDir）
 \usepackage[outputdir=build]{../sty/core/Hypo-Base}
 
+% v0.2.3 Step D：数学与速写（默认开启；可通过 \HypoDisableShorthand 关闭）
+\usepackage{../sty/core/Hypo-Math}
+
 \begin{document}
 \section*{Fonts Test}
 
@@ -29,4 +32,9 @@ English: The quick brown fox jumps over the lazy dog.
 
 \section*{Base Test}
 FinalOutputDir = \texttt{\FinalOutputDir}
+
+\section*{Math + Shorthand Test (ON by default)}
+\TBF{Bold text} / \TX{inline text}
+
+Math: $\MB{x} + \MC{F}(\BS{\theta})$ and $\Abs{-3} = 3$.
 \end{document}

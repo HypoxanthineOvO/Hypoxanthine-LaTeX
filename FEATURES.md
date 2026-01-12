@@ -10,8 +10,11 @@
 
 ## 全局选项（拟定）
 - indent=true/false：控制段首缩进策略（两入口一致）
-- shorthand=true/false：是否启用大写速写命令（默认开启；例如 \TX, \TBF 等）
 - outputdir=...：给 minted 等模块使用的输出目录（由 Hypo-Base 导出）
+
+## 速写开关（拟定）
+- 默认启用大写速写命令（例如 \TX, \TBF, \MB, \MC, \BS）。
+- 如需关闭（用于规避命名冲突）：在加载 Hypo-Math（或入口类）之前定义 \HypoDisableShorthand。
 
 ## 速写命令（拟定，需确认冲突风险）
 - \TX{...}：等价于 \text{...}（避免 \T 这类短命令冲突）

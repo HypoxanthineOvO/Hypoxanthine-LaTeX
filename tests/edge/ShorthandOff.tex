@@ -1,0 +1,17 @@
+\documentclass{article}
+
+% Edge case: disable shorthand via macro before loading Hypo-Math
+\def\HypoDisableShorthand{}
+\usepackage{../../sty/core/Hypo-Math}
+
+\begin{document}
+\section*{Shorthand Test (OFF)}
+
+% 通过是否存在 \TX 命令来验证是否关闭
+\ifcsname TX\endcsname
+Shorthand ON (unexpected)
+\else
+Shorthand OFF (expected)
+\fi
+
+\end{document}

@@ -1,18 +1,29 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{Hypo-Math}[2026/01/01 Hypoxanthine Math]
+\ProvidesPackage{Hypo-Math}[2026/01/12 Hypoxanthine Math]
 
-% 1. 依赖
-\RequirePackage{amsmath, amssymb, amsthm, mathtools}
-\RequirePackage[most]{tcolorbox}
-\RequirePackage{../../sty/core/hypo-colors} % 相对路径引用颜色
+% 依赖（保持精简：只提供数学命令，不引入 box/code/refs）
+\RequirePackage{amsmath, amssymb, mathtools}
 
-% 2. 符号缩写 (Shortcuts)
+% 数集符号（可选能力；不作为“速写重点”，但保留常用）
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\Z}{\mathbb{Z}}
 
-% 3. 自动缩放括号
+% 成对定界符（mathtools 提供）
 \DeclarePairedDelimiter\Paren{(}{)}
 \DeclarePairedDelimiter\Brack{[}{]}
 \DeclarePairedDelimiter\Set{\{}{\}}
 \DeclarePairedDelimiter\Abs{\lvert}{\rvert}
+
+% 速写命令：默认启用；如需关闭，在加载前定义 \HypoDisableShorthand
+\ifdefined\HypoDisableShorthand
+\else
+	% 文本速写
+	\providecommand{\TX}[1]{\text{#1}}
+	\providecommand{\TBF}[1]{\textbf{#1}}
+
+	% 数学字母样式速写
+	\providecommand{\MB}[1]{\mathbf{#1}}
+	\providecommand{\MC}[1]{\mathcal{#1}}
+	\providecommand{\BS}[1]{\boldsymbol{#1}}
+\fi
