@@ -149,7 +149,7 @@ Box 模块支持 \HypoTT{numbering=none/global/section/chapter}（默认 \HypoTT
 可通过 tcolorbox 的 hook 覆盖样式。为避免源文件出现 \HypoTT{\HypoBS tcbset} 这种以 \HypoBS t 开头的命令，这里用展示写法：
 
 \begin{verbatim}
-\csname tcbset\endcsname{hypo definition box/.style={colframe=HypoRedDark,colback=HypoRedLight}}
+\tcbset{hypo definition box/.style={colframe=HypoRedDark,colback=HypoRedLight}}
 \end{verbatim}
 
 \subsection{示例}

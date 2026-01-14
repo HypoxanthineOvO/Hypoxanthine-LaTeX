@@ -176,13 +176,11 @@ Hypoxanthine-LaTeX/
 下面是建议的中期版本分期（可随实际进度微调）。原则：每个版本都应能回归编译、能写进 CHANGELOG、并且不破坏已冻结接口。
 
 - `v0.5.0`：Step N（内容与图片最小集）
-  - 落地 `\\img{path}{caption}`（接口已在 FEATURES 声明）
-  - 落地内容层级环境 `detail` / `vital`（先最小行为；版式差异由 class 决定）
-  - 清点并修复核心大小写/路径风险（尤其 module 引用 core 的路径）
+  - 落地 `\img{path}{caption}`（接口已在 FEATURES 声明）
 
 - `v0.6.0`：Step O（Algorithm / Pseudocode 模块）
   - 新增独立模块（例如 `Hypo-Algorithm`），提供算法环境（实现库可选：algorithm2e 或 algpseudocode）
-  - 明确与 `outputdir`、字体、颜色的集成方式
+  - 简化算法环境的接口：`\begin{Hypo-Alg}[h] \caption{...} \end{Hypo-Alg}`
 
 - `v0.7.0`：Step P（Code / Listings 模块收敛）
   - 稳定 `Hypo-Code`：明确 minted 依赖、shell-escape 策略、输出目录策略

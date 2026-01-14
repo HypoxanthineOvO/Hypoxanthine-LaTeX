@@ -7,14 +7,10 @@
 % tcolorbox theorem counters are typically named tcb@cnt@<env>.
 % Configure both the raw env name and the underlying counter name for safety.
 
+% Format goal: "XXX: 0.1".
+% Put the prefix (with colon) in \crefname and keep the label formatter as the
+% default numeric representation to avoid duplicated names.
 % Names
-\crefname{definition}{Definition:}{Definitions:}
-\Crefname{definition}{Definition:}{Definitions:}
-\crefname{example}{Example:}{Examples:}
-\Crefname{example}{Example:}{Examples:}
-\crefname{note}{Note:}{Notes:}
-\Crefname{note}{Note:}{Notes:}
-
 \crefname{tcb@cnt@definition}{Definition:}{Definitions:}
 \Crefname{tcb@cnt@definition}{Definition:}{Definitions:}
 \crefname{tcb@cnt@example}{Example:}{Examples:}
@@ -22,8 +18,5 @@
 \crefname{tcb@cnt@note}{Note:}{Notes:}
 \Crefname{tcb@cnt@note}{Note:}{Notes:}
 
-% Format goal: "XXX: 0.1".
-% Put the prefix (with colon) in \crefname and keep the label formatter as the
-% default numeric representation to avoid duplicated names.
 
 \endinput
