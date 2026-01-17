@@ -2,7 +2,7 @@
 \ProvidesClass{Hypo-Note}[2026/01/17 v0.8.0 Hypoxanthine Note Class]
 
 % Route options: pass Hypo-Note specific options to Hypo-Note-Core,
-% and pass everything else to the base class (ctexart).
+% and pass everything else to the base class (ctexbook/ctexart).
 \RequirePackage{expl3}
 \RequirePackage{l3keys2e}
 \ExplSyntaxOn
@@ -15,20 +15,39 @@
 \bool_new:N \g_hypo_note_opt_code_bool
 \tl_new:N   \g_hypo_note_opt_outputdir_tl
 \tl_new:N   \g_hypo_note_opt_colorscheme_tl
+\tl_new:N   \g_hypo_note_opt_base_tl
+\seq_new:N  \g_hypo_note_base_unknown_opts_seq
+\bool_new:N \g_hypo_note_base_user_side_bool
+\bool_new:N \g_hypo_note_base_user_open_bool
 
-\cs_new_protected:Npn \hypo_note_pass_unknown_to_base:n #1
+\cs_new_protected:Npn \hypo_note_collect_unknown_to_base:n #1
   {
     \tl_set:Nx \l_tmpa_tl { \l_keys_key_str }
     \tl_if_blank:nTF {#1}
-      { \PassOptionsToClass{\l_tmpa_tl}{ctexart} }
+      { \tl_set_eq:NN \l_tmpb_tl \l_tmpa_tl }
+      { \tl_set:Nx \l_tmpb_tl { \l_tmpa_tl = {#1} } }
+
+    % Track whether the user explicitly chose oneside/twoside or openany/openright/openleft.
+    \str_case:nnF { \tl_to_str:N \l_tmpa_tl }
       {
-        \tl_set:Nx \l_tmpb_tl { \l_tmpa_tl = {#1} }
-        \PassOptionsToClass{\l_tmpb_tl}{ctexart}
+        {oneside}   { \bool_set_true:N \g_hypo_note_base_user_side_bool }
+        {twoside}   { \bool_set_true:N \g_hypo_note_base_user_side_bool }
+        {openany}   { \bool_set_true:N \g_hypo_note_base_user_open_bool }
+        {openright} { \bool_set_true:N \g_hypo_note_base_user_open_bool }
+        {openleft}  { \bool_set_true:N \g_hypo_note_base_user_open_bool }
       }
+      { }
+
+    \seq_put_right:NV \g_hypo_note_base_unknown_opts_seq \l_tmpb_tl
   }
 
 \keys_define:nn { hypo / note / class }
   {
+    base .choice:,
+    base / book    .code:n = { \tl_set:Nn \g_hypo_note_opt_base_tl { ctexbook } },
+    base / article .code:n = { \tl_set:Nn \g_hypo_note_opt_base_tl { ctexart } },
+    base .default:n = book,
+    base .initial:n = book,
     shorthand .choice:,
     shorthand / true  .code:n = { \bool_set_true:N  \g_hypo_note_opt_shorthand_bool },
     shorthand / false .code:n = { \bool_set_false:N \g_hypo_note_opt_shorthand_bool },
@@ -71,13 +90,30 @@
     colorscheme .tl_set:N = \g_hypo_note_opt_colorscheme_tl,
     colorscheme .initial:n = Base,
 
-    unknown .code:n = { \hypo_note_pass_unknown_to_base:n {#1} },
+    unknown .code:n = { \hypo_note_collect_unknown_to_base:n {#1} },
   }
 
 \ProcessKeysOptions{ hypo / note / class }
 \ExplSyntaxOff
 
-\LoadClass{ctexart}
+% Pass collected unknown options to the chosen base class, then load it.
+\ExplSyntaxOn
+\seq_map_inline:Nn \g_hypo_note_base_unknown_opts_seq
+  { \PassOptionsToClass{##1}{\g_hypo_note_opt_base_tl} }
+
+% In book mode, default to a note-friendly pagination unless the user overrides.
+\str_if_eq:VnT \g_hypo_note_opt_base_tl { ctexbook }
+  {
+    \bool_if:NF \g_hypo_note_base_user_side_bool
+      { \PassOptionsToClass{oneside}{ctexbook} }
+    \bool_if:NF \g_hypo_note_base_user_open_bool
+      { \PassOptionsToClass{openany}{ctexbook} }
+  }
+% Bake the selected base class name into a plain macro (no expl3 commands).
+\cs_set:Npx \HypoNoteBaseClass { \tl_use:N \g_hypo_note_opt_base_tl }
+\ExplSyntaxOff
+
+\LoadClass{\HypoNoteBaseClass}
 
 % ------------------------------------------------------------------------------
 % Style: layout + header/footer
@@ -94,7 +130,13 @@
 
 % Section marks for article-like classes
 \makeatletter
-\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\@ifundefined{chapter}
+  {\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}}
+  {%
+    % Book-like: leftmark = chapter, rightmark = section
+    \renewcommand{\chaptermark}[1]{\markboth{\thechapter\ #1}{\thechapter\ #1}}%
+    \renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}%
+  }
 \makeatother
 
 % ------------------------------------------------------------------------------

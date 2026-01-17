@@ -54,4 +54,133 @@
     \RequirePackage{Hypo-Refs}
 \fi
 
+% -----------------------------------------------------------------------------
+% Optional: deeper sectioning levels and chapter support for note-style docs.
+% -----------------------------------------------------------------------------
+\makeatletter
+
+\newcommand{\HypoEnableDeepSections}{%
+    \@ifnextchar[%
+        {\Hypo@EnableDeepSectionsWith}%
+        {\Hypo@EnableDeepSectionsWith[5]}%
+}
+
+\newcommand{\Hypo@EnableDeepSectionsWith}[1]{%
+    \setcounter{secnumdepth}{#1}%
+    \setcounter{tocdepth}{#1}%
+}
+
+\newcommand{\HypoParagraphBlockHeadings}{%
+    % Prefer ctex's interface when available.
+    \@ifundefined{ctexset}
+      {\Hypo@ParagraphBlockHeadings@latex}%
+      {\Hypo@ParagraphBlockHeadings@ctex}%
+}
+
+\newcommand{\Hypo@ParagraphBlockHeadings@ctex}{%
+    \ctexset{%
+        paragraph={%
+            beforeskip=0.8ex plus 0.2ex minus 0.2ex,
+            afterskip=0.3ex,
+            format=\bfseries,
+        },
+        subparagraph={%
+            beforeskip=0.6ex plus 0.2ex minus 0.2ex,
+            afterskip=0.2ex,
+            format=\bfseries,
+        }%
+    }%
+}
+
+\newcommand{\Hypo@ParagraphBlockHeadings@latex}{%
+    \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+        {0.8ex \@plus 0.2ex \@minus 0.2ex}%
+        {0.3ex}%
+        {\normalfont\bfseries}}%
+    \renewcommand\subparagraph{\@startsection{subparagraph}{5}{\z@}%
+        {0.6ex \@plus 0.2ex \@minus 0.2ex}%
+        {0.2ex}%
+        {\normalfont\bfseries}}%
+}
+
+% -----------------------------------------------------------------------------
+% Chapter support for article-like base classes (ctexart/article).
+% Provide a real \chapter (numbering + TOC) when base class doesn't have it.
+% -----------------------------------------------------------------------------
+\newif\ifHypo@chapters@enabled
+\Hypo@chapters@enabledfalse
+
+\newcommand{\HypoChapterBreak}{\clearpage}
+
+\newcommand{\HypoEnableChapters}{%
+    \ifHypo@chapters@enabled\else
+        \Hypo@chapters@enabledtrue
+        % Reset sectioning counters like report/book.
+        \@addtoreset{section}{chapter}%
+        % Numbering scheme: chapter.section.subsection...
+        \renewcommand\thesection{\thechapter.\arabic{section}}%
+        \renewcommand\thesubsection{\thesection.\arabic{subsection}}%
+        \renewcommand\thesubsubsection{\thesubsection.\arabic{subsubsection}}%
+        \renewcommand\theparagraph{\thesubsubsection.\arabic{paragraph}}%
+        \renewcommand\thesubparagraph{\theparagraph.\arabic{subparagraph}}%
+    \fi
+}
+
+\@ifundefined{chapter}{%
+    \newcounter{chapter}
+    \renewcommand\thechapter{\arabic{chapter}}
+    \providecommand\theHchapter{\thechapter}
+
+    % Ensure TOC support exists *before* \tableofcontents reads .toc.
+    % Otherwise \contentsline{chapter}{...}{...}{...} would call \relax and leave
+    % arguments unconsumed, breaking subsequent TOC entries.
+    \@ifundefined{l@chapter}{%
+        \newcommand*\l@chapter{\@dottedtocline{0}{0em}{1.8em}}%
+    }{}%
+    \@ifundefined{toclevel@chapter}{\newcommand*\toclevel@chapter{0}}{}%
+
+    \newcommand{\chaptermark}[1]{\markboth{\thechapter\ #1}{\thechapter\ #1}}
+
+    \newcommand{\Hypo@chapter@heading}[2]{%
+        \par\vspace{1.2ex}%
+        {\Large\bfseries
+            \ifx#1\relax\else
+                #1\par\vspace{0.4ex}%
+            \fi
+            #2\par
+        }%
+        \vspace{0.6ex}%
+    }
+
+    \newcommand{\Hypo@chapter@phantomsection}{%
+        \@ifundefined{phantomsection}{}{\phantomsection}%
+    }
+
+    \newcommand{\Hypo@chapter@star}[1]{%
+        \HypoChapterBreak
+        \Hypo@chapter@phantomsection
+        \Hypo@chapter@heading{\relax}{#1}%
+        \chaptermark{#1}%
+    }
+
+    \newcommand{\Hypo@chapter@nostar}[1]{%
+        \HypoEnableChapters
+        \refstepcounter{chapter}%
+        \setcounter{section}{0}%
+        \HypoChapterBreak
+        \Hypo@chapter@phantomsection
+        \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter}#1}%
+        \Hypo@chapter@heading{\thechapter}{#1}%
+        \chaptermark{#1}%
+    }
+
+    \newcommand{\chapter}{\@ifstar{\Hypo@chapter@star}{\Hypo@chapter@nostar}}
+}{}
+
+% Back-compat aliases (older docs may use these).
+\newcommand{\NoteChapter}{\chapter}
+\newcommand{\NoteChapterBreak}{\HypoChapterBreak}
+
+\makeatother
+
 \endinput

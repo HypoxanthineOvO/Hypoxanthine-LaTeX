@@ -3,7 +3,7 @@
 
 % Options:
 % - Pass Hypoxanthine entry options to Hypo-Note-Core and local modules.
-% - Pass unknown options to base class (ctexart).
+% - Pass unknown options to base class (ctexbook/ctexart).
 \RequirePackage{expl3}
 \RequirePackage{l3keys2e}
 \ExplSyntaxOn
@@ -18,20 +18,38 @@
 \bool_new:N \g_hypo_litnote_opt_litbox_bool
 \tl_new:N   \g_hypo_litnote_opt_outputdir_tl
 \tl_new:N   \g_hypo_litnote_opt_colorscheme_tl
+\tl_new:N   \g_hypo_litnote_opt_base_tl
+\seq_new:N  \g_hypo_litnote_base_unknown_opts_seq
+\bool_new:N \g_hypo_litnote_base_user_side_bool
+\bool_new:N \g_hypo_litnote_base_user_open_bool
 
-\cs_new_protected:Npn \hypo_litnote_pass_unknown_to_base:n #1
+\cs_new_protected:Npn \hypo_litnote_collect_unknown_to_base:n #1
   {
     \tl_set:Nx \l_tmpa_tl { \l_keys_key_str }
     \tl_if_blank:nTF {#1}
-      { \PassOptionsToClass{\l_tmpa_tl}{ctexart} }
+      { \tl_set_eq:NN \l_tmpb_tl \l_tmpa_tl }
+      { \tl_set:Nx \l_tmpb_tl { \l_tmpa_tl = {#1} } }
+
+    \str_case:nnF { \tl_to_str:N \l_tmpa_tl }
       {
-        \tl_set:Nx \l_tmpb_tl { \l_tmpa_tl = {#1} }
-        \PassOptionsToClass{\l_tmpb_tl}{ctexart}
+        {oneside}   { \bool_set_true:N \g_hypo_litnote_base_user_side_bool }
+        {twoside}   { \bool_set_true:N \g_hypo_litnote_base_user_side_bool }
+        {openany}   { \bool_set_true:N \g_hypo_litnote_base_user_open_bool }
+        {openright} { \bool_set_true:N \g_hypo_litnote_base_user_open_bool }
+        {openleft}  { \bool_set_true:N \g_hypo_litnote_base_user_open_bool }
       }
+      { }
+
+    \seq_put_right:NV \g_hypo_litnote_base_unknown_opts_seq \l_tmpb_tl
   }
 
 \keys_define:nn { hypo / litnote / class }
   {
+    base .choice:,
+    base / book    .code:n = { \tl_set:Nn \g_hypo_litnote_opt_base_tl { ctexbook } },
+    base / article .code:n = { \tl_set:Nn \g_hypo_litnote_opt_base_tl { ctexart } },
+    base .default:n = book,
+    base .initial:n = book,
     shorthand .choice:,
     shorthand / true  .code:n = { \bool_set_true:N  \g_hypo_litnote_opt_shorthand_bool },
     shorthand / false .code:n = { \bool_set_false:N \g_hypo_litnote_opt_shorthand_bool },
@@ -86,13 +104,29 @@
     colorscheme .tl_set:N = \g_hypo_litnote_opt_colorscheme_tl,
     colorscheme .initial:n = Base,
 
-    unknown .code:n = { \hypo_litnote_pass_unknown_to_base:n {#1} },
+    unknown .code:n = { \hypo_litnote_collect_unknown_to_base:n {#1} },
   }
 
 \ProcessKeysOptions{ hypo / litnote / class }
 \ExplSyntaxOff
 
-\LoadClass{ctexart}
+% Pass collected unknown options to the chosen base class, then load it.
+\ExplSyntaxOn
+\seq_map_inline:Nn \g_hypo_litnote_base_unknown_opts_seq
+  { \PassOptionsToClass{##1}{\g_hypo_litnote_opt_base_tl} }
+
+\str_if_eq:VnT \g_hypo_litnote_opt_base_tl { ctexbook }
+  {
+    \bool_if:NF \g_hypo_litnote_base_user_side_bool
+      { \PassOptionsToClass{oneside}{ctexbook} }
+    \bool_if:NF \g_hypo_litnote_base_user_open_bool
+      { \PassOptionsToClass{openany}{ctexbook} }
+  }
+% Bake the selected base class name into a plain macro (no expl3 commands).
+\cs_set:Npx \HypoLitNoteBaseClass { \tl_use:N \g_hypo_litnote_opt_base_tl }
+\ExplSyntaxOff
+
+\LoadClass{\HypoLitNoteBaseClass}
 
 % -----------------------------------------------------------------------------
 % Layout (minimal first version)
@@ -108,7 +142,10 @@
 \renewcommand{\footrulewidth}{0pt}
 
 \makeatletter
-\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\@ifundefined{chapter}
+  {\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}}
+  {\renewcommand{\chaptermark}[1]{\markboth{\thechapter\ #1}{\thechapter\ #1}}%
+   \renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}}
 \makeatother
 
 \fancyhead[L]{\nouppercase{\rightmark}}
