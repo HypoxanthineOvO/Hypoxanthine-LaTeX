@@ -10,6 +10,7 @@
 \DeclareBoolOption[true]{indent}
 \DeclareBoolOption[true]{boxes}
 \DeclareBoolOption[true]{refs}
+\DeclareBoolOption[true]{algorithm}
 \DeclareStringOption[build]{outputdir}
 \ProcessKeyvalOptions*
 
@@ -34,6 +35,10 @@
 
 \ifHypoNote@boxes
     \RequirePackage{Hypo-Box}
+\fi
+
+\ifHypoNote@algorithm
+    \RequirePackage{Hypo-Algorithm}
 \fi
 
 % Refs（hyperref/cleveref）应尽量后置加载
