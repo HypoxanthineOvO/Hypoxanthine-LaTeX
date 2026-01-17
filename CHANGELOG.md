@@ -51,13 +51,13 @@
 - Box：内部设置样式时规避“tab+cbset”破坏（避免编辑器把 `\tcbset` 的 `\t` 误处理成 Tab）
 
 ## v0.3.4
-- Box：definition/example/note 支持显式 label（用于 `\\label/\\ref`），label 前缀分别为 `def:` / `ex:` / `note:`
+- Box：definition/example/note 支持显式 label（用于 `\label/\ref`），label 前缀分别为 `def:` / `ex:` / `note:`
 - tests：补充主线用例的显式引用验证
 
 ## v0.3.5
 - Refs：新增 Hypo-Refs 模块（hyperref + cleveref），入口新增 `refs=true/false`（默认开启）
-- 引用格式：使用 `\\cref{...}` 时输出 "Definition: 0.1" / "Example: 0.1" / "Note: 0.1" 这类格式
-- tests：主线用例切换为 `\\cref` 验证输出
+- 引用格式：使用 `\cref{...}` 时输出 "Definition: 0.1" / "Example: 0.1" / "Note: 0.1" 这类格式
+- tests：主线用例切换为 `\cref` 验证输出
 
 ## v0.4.0
 - README：对齐当前工程化用法（按包名加载、Makefile 注入 TEXINPUTS、入口选项说明等）
@@ -70,12 +70,12 @@
 - 清理 `PROMPT.md`
 
 ## v0.5.0 (2026-01-17)
-- 新增图片快捷命令：`\\img`，默认 `figure` + `[htbp]` + `width=0.95\\linewidth`
+- 新增图片快捷命令：`\img`，默认 `figure` + `[htbp]` + `width=0.95\linewidth`
 - 支持可选键值参数：`label=xxx` 自动使用 `fig:` 前缀，`span=2` 生成 `figure*`
 
 ## v0.6.0 (2026-01-17)
 - 新增算法模块：`Hypo-Algorithm`（基于 `algorithm2e`）
-- 入口新增 `algorithm=true/false`（默认开启），并与 `\\cref` 协作输出 "Algorithm: <num>"
+- 入口新增 `algorithm=true/false`（默认开启），并与 `\cref` 协作输出 "Algorithm: <num>"
 
 ## v0.7.0 (2026-01-17)
 - 重写代码模块：`Hypo-Code`（minted 优先；不可用时 fallback 到 `listings` 并给出 Warning）

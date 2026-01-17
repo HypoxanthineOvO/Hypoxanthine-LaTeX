@@ -36,7 +36,7 @@
 - \Set / \Paren / \Brack：属于“可读性命令”，是否保留/是否提供更短别名（待你偏好决定）
 
 ## 图片命令（已实现）
-- \img{<path>}{<caption>}：插图快捷命令（默认 figure + [htbp] + width=0.95\\linewidth）
+- \img{<path>}{<caption>}：插图快捷命令（默认 figure + [htbp] + width=0.95\linewidth）
 - 可选键值参数：\img[...]{<path>}{<caption>}
   - label=xxx：自动生成 \label{fig:xxx}（与 box 的 def:/ex:/note: 前缀风格一致）
   - span=1|2：单栏 figure / 双栏 figure*
@@ -62,24 +62,24 @@
 ### 盒子标题与 label
 - 盒子支持“标题”（例如 Definition 的名字）
 - 显式 label（v0.3.4）：
-  - 语法：`\\begin{definition}{Title}{label}`（example/note 同理）
+  - 语法：`\begin{definition}{Title}{label}`（example/note 同理）
   - 实际生成的 label 会自动带前缀：definition=`def:`，example=`ex:`，note=`note:`
-  - 不需要引用时可传空：`{}`（不生成 `\\label`）
+  - 不需要引用时可传空：`{}`（不生成 `\label`）
 - 自动 label（计划）：仅对 ASCII 标题做可读的 slug；中文/非 ASCII 默认不自动生成（避免不可记忆的 hash）
 
 ## 引用与链接（拟定）
 - v0.3.5 起：入口默认加载 hyperref + cleveref（可通过 `refs=false` 关闭）
-- 建议用法：用 `\\cref{...}` 输出 "Definition: 0.1" 这类格式
+- 建议用法：用 `\cref{...}` 输出 "Definition: 0.1" 这类格式
 
 ## 算法（已实现）
 - 模块：`Hypo-Algorithm`（基于 `algorithm2e`）
 - 入口默认加载，可通过 `algorithm=false` 关闭
-- 与 `Hypo-Refs` 协作：`\\cref{alg:...}` 输出形如 "Algorithm: 1"
+- 与 `Hypo-Refs` 协作：`\cref{alg:...}` 输出形如 "Algorithm: 1"
 
 ## 代码（已实现）
 - 模块：`Hypo-Code`（优先使用 `minted`，不可用时 fallback 到 `listings` 并给出 Warning）
 - 入口默认加载，可通过 `code=false` 关闭
-- 环境：`hypocode`，用法：`\\begin{hypocode}{python} ... \\end{hypocode}`
+- 环境：`hypocode`，用法：`\begin{hypocode}{python} ... \end{hypocode}`
 - 可选参数（对两种后端都稳定）：
   - `linenos=true|false`：是否显示行号（默认 true）
   - `theme=<pygments-style>`：主题/配色（仅对 minted 生效；fallback 下会被忽略）
