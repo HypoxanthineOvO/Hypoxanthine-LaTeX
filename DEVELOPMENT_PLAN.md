@@ -105,7 +105,7 @@ Hypoxanthine-LaTeX/
 - [x] `Hypo-Sheet`：紧凑/多栏版式 ✅
 - [x] 统一接口：`shorthand`/`indent`/`boxes`/`refs`/`outputdir` ✅
 
-## 8. 开发路线图（当前进度 v0.7.0）
+## 8. 开发路线图（当前进度 v0.8.0）
 
 ### ✅ 已完成（v0.1.0 - v0.4.3）
 - [x] `v0.1.0`：工程文档初始化 + 构建系统修复
@@ -127,10 +127,73 @@ Hypoxanthine-LaTeX/
 - [x] `v0.5.0`：`\img` 命令实现
 - [x] `v0.6.0`：Algorithm 模块
 - [x] `v0.7.0`：Code 模块
-- [ ] `v0.8.0`：Note 模块，将 `.sty` 更新为 `.cls` 
+- [x] `v0.8.0`：Note 模块，将 `.sty` 更新为 `.cls` 
 - [ ] `v0.9.0`：CHSH 模块支持
 - [ ] `v1.0.0`：正式版发布
 - [ ] `v1.1.0`：ASCII 标题自动 label、注册 LABEL 相关的宏
+
+### v0.8.0 计划：Hypo-Note 从 .sty 升级为 .cls（理工笔记版式）
+
+#### 目标与约束
+- 新入口：支持 `\documentclass{Hypo-Note}`（基于 `ctexart`）
+- 兼容：保留 `\usepackage{Hypo-Note}` 的旧用法，不破坏历史文档
+- 信息字段：默认不显示；用户显式设置后才显示
+- 封面：手动 `\makecover`
+- 页眉：标题 + 作者 + 章节；页脚：页码（居中）
+
+#### 交付物拆分
+1) 新增 class：`sty/classes/note/Hypo-Note.cls`
+    - 基类：`ctexart`
+    - 集成：`geometry`（版心）、`fancyhdr`（页眉页脚）、标准目录
+    - 提供：`\makecover`（不自动触发）
+
+2) 抽公共入口层（避免重复维护）：`sty/classes/note/Hypo-Note-Core.sty`
+    - 承载当前 Hypo-Note 入口的：选项解析 + core/modules 加载逻辑
+
+3) 兼容 wrapper：`sty/classes/note/Hypo-Note.sty`
+    - 仅转发到 `Hypo-Note-Core.sty`
+    - （可选）给出一次性 deprecate 提示：推荐改用 `\documentclass{Hypo-Note}`
+
+4) 新增 icon 模块：`sty/modules/Hypo-Icon.sty`
+    - 封装常用 icon（邮箱/主页/GitHub 等），底层优先用 `fontawesome5`
+    - 依赖缺失时自动降级为纯文本（不报错）
+
+5) tests 更新
+    - 新增一个 class 用例（例如 `tests/ClassNote.tex`）：覆盖 `\makecover`、页眉页脚、目录
+    - 继续保留现有 `tests/Main.tex`（package 入口回归）
+
+6) manual 更新
+    - 新增一节：Class 用法（`\documentclass{Hypo-Note}`）、信息字段 API、`\makecover` 示例
+
+#### 对外接口（v0.8.0 需要冻结）
+- 信息设置接口（建议 kv）：`\HypoNoteSetup{title=..., subtitle=..., author=..., email=..., ...}`
+- 封面命令：`\makecover`
+- icon 命令（由 Hypo-Icon 提供）：统一 `\HypoIcon{<key>}`，映射由用户维护（`\HypoIconDeclare` / `\HypoIconSetup`）
+
+### 封面图支持（想法与计划，未实现，不急做）
+
+#### 目标
+- 在 `\makecover` 的 titlepage 内支持“封面图/Logo/背景图”三种常见形态
+- 默认不启用，设置后才显示（与元数据一致）
+- 对 XeLaTeX + xdvipdfmx 友好，尽量减少额外依赖
+
+#### 设计想法（接口草案，择一落地）
+1) **顶部主图（Hero）**：在标题上方插入图片
+    - keys（建议）：`coverimage=path`, `coverimage-width=...`, `coverimage-vspace=...`
+
+2) **角标 Logo**：在右上/左上放置小 Logo
+    - keys（建议）：`coverlogo=path`, `coverlogo-width=...`, `coverlogo-pos=tr|tl|br|bl`
+
+3) **整页背景图**：仅作用于封面页的 shipout 背景
+    - keys（建议）：`coverbg=path`, `coverbg-opacity=...`, `coverbg-scale=...`
+    - 实现建议：优先用 LaTeX shipout hooks；必要时再引入 `eso-pic` 作为兜底
+
+#### 实施计划（后续版本）
+- [ ] 1) 冻结 keys 命名（`coverimage/coverlogo/coverbg` 三选一或同时支持），并写清默认值与互斥规则
+- [ ] 2) 实现 cover 内图片插入：优先用 `graphicx`（仓库已有）
+- [ ] 3) （可选）实现透明度：评估 `transparent` / `tikz` 依赖，默认不开启 opacity 能力
+- [ ] 4) tests：增加 `tests/` 下的封面图用例（附带一个小体积测试资源 `tests/assets/cover.pdf` 或 `cover.png`）
+- [ ] 5) 文档：先更新 `FEATURES.md`（标注“规划中/未实现”），再据此更新 `manual/Manual.tex`
 
 ## 9. 当前支持的特征清单
 
@@ -161,10 +224,5 @@ Hypo-Note/Hypo-Sheet
     → Hypo-Box (module, 可选)
     → Hypo-Refs (module, 可选)
     → Hypo-Code (module, 可选)
-
-## 10. Release Checklist（v0.5.0–v0.7.0）
-- [ ] 更新文档：manual/FEATURES/README 对齐（含 minted/fallback 说明）
-- [ ] 更新 CHANGELOG：补齐 v0.5.0/v0.6.0/v0.7.0 的发布日期与条目
-- [ ] 验证：`make -C tests`、`make -C manual`（可选 `SHELL_ESCAPE=1` 再跑一次）
-- [ ] 打 Tag：`git tag -a v0.5.0`、`v0.6.0`、`v0.7.0`
-- [ ] 推送：`git push --tags`（如需要发布到远端）
+    → Hypo-Algorithm (module, 可选)
+```

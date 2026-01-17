@@ -1,0 +1,77 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{Hypo-Icon}[2026/01/17 v0.8.0 Hypoxanthine Icon]
+
+\RequirePackage{expl3}
+\RequirePackage{xparse}
+
+\ExplSyntaxOn
+
+\prop_new:N \g_hypo_icon_map_prop
+
+% Optional: use fontawesome5 if present.
+\bool_new:N \g_hypo_icon_fontawesome_bool
+\bool_set_false:N \g_hypo_icon_fontawesome_bool
+\file_if_exist:nT { fontawesome5.sty }
+  {
+    \RequirePackage{fontawesome5}
+    \bool_set_true:N \g_hypo_icon_fontawesome_bool
+  }
+
+\cs_new_protected:Npn \hypo_icon_declare:nn #1 #2
+  { \prop_put:Nnn \g_hypo_icon_map_prop {#1} {#2} }
+
+\NewDocumentCommand \HypoIconDeclare { m m }
+  { \hypo_icon_declare:nn {#1} {#2} }
+
+\keys_define:nn { hypo / icon }
+  {
+    unknown .code:n =
+      {
+        % Accept user mapping as: \HypoIconSetup{email={...}, github={...}}
+        \hypo_icon_declare:nn { \l_keys_key_tl } {#1}
+      },
+  }
+
+\NewDocumentCommand \HypoIconSetup { m }
+  { \keys_set:nn { hypo / icon } {#1} }
+
+\prop_new:N \g_hypo_icon_warned_prop
+\cs_new_protected:Npn \hypo_icon_warn_unknown:n #1
+  {
+    \prop_if_in:NnF \g_hypo_icon_warned_prop {#1}
+      {
+        \prop_put:Nnn \g_hypo_icon_warned_prop {#1} {1}
+        \PackageWarningNoLine{Hypo-Icon}{Unknown icon key~'#1'. Use \string\HypoIconDeclare\space or \string\HypoIconSetup\space to add it.}
+      }
+  }
+
+\cs_new:Npn \hypo_icon_get:n #1
+  {
+    \prop_if_in:NnTF \g_hypo_icon_map_prop {#1}
+      { \prop_item:Nn \g_hypo_icon_map_prop {#1} }
+      { \hypo_icon_warn_unknown:n {#1} \tl_empty: }
+  }
+
+\NewDocumentCommand \HypoIcon { m }
+  { \hypo_icon_get:n {#1} }
+
+% ------------------------------------------------------------------------------
+% Default mappings (user can override with \HypoIconDeclare / \HypoIconSetup)
+% ------------------------------------------------------------------------------
+\bool_if:NTF \g_hypo_icon_fontawesome_bool
+  {
+    % Use the generic \faIcon{...} interface for stability.
+    \hypo_icon_declare:nn {email}    {\faIcon{envelope}}
+    \hypo_icon_declare:nn {homepage} {\faIcon{link}}
+    \hypo_icon_declare:nn {github}   {\faIcon{github}}
+  }
+  {
+    % Fallback (no dependency): keep readable markers.
+    \hypo_icon_declare:nn {email}    {@}
+    \hypo_icon_declare:nn {homepage} {\#}
+    \hypo_icon_declare:nn {github}   {git}
+  }
+
+\ExplSyntaxOff
+
+\endinput

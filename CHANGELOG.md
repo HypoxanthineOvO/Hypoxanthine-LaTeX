@@ -3,7 +3,14 @@
 本文件记录版本更新内容（面向使用者）。
 
 ## Unreleased
-- （暂无）
+
+
+## v0.8.0 (2026-01-17)
+- Note：新增 `Hypo-Note.cls`（基类 `ctexart`），支持作为 `\documentclass{Hypo-Note}` 使用
+- Note：新增元数据接口 `\HypoNoteSetup{...}` 与手动封面命令 `\makecover`
+- Note：新增页眉页脚（Title + Author + 章节标题），并保留标准目录能力（`\tableofcontents`）
+- Icon：新增 `Hypo-Icon` 模块，统一接口 `\HypoIcon{key}`，并允许用户通过 `\HypoIconDeclare/\HypoIconSetup` 维护映射
+- 兼容：`Hypo-Note.sty` 保留为 wrapper，继续支持旧的 `\usepackage{Hypo-Note}` 用法
 
 ## v0.1.0
 - 初始化工程文档：新增 DEVELOPMENT_PLAN、FEATURES、PROMPT

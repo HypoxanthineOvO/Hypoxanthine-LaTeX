@@ -1,6 +1,4 @@
-\documentclass{article}
-
-\usepackage[outputdir=build]{Hypo-Note}
+\documentclass[outputdir=build]{Hypo-Note}
 
 % 注意：本仓库曾多次遇到“\t 被编辑器/格式化器误处理为 Tab”的问题。
 % 为了让手册本身更稳健，这里尽量避免在源文件里直接出现以 \t 开头的控制序列
@@ -14,7 +12,7 @@
 
 \HypoDo{title}{Hypoxanthine-LaTeX 使用手册}
 \HypoDo{author}{Hypoxanthine-LaTeX Project}
-\HypoDo{date}{v0.4.0}
+\HypoDo{date}{v0.8.0}
 
 \begin{document}
 \maketitle
@@ -34,7 +32,17 @@ Hypoxanthine-LaTeX 是一个模块化、偏工程化维护的个人 LaTeX 生态
 
 \section{快速上手}
 
-在你的文档里，按\HypoIT{包名}加载入口包：
+v0.8.0 起推荐直接使用 \HypoTT{Hypo-Note} 作为 class 入口：
+
+\begin{verbatim}
+\documentclass[outputdir=build]{Hypo-Note}
+
+\begin{document}
+Hello.
+\end{document}
+\end{verbatim}
+
+兼容旧用法（仍可用）：
 
 \begin{verbatim}
 \documentclass{article}
@@ -53,6 +61,38 @@ Hello.
 \subsection{Hypo-Note}
 
 \HypoTT{Hypo-Note} 是“笔记型”入口（更偏阅读舒适）。它会加载 core 能力，并按选项加载 modules。
+
+v0.8.0 起，\HypoTT{Hypo-Note} 也提供 class 入口（\HypoTT{Hypo-Note.cls}），并提供元数据与手动封面：
+
+\begin{verbatim}
+\documentclass[outputdir=build]{Hypo-Note}
+
+\HypoNoteSetup{
+    title={My Note},
+    subtitle={Subtitle},
+    author={Your Name},
+    date={2026/01/17},
+    email={you@example.com},
+    homepage={https://example.com},
+    affiliation={Somewhere},
+}
+
+\begin{document}
+\makecover
+\HypoDo{tableofcontents}
+\end{document}
+\end{verbatim}
+
+说明：如果不设置 \HypoTT{date}，封面默认使用 \HypoTT{\HypoBS today}。
+
+封面图（封面主图/Logo/背景图）能力目前属于“规划中”，尚未实现；对应的接口草案与计划维护在 \HypoTT{DEVELOPMENT\_PLAN.md}。
+
+封面使用的图标来自 \HypoTT{Hypo-Icon} 模块，统一接口为 \HypoTT{\HypoBS HypoIcon\{key\}}，并允许用户维护映射：
+
+\begin{verbatim}
+\HypoIconDeclare{email}{@}
+\HypoIconSetup{homepage={\#}, github={git}}
+\end{verbatim}
 
 \subsection{Hypo-Sheet}
 
