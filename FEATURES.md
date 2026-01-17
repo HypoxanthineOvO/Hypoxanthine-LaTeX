@@ -5,6 +5,8 @@
 
 ## 入口（Classes）
 - Hypo-Note：笔记入口（版式偏舒适阅读）
+  - 推荐新用法：`\documentclass[...]{Hypo-Note}`（v0.8.0 起提供 `Hypo-Note.cls`）
+  - 兼容旧用法：`\usepackage[...]{Hypo-Note}` 仍可用（内部改为加载 `Hypo-Note-Core`）
 - Hypo-Sheet：小抄入口（版式偏紧凑/多栏）
 - 目标：两者导出的命令/环境尽量一致，切换入口时正文无需大改。
 
@@ -15,6 +17,27 @@
 - boxes=true/false：是否启用盒子环境（两入口一致，默认开启）
 - refs=true/false：是否启用引用模块（hyperref + cleveref，两入口一致，默认开启）
 - outputdir=...：给 minted 等模块使用的输出目录（由 Hypo-Base 导出）
+  - v0.8.0 起：这些选项也可作为 `Hypo-Note` class 的 class option 使用
+
+## Note 元数据与封面（v0.8.0）
+- 元数据统一入口：`\HypoNoteSetup{title=..., subtitle=..., author=..., email=..., homepage=..., affiliation=..., date=...}`
+- 封面：`\makecover`（手动触发；未设置任何元数据时会 Warning 且不输出空封面）
+- 页眉页脚：默认页眉包含 Title + Author + 当前章节（rightmark），页脚居中页码
+
+### 封面图（规划中，未实现）
+- 目标：在 `\makecover` 里支持封面图/Logo/背景图（默认不显示，设置才显示）
+- 可能的 keys 草案（最终以 DEVELOPMENT_PLAN 为准）：
+  - `coverimage=<path>`：标题上方主图（可配 `coverimage-width/coverimage-vspace`）
+  - `coverlogo=<path>`：角标 Logo（可配 `coverlogo-width/coverlogo-pos`）
+  - `coverbg=<path>`：整页背景（可配 `coverbg-scale/coverbg-opacity`）
+
+## Icon（模块：Hypo-Icon，v0.8.0）
+- 统一接口：`\HypoIcon{<key>}`
+- 映射维护：
+  - `\HypoIconDeclare{key}{value}`：声明/覆盖单个映射
+  - `\HypoIconSetup{key={value}, ...}`：批量声明映射（未知 key 会写入映射表）
+- 默认映射：`email/homepage/github`
+  - 若存在 `fontawesome5`，默认使用 `\faIcon{...}`；否则降级为可读文本标记
 
 ## 速写开关（拟定）
 - 默认启用大写速写命令（例如 \TX, \TBF, \MB, \MC, \BS）。

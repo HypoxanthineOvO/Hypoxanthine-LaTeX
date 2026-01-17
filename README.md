@@ -1,6 +1,6 @@
 # Hypoxanthine-LaTeX
 
-![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v0.7.0-orange) ![Status](https://img.shields.io/badge/status-Alpha-yellow)
+![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v0.8.0-orange) ![Status](https://img.shields.io/badge/status-Alpha-yellow)
 
 **Hypoxanthine-LaTeX** 是一个模块化、工程化维护的个人 LaTeX 生态：
 - 入口（Class）负责“场景与对外接口”（Hypo-Note / Hypo-Sheet）
@@ -34,9 +34,8 @@ git clone git@github.com:HypoxanthineOvO/Hypoxanthine-LaTeX.git
 新建 `main.tex`：
 
 ```latex
-\documentclass{article}
-% 从仓库的 sty/ 下按包名加载（由 Makefile 注入 TEXINPUTS）
-\usepackage[outputdir=build]{Hypo-Note}
+% v0.8.0 起推荐用 class 入口
+\documentclass[outputdir=build]{Hypo-Note}
 
 \begin{document}
 \section{Hello}
@@ -48,6 +47,15 @@ Math: $\MB{x} + \MC{F}(\BS{\theta})$ and $\Abs{-3}=3$.
 \end{definition}
 See \cref{def:group}.
 \end{document}
+兼容旧用法（仍可用）：
+
+```latex
+\documentclass{article}
+\usepackage[outputdir=build]{Hypo-Note}
+\begin{document}
+Hello.
+\end{document}
+```
 
 ```
 
