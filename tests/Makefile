@@ -13,9 +13,9 @@ ASSET_TEX := $(ASSET_DIR)/example-image.tex
 ASSET_PDF := $(ASSET_DIR)/example-image.pdf
 
 
-.PHONY: all main class litnote edge clean watch help
+.PHONY: all main class litnote chsh edge clean watch help
 
-all: main class litnote
+all: main class litnote chsh
 
 main: $(ASSET_PDF)
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Main MAIN_FILE=Main.tex OUT_DIR=$(OUT_DIR) all
@@ -25,6 +25,9 @@ class: $(ASSET_PDF)
 
 litnote: $(ASSET_PDF)
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=LitNote MAIN_FILE=LitNote.tex OUT_DIR=$(OUT_DIR) all
+
+chsh: $(ASSET_PDF)
+	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=CHSH MAIN_FILE=CHSH.tex OUT_DIR=$(OUT_DIR) all
 
 $(ASSET_PDF): $(ASSET_TEX)
 	latexmk -xelatex -interaction=nonstopmode -halt-on-error -outdir=$(ASSET_DIR) $(ASSET_TEX)
@@ -44,6 +47,7 @@ help:
 	@echo "Hypoxanthine Tests"
 	@echo "  make       - Build mainline test PDF"
 	@echo "  make class - Build class test PDF"
+	@echo "  make chsh  - Build CHSH test PDF"
 	@echo "  make edge  - Build edge-case test PDFs"
 	@echo "  make watch - Watch & rebuild mainline PDF"
 	@echo "  make clean - Remove build directory"

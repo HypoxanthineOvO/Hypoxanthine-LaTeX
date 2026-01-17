@@ -1,0 +1,57 @@
+\documentclass[
+  outputdir=build,
+  colorscheme=Tech,
+  columns=3,
+  colsep=10pt,
+  paperarea=a4,
+  areascale=2,
+  paperaspect=0.7070707071,
+  chapterbreak=column
+]{Hypo-CHSH}
+
+\title{CHSH Test}
+\author{Hypoxanthine}
+\date{2026-01-17}
+
+\begin{document}
+\maketitle
+
+\section{Sizing \& Columns}
+Paper: \texttt{\the\paperwidth} $\times$ \texttt{\the\paperheight}\\
+FinalOutputDir = \texttt{\FinalOutputDir}
+
+\begin{note}{Column Break}{colbreak}
+Use \texttt{\string\CHSHColumnBreak} to control flow.
+\end{note}
+
+\CHSHColumnBreak
+
+\section{Boxes \& Refs}
+\begin{definition}{Group}{group}
+A group is a set with an operation.
+\end{definition}
+See \cref{def:group}.
+
+\begin{example}{Integers}{integers}
+$\mathbb{Z}$ under addition.
+\end{example}
+See \cref{ex:integers}.
+
+\section{Lists}
+\begin{itemize}
+  \item Level 1
+  \begin{itemize}
+    \item Level 2
+    \begin{itemize}
+      \item Level 3
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\section{Code}
+\begin{hypocode}{python}
+def add(a, b):
+  return a + b
+\end{hypocode}
+
+\end{document}
