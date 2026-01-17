@@ -1,15 +1,160 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{Hypo-Code}[2026/01/01 Hypoxanthine Code Plugin]
+\ProvidesPackage{Hypo-Code}[2026/01/16 v0.7.0 Hypoxanthine Code]
 
-\RequirePackage{Hypo-Base} % 获取 \FinalOutputDir
+\RequirePackage{expl3}
+\RequirePackage{xparse}
+\RequirePackage{fancyvrb} % for \VerbatimEnvironment
+\RequirePackage{shellesc}
 
-\RequirePackage[outputdir=\FinalOutputDir]{minted}
+% If loaded via entry packages, \FinalOutputDir comes from Hypo-Base.
+\makeatletter
+\@ifundefined{FinalOutputDir}{\def\FinalOutputDir{build}}{}
+\makeatother
 
-\setminted{
-    frame=lines,
-    framesep=2mm,
-    baselinestretch=1.1,
-    fontsize=\small,
-    linenos,
-    breaklines
-}
+\ExplSyntaxOn
+
+\bool_new:N \g_hypo_code_warned_bool
+\bool_new:N \l_hypo_code_use_minted_bool
+
+\bool_new:N \l_hypo_code_linenos_bool
+\tl_new:N   \l_hypo_code_theme_tl
+\tl_new:N   \l_hypo_code_minted_extra_tl
+\tl_new:N   \l_hypo_code_listings_extra_tl
+
+\keys_define:nn { hypo / code }
+    {
+        linenos  .bool_set:N = \l_hypo_code_linenos_bool,
+        linenos  .initial:n  = true,
+        theme    .tl_set:N   = \l_hypo_code_theme_tl,
+        theme    .initial:n  = ,
+        minted   .tl_set:N   = \l_hypo_code_minted_extra_tl,
+        minted   .initial:n  = ,
+        listings .tl_set:N   = \l_hypo_code_listings_extra_tl,
+        listings .initial:n  = ,
+    }
+
+\cs_new_protected:Npn \hypo_code_options_set:n #1
+    { \keys_set:nn { hypo / code } {#1} }
+
+\prg_new_conditional:Npnn \hypo_code_shell_escape_enabled: { p, T, F, TF }
+    {
+        \int_compare:nNnTF { \ShellEscapeStatus } = { 1 }
+            { \prg_return_true: }
+            { \prg_return_false: }
+    }
+
+\cs_new_protected:Npn \hypo_code_warn_fallback_once:
+    {
+        \bool_if:NF \g_hypo_code_warned_bool
+            {
+                \bool_set_true:N \g_hypo_code_warned_bool
+                \PackageWarning{Hypo-Code}
+                    {minted unavailable or shell-escape disabled; falling back to listings}
+            }
+    }
+
+% Decide whether to use minted.
+\bool_set_false:N \l_hypo_code_use_minted_bool
+\file_if_exist:nTF { minted.sty }
+    {
+        \hypo_code_shell_escape_enabled:T
+            {\bool_set_true:N \l_hypo_code_use_minted_bool}
+    }
+    { }
+
+% ==============================================================================
+% 1) minted path (preferred)
+% 2) listings fallback
+% ==============================================================================
+\bool_if:NTF \l_hypo_code_use_minted_bool
+    {
+        \RequirePackage[outputdir=\FinalOutputDir]{minted}
+        \setminted{
+                frame=lines,
+                framesep=2mm,
+                baselinestretch=1.1,
+                fontsize=\small,
+                breaklines
+        }
+
+        % Use the command form (\minted[opts]{lang}{code}) to avoid nesting
+        % verbatim-like environments.
+        \NewDocumentEnvironment{hypocode}{ O{} m +v }
+            {
+                \hypo_code_options_set:n {#1}
+                \tl_clear:N \l_tmpa_tl
+                \bool_if:NTF \l_hypo_code_linenos_bool
+                    { \tl_put_right:Nn \l_tmpa_tl { linenos } }
+                    { \tl_put_right:Nn \l_tmpa_tl { linenos=false } }
+                \tl_if_blank:VTF \l_hypo_code_theme_tl
+                    { }
+                    { \tl_put_right:Nn \l_tmpa_tl { ,style=\l_hypo_code_theme_tl } }
+                \tl_if_blank:VTF \l_hypo_code_minted_extra_tl
+                    { }
+                    { \tl_put_right:Nn \l_tmpa_tl { ,\l_hypo_code_minted_extra_tl } }
+                \minted[\l_tmpa_tl]{#2}{#3}
+            }
+            {}
+    }
+    {
+        \RequirePackage{listings}
+        \RequirePackage{xcolor}
+
+        \lstdefinestyle{hypo-code}{
+            basicstyle=\ttfamily\small,
+            frame=lines,
+            numberstyle=\tiny,
+            breaklines=true,
+            columns=fullflexible,
+            showstringspaces=false,
+            tabsize=4
+        }
+
+        \cs_new:Npn \hypo_code_listings_lang:n #1
+            {
+                \str_case:nnF { \str_lowercase:n {#1} }
+                    {
+                        {python}{Python}
+                        {py}{Python}
+                        {cpp}{C++}
+                        {c++}{C++}
+                        {latex}{[LaTeX]TeX}
+                        {tex}{[LaTeX]TeX}
+                        {bash}{bash}
+                        {sh}{bash}
+                    }
+                    {#1}
+            }
+
+        % Define a real listings environment so that \end{hypocode} is recognized
+        % by listings' verbatim scanner.
+        \lstnewenvironment{hypocode}[2][]
+            {
+                \hypo_code_warn_fallback_once:
+                \hypo_code_options_set:n {#1}
+                \bool_if:NTF \l_hypo_code_linenos_bool
+                    {
+                        \tl_if_blank:VTF \l_hypo_code_listings_extra_tl
+                            {
+                                \lstset{style=hypo-code,language=\hypo_code_listings_lang:n{#2},numbers=left}
+                            }
+                            {
+                                \lstset{style=hypo-code,language=\hypo_code_listings_lang:n{#2},numbers=left,\l_hypo_code_listings_extra_tl}
+                            }
+                    }
+                    {
+                        \tl_if_blank:VTF \l_hypo_code_listings_extra_tl
+                            {
+                                \lstset{style=hypo-code,language=\hypo_code_listings_lang:n{#2},numbers=none}
+                            }
+                            {
+                                \lstset{style=hypo-code,language=\hypo_code_listings_lang:n{#2},numbers=none,\l_hypo_code_listings_extra_tl}
+                            }
+                    }
+            }
+            {}
+    }
+
+\ExplSyntaxOff
+
+\endinput

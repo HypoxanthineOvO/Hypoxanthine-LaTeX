@@ -11,6 +11,7 @@
 \DeclareBoolOption[true]{boxes}
 \DeclareBoolOption[true]{refs}
 \DeclareBoolOption[true]{algorithm}
+\DeclareBoolOption[true]{code}
 \DeclareStringOption[build]{outputdir}
 \ProcessKeyvalOptions*
 
@@ -39,6 +40,10 @@
 
 \ifHypoSheet@algorithm
     \RequirePackage{Hypo-Algorithm}
+\fi
+
+\ifHypoSheet@code
+    \RequirePackage{Hypo-Code}
 \fi
 
 % Refs（hyperref/cleveref）应尽量后置加载

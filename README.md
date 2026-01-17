@@ -1,6 +1,6 @@
 # Hypoxanthine-LaTeX
 
-![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v0.4.0-orange) ![Status](https://img.shields.io/badge/status-Alpha-yellow)
+![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v0.7.0-orange) ![Status](https://img.shields.io/badge/status-Alpha-yellow)
 
 **Hypoxanthine-LaTeX** 是一个模块化、工程化维护的个人 LaTeX 生态：
 - 入口（Class）负责“场景与对外接口”（Hypo-Note / Hypo-Sheet）
@@ -74,8 +74,43 @@ make
 - Core：Fonts / Colors / Base（`outputdir` + `\FinalOutputDir`）/ Math（含可关闭速写）
 - Box：definition / example / note（显式 label：`def:` / `ex:` / `note:` 前缀）
 - Refs：默认启用 hyperref + cleveref（可 `refs=false` 关闭），`\cref{...}` 输出形如 "Definition: 0.1"
+- Img：`\img` 插图快捷命令（支持引用、figure/figure*、宽度/placement 参数）
+- Algorithm：基于 `algorithm2e` 的算法环境配置（与 `\cref` 协作）
+- Code：`hypocode` 环境（优先 minted；不可用时 fallback listings，并给一次性 Warning）
 
 详细接口请直接看 [FEATURES.md](FEATURES.md)。
+
+## 🧩 Code Highlight / 代码高亮（Hypo-Code）
+
+推荐使用统一环境：
+
+```latex
+\begin{hypocode}{python}
+def add(a, b):
+    return a + b
+\end{hypocode}
+```
+
+常用可选参数（两种后端都不会报错）：
+
+```latex
+% 是否显示行号（默认 true）
+\begin{hypocode}[linenos=false]{python}
+print("no line numbers")
+\end{hypocode}
+
+% 主题（仅对 minted 生效；fallback 下会忽略）
+\begin{hypocode}[theme=monokai]{python}
+print("monokai")
+\end{hypocode}
+```
+
+启用 minted（推荐，需 `-shell-escape` + Pygments）：
+
+- 使用本仓库 Makefile 体系：`make SHELL_ESCAPE=1`
+- Pygments 依赖：需要可执行的 `pygmentize`（通常来自 `python3-pygments` 或 `pip install Pygments`）
+
+安全提示：`-shell-escape` 会允许 TeX 执行外部命令；如果编译不可信的文档，请保持关闭。
 
 ## 🗺 路线图
 

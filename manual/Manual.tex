@@ -177,8 +177,90 @@ See \cref{def:group}.
 
 本项目默认输出形如 \HypoTT{"Definition: 0.1"}、\HypoTT{"Example: 0.1"}、\HypoTT{"Note: 0.1"}。
 
+\section{算法（模块：Hypo-Algorithm）}
+
+当入口选项 \HypoTT{algorithm=true}（默认）时，会加载 \HypoTT{algorithm2e}。
+
+示例：
+\begin{verbatim}
+\begin{algorithm}[htbp]
+    \caption{Demo algorithm}
+    \label{alg:demo}
+    \KwIn{Input $x$}
+    \KwOut{Output $y$}
+    $y \leftarrow x$
+\end{algorithm}
+
+See \cref{alg:demo}.
+\end{verbatim}
+
+\section{图片插入（Core：Hypo-Img）}
+
+\HypoTT{\HypoBS img} 是插入图片的快捷命令，默认使用 \HypoTT{figure} 环境且 placement 为 \HypoTT{htbp}，宽度默认为当前栏的 \HypoTT{0.95\\linewidth}。
+
+\subsection{基础用法}
+\begin{verbatim}
+\img{path/to/image}{Caption}
+\end{verbatim}
+
+\subsection{带引用（用户只写 xxx，自动加 fig: 前缀）}
+\begin{verbatim}
+\img[label=demo]{path/to/image}{Caption}
+See \cref{fig:demo}.
+\end{verbatim}
+
+\subsection{双栏浮动体（figure*）}
+\begin{verbatim}
+\img[span=2,label=wide]{path/to/image}{Wide figure}
+\end{verbatim}
+
 \section{计划中的功能}
 
-部分接口在 \HypoTT{FEATURES.md} 中预留但尚未实现，例如：\quad \HypoTT{\HypoBS img\{path\}\{caption\}}。
+部分接口在 \HypoTT{FEATURES.md} 中预留但尚未实现，例如：自动 label slug（尤其是中文标题）、更细粒度的缩进策略、聚合入口包（如 Hypo-All）等。
+
+\section{代码（模块：Hypo-Code）}
+
+当入口选项 \HypoTT{code=true}（默认）时，会加载代码模块。该模块会优先使用 \HypoTT{minted}；如果环境不支持（例如未开启 \HypoTT{-shell-escape}、未安装 minted，或缺少 Pygments），则会自动 fallback 到 \HypoTT{listings} 并给出一次性 Warning。
+
+\subsection{基础用法}
+对外推荐使用环境 \HypoTT{hypocode}：
+\begin{verbatim}
+\begin{hypocode}{python}
+def add(a, b):
+    return a + b
+\end{hypocode}
+\end{verbatim}
+
+\subsection{语言支持}
+\begin{itemize}
+    \item minted 路径：理论上支持 Pygments 提供的全部 lexer（如 python/c++/rust/go/js/ts/java/latex/bash 等），以你本机的 Pygments 版本为准。
+    \item listings fallback：内置映射支持 \HypoTT{python/py}、\HypoTT{cpp/c++}、\HypoTT{latex/tex}、\HypoTT{bash/sh}；其他语言名会原样交给 listings，若未定义则可能报错。
+\end{itemize}
+
+\subsection{常用配置接口（跨后端稳定）}
+\begin{verbatim}
+% 1) 是否显示行号（默认 true）
+\begin{hypocode}[linenos=false]{python}
+print("hello")
+\end{hypocode}
+
+% 2) 主题（仅对 minted 生效；fallback 下会被忽略）
+\begin{hypocode}[theme=monokai]{python}
+print("monokai")
+\end{hypocode}
+
+% 3) 后端透传（需要更细的 minted/listings 原生选项时）
+\begin{hypocode}[minted={tabsize=2}]{python}
+print("minted tabsize")
+\end{hypocode}
+
+\begin{hypocode}[listings={tabsize=2}]{python}
+print("listings tabsize")
+\end{hypocode}
+\end{verbatim}
+
+\subsection{如何启用 minted（推荐）}
+minted 需要编译时开启 \HypoTT{-shell-escape} 并保证 \HypoTT{pygmentize} 可用。
+在本仓库的 Makefile 体系里，可以用 \HypoTT{SHELL_ESCAPE=1} 打开（见 \HypoTT{make/Hypoxanthine.mk}）。
 
 \end{document}

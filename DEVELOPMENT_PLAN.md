@@ -96,8 +96,8 @@ Hypoxanthine-LaTeX/
 ### 7.2 Modules
 - [x] `Hypo-Box`：三盒子系统 ✅
 - [x] `Hypo-Refs`：引用管理 ✅
-- [x] `Hypo-Code`：minted 配置 ✅
-- [ ] `Hypo-Algorithm`：算法环境（计划）
+- [x] `Hypo-Code`：代码模块（minted 优先 + listings fallback）✅
+- [x] `Hypo-Algorithm`：算法环境（algorithm2e）✅
 - [ ] `Hypo-Lists`：列表增强（计划）
 
 ### 7.3 Classes ✅ v0.2.4
@@ -105,7 +105,7 @@ Hypoxanthine-LaTeX/
 - [x] `Hypo-Sheet`：紧凑/多栏版式 ✅
 - [x] 统一接口：`shorthand`/`indent`/`boxes`/`refs`/`outputdir` ✅
 
-## 8. 开发路线图（当前进度 v0.4.3）
+## 8. 开发路线图（当前进度 v0.7.0）
 
 ### ✅ 已完成（v0.1.0 - v0.4.3）
 - [x] `v0.1.0`：工程文档初始化 + 构建系统修复
@@ -124,9 +124,9 @@ Hypoxanthine-LaTeX/
 - [x] `v0.4.1-3`：中文手册 + 代码文档整理
 
 ### 🔄 进行中/待完成
-- [ ] `v0.5.0`：`\img` 命令实现
-- [ ] `v0.6.0`：Algorithm 模块
-- [ ] `v0.7.0`：Code 模块
+- [x] `v0.5.0`：`\img` 命令实现
+- [x] `v0.6.0`：Algorithm 模块
+- [x] `v0.7.0`：Code 模块
 - [ ] `v0.8.0`：Note 模块，将 `.sty` 更新为 `.cls` 
 - [ ] `v0.9.0`：CHSH 模块支持
 - [ ] `v1.0.0`：正式版发布
@@ -161,3 +161,10 @@ Hypo-Note/Hypo-Sheet
     → Hypo-Box (module, 可选)
     → Hypo-Refs (module, 可选)
     → Hypo-Code (module, 可选)
+
+## 10. Release Checklist（v0.5.0–v0.7.0）
+- [ ] 更新文档：manual/FEATURES/README 对齐（含 minted/fallback 说明）
+- [ ] 更新 CHANGELOG：补齐 v0.5.0/v0.6.0/v0.7.0 的发布日期与条目
+- [ ] 验证：`make -C tests`、`make -C manual`（可选 `SHELL_ESCAPE=1` 再跑一次）
+- [ ] 打 Tag：`git tag -a v0.5.0`、`v0.6.0`、`v0.7.0`
+- [ ] 推送：`git push --tags`（如需要发布到远端）

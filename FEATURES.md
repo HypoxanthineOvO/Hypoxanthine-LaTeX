@@ -35,8 +35,13 @@
 - 数集符号（\R, \N, \Z, \Q, \C）：可选能力；不作为“速写重点”，默认不强依赖
 - \Set / \Paren / \Brack：属于“可读性命令”，是否保留/是否提供更短别名（待你偏好决定）
 
-## 图片命令（计划）
-- \img{<path>}{<caption>}：插图快捷命令（尚未实现，拟在 v0.5+ 完成）
+## 图片命令（已实现）
+- \img{<path>}{<caption>}：插图快捷命令（默认 figure + [htbp] + width=0.95\\linewidth）
+- 可选键值参数：\img[...]{<path>}{<caption>}
+  - label=xxx：自动生成 \label{fig:xxx}（与 box 的 def:/ex:/note: 前缀风格一致）
+  - span=1|2：单栏 figure / 双栏 figure*
+  - width=...：覆盖默认宽度
+  - placement=...：覆盖默认浮动参数（默认 htbp）
 
 ## 内容层级（拟定）
 - detail 环境：sheet 下默认隐藏；note 下显示（样式可后定）
@@ -65,3 +70,21 @@
 ## 引用与链接（拟定）
 - v0.3.5 起：入口默认加载 hyperref + cleveref（可通过 `refs=false` 关闭）
 - 建议用法：用 `\\cref{...}` 输出 "Definition: 0.1" 这类格式
+
+## 算法（已实现）
+- 模块：`Hypo-Algorithm`（基于 `algorithm2e`）
+- 入口默认加载，可通过 `algorithm=false` 关闭
+- 与 `Hypo-Refs` 协作：`\\cref{alg:...}` 输出形如 "Algorithm: 1"
+
+## 代码（已实现）
+- 模块：`Hypo-Code`（优先使用 `minted`，不可用时 fallback 到 `listings` 并给出 Warning）
+- 入口默认加载，可通过 `code=false` 关闭
+- 环境：`hypocode`，用法：`\\begin{hypocode}{python} ... \\end{hypocode}`
+- 可选参数（对两种后端都稳定）：
+  - `linenos=true|false`：是否显示行号（默认 true）
+  - `theme=<pygments-style>`：主题/配色（仅对 minted 生效；fallback 下会被忽略）
+  - `minted={...}`：透传 minted 原生选项（仅 minted 生效）
+  - `listings={...}`：透传 listings 原生选项（仅 fallback 生效）
+- 语言支持：
+  - minted：以 Pygments 的 lexer 为准（通常覆盖绝大多数语言）
+  - fallback：内置映射 `python/py`、`cpp/c++`、`latex/tex`、`bash/sh`；其他语言名会原样交给 listings

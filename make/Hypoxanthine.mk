@@ -9,6 +9,12 @@ TOOL    ?= latexmk
 # 关键：-outdir 指定输出目录，-file-line-error 方便 VS Code 捕获错误
 FLAGS   ?= -xelatex -synctex=1 -interaction=nonstopmode -file-line-error -outdir=$(OUT_DIR)
 
+# minted 等需要 -shell-escape（默认关闭；可用 `make SHELL_ESCAPE=1` 显式打开）
+SHELL_ESCAPE ?= 0
+ifeq ($(SHELL_ESCAPE),1)
+FLAGS += -latexoption=-shell-escape
+endif
+
 # 让 TeX 能通过包名找到 sty/ 下的本地包（例如 \usepackage{Hypo-Note}）
 # 末尾的冒号用于保留 TeX 默认搜索路径。
 HYPO_PATH ?= .
@@ -44,3 +50,4 @@ help:
 	@echo "  make        - Build the PDF"
 	@echo "  make watch  - Auto-recompile on save"
 	@echo "  make clean  - Remove build directory"
+	@echo "  make SHELL_ESCAPE=1 - Enable -shell-escape (for minted)"

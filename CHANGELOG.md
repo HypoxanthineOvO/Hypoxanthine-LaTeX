@@ -2,6 +2,9 @@
 
 本文件记录版本更新内容（面向使用者）。
 
+## Unreleased
+- （暂无）
+
 ## v0.1.0
 - 初始化工程文档：新增 DEVELOPMENT_PLAN、FEATURES、PROMPT
 - 构建系统可用性修复：Makefile include 大小写对齐、补齐 watch 目标
@@ -65,3 +68,17 @@
 - 使用中文手册
 - 整理目前的代码和文档
 - 清理 `PROMPT.md`
+
+## v0.5.0 (2026-01-17)
+- 新增图片快捷命令：`\\img`，默认 `figure` + `[htbp]` + `width=0.95\\linewidth`
+- 支持可选键值参数：`label=xxx` 自动使用 `fig:` 前缀，`span=2` 生成 `figure*`
+
+## v0.6.0 (2026-01-17)
+- 新增算法模块：`Hypo-Algorithm`（基于 `algorithm2e`）
+- 入口新增 `algorithm=true/false`（默认开启），并与 `\\cref` 协作输出 "Algorithm: <num>"
+
+## v0.7.0 (2026-01-17)
+- 重写代码模块：`Hypo-Code`（minted 优先；不可用时 fallback 到 `listings` 并给出 Warning）
+- 入口新增 `code=true/false`（默认开启），并提供 `hypocode` 环境
+- `hypocode` 新增稳定选项：`linenos=true|false`、`theme=<pygments-style>`（theme 仅对 minted 生效）
+- 构建系统新增 `SHELL_ESCAPE=1` 开关，用于启用 `-shell-escape`（minted 推荐配置）
