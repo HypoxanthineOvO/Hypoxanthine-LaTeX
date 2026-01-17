@@ -61,3 +61,7 @@
 - manual：补齐自举式手册（覆盖入口/选项、core/modules、Box、Refs 与示例）
 - DEVELOPMENT_PLAN：补充 v0.5.0–v1.0.0 长线里程碑与 release criteria
 
+## v0.4.1 & v0.4.2 & v0.4.3
+- 使用中文手册
+- 整理目前的代码和文档
+- 清理 `PROMPT.md`

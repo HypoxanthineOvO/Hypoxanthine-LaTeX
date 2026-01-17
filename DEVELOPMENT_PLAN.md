@@ -1,225 +1,163 @@
-# Hypoxanthine-LaTeX 开发计划书（Draft）
+# Hypoxanthine-LaTeX 开发计划书
 
-## 🧩 更新提示词（Prompt Template）
+## 1. 项目目标
 
-把你新增/修改的需求（例如：新增 Block、调整现有 Block 配置与颜色、增加 Snippets、调整目录结构等）直接粘贴在下面分隔线之后，然后对我说“按计划书更新”。
+创建一个"可工程化维护"的 LaTeX 生态，提供：
+- **Hypo-Note / Hypo-Sheet** 两套入口，接口语法一致
+- 常用写作动作用速写命令提升效率，且可开关
+- Box/样式可扩展但不失控：先做最小集，后续增量扩展
 
-要求：
-- 先更新本计划书里对应章节（结构/规范/里程碑/任务清单）。
-- 只在你明确要求时才开始改代码/加文件；否则只输出“需要改哪些文件、怎么改”的清单。
-- 修复时优先处理：大小写/路径可用性、构建系统可运行、文档示例可编译。
-- 任何命名变更必须同时更新引用点（README、Makefile、\RequirePackage 路径等）。
+## 2. 核心原则
 
----
-（在此粘贴你的新需求）
+1) **接口冻结优先于实现**：先冻结用户命令/环境，再实现
+2) **职责分离**：
+   - Class 管版式（geometry/titlesec/fancyhdr等）
+   - Core 管基础能力（字体/颜色/数学基础）
+   - Module 管插件功能（minted/algorithm2e/hyperref等）
+3) **一处定义，多处复用**：颜色、速写、label规则等必须单点维护
 
+## 3. 命名规范
 
-## 1. 一句话目标（你真正想要的体验）
+- 统一采用 `Hypo-*.sty`（`*` 首字母大写）
+- Linux 大小写敏感：文件名与 `\RequirePackage` / Makefile 严格一致
+- 允许兼容入口文件（薄wrapper），但只能转发逻辑
 
-你要的是一个“可工程化维护”的 LaTeX 生态：
-- 入口分为 **Hypo-Note / Hypo-Sheet** 两套，但 **接口语法尽量一致**，切换时“尽量只改引入文件”。
-- 常用写作动作用速写命令提升效率，且可开关。
-- Box/样式可扩展但不失控：先做最小集，后续增量扩展。
-
-
-## 2. 关键原则（防止计划书越写越乱）
-
-1) **接口冻结优先于实现**：先把“我写文档会用哪些命令/环境”冻结，再动代码。
-
-2) **Class 管版式，Core 管能力，Module 管插件**：
-- geometry/titlesec/fancyhdr/multicol/tocloft 永远放 class。
-- 字体/颜色/数学基础永远放 core。
-- minted/algorithm2e/hyperref/cleveref/enumitem 这类按需能力放 modules。
-
-3) **一处定义，多处复用**：颜色、速写、label 规则、cref 注册都必须单点维护。
-
-
-## 3. 命名与兼容性（已确认）
-
-- 统一采用 `Hypo-*.sty`（`*` 首字母大写）。
-- Linux 大小写敏感：文件名与 `\\RequirePackage` / Makefile include 必须严格一致。
-- 允许“兼容入口文件”（薄 wrapper）来缓冲重命名/迁移，但 wrapper 只能转发，不得重复实现逻辑。
-
-
-## 4. 目标结构（V1.x）
+## 4. 项目结构
 
 ```text
 Hypoxanthine-LaTeX/
 ├── sty/
 │   ├── core/                 # 原子能力（无版式）
+│   │   ├── Hypo-Base.sty     # kvoptions + FinalOutputDir ✅ v0.2.2
+│   │   ├── Hypo-Colors.sty   # 专业色系（浅/中/深）✅ v0.3.2
+│   │   ├── Hypo-Fonts.sty    # 字体策略 ✅ v0.2.0
+│   │   └── Hypo-Math.sty     # 数学基础 + 速写 ✅ v0.2.3
 │   ├── modules/              # 插件能力（按需加载）
-│   └── classes/              # 场景入口（定义版式与对外接口）
-│       ├── note/Hypo-Note.sty
-│       └── sheet/Hypo-Sheet.sty
-├── make/Hypoxanthine.mk
-├── templates/Makefile
-├── FEATURES.md               # 功能/接口清单（简述版，事实来源）
+│   │   ├── Hypo-Box.sty      # 盒子系统 ✅ v0.3.0-v0.3.4
+│   │   ├── Hypo-Code.sty     # minted 配置 ✅ 
+│   │   └── Hypo-Refs.sty     # hyperref + cleveref ✅ v0.3.5
+│   └── classes/              # 场景入口
+│       ├── note/             # Hypo-Note 类 ✅ v0.2.4
+│       └── sheet/            # Hypo-Sheet 类 ✅ v0.2.4
+├── make/Hypoxanthine.mk      # 构建系统 ✅
+├── templates/Makefile        # 模板 ✅
+├── FEATURES.md               # 功能/接口清单
 ├── PROMPT.md                 # 协作提示词模板
-├── CHANGELOG.md              # 版本更新内容（面向使用者）
-├── tests/                    # 隔离测试入口（corner cases，不污染 manual）
-└── manual/                   # 后续再生成（从 FEATURES.md 出发）
+├── CHANGELOG.md              # 版本更新内容 ✅
+├── tests/                    # 隔离测试入口 ✅ v0.2.0
+│   ├── edge/                 # 边缘用例 ✅ v0.2.3
+│   └── Main.tex              # 主线测试
+└── manual/                   # 使用手册 ✅ v0.4.0
+    └── Manual.tex            # 中文手册 ✅ v0.4.1
 ```
 
+## 5. 对外接口（冻结清单）
 
-## 5. 对外接口（冻结清单，切入口不改正文的关键）
+### 5.1 选项
+- `shorthand`：默认开启，允许关闭速写
+- `indent`：段首缩进开关
+- `boxes`：是否启用盒子环境
+- `refs`：是否启用引用模块
+- `outputdir`：输出目录设置
 
-### 5.1 两个入口必须共同导出
+### 5.2 命令
+- `\img{<path>}{<caption>}`
+- 文字速写：`\TX{...}`, `\TBF{...}`
+- 数学速写：`\MB{...}`, `\MC{...}`, `\BS{...}`, `\Abs`
 
-- 选项：
-  - `shorthand`：**默认开启**，允许 `shorthand=false` 关闭（用于排查冲突/兼容其他包）。
-    - 实现约定：入口内部通过预先定义 `\HypoDisableShorthand` 来关闭 Hypo-Math 内置速写（不单独拆分 Shorthand 包）。
-  - `indent`：段首缩进开关（`true/false`，两入口一致）。
-  - `boxes`：是否启用盒子环境（`true/false`，两入口一致，默认开启）。
-  - `refs`：是否启用引用模块（`true/false`，两入口一致，默认开启）。
-  - `outputdir`：给 minted 等使用（由 core 导出）。
+### 5.3 环境
+- `definition` / `example` / `note`
+- `detail` / `vital`
 
-- 命令（第一批冻结）：
-  - `\\img{<path>}{<caption>}`
-  - 速写：文字类 + 数学字母类（见 5.2）
+## 6. Box 系统（当前实现状态）
 
-- 环境（第一批冻结）：
-  - `definition` / `example` / `note`
-  - `detail` / `vital`
+### 6.1 最小盒子集合 ✅ v0.3.0-v0.3.3
+- [x] `definition` 环境（浅底 + 细边框，HypoBlue系列）
+- [x] `example` 环境（浅底 + 细边框，HypoGreen系列）
+- [x] `note` 环境（浅底 + 细边框，HypoBrown系列）
 
-### 5.2 速写（默认开启）
+### 6.2 label 系统
+- [x] 显式 label 参数（前缀 def:/ex:/note:）✅ v0.3.4
+- [ ] ASCII 标题自动 label（计划 v0.3.6）
 
-- 文字速写：`\\TX{...}` = `\\text{...}`，`\\TBF{...}` = `\\textbf{...}`。
-- 数学速写：你明确更需要 `\\mathbf/\\mathcal` 这类，而不是数集符号。
-  - 建议第一批：`\\MB{...}` = `\\mathbf{...}`，`\\MC{...}` = `\\mathcal{...}`，`\\BS{...}` = `\\boldsymbol{...}`。
-  - `\\Abs` 保留。
-- 约束：速写必须可关闭；命名要尽量避开常见冲突（例如 `\\T` 很短，未来如遇冲突优先提供替代名并在 FEATURES 记录）。
+### 6.3 引用系统 ✅ v0.3.5
+- [x] `\cref` 输出格式 "Definition: 0.1"
+- [x] `\Cref` 输出格式 "Definition 0.1"
+- [x] hyperref + cleveref 集成
 
+## 7. 模块职责（当前实现状态）
 
-## 6. Box 系统（先做最小集 + label + cref 注册）
-
-### 6.1 最小盒子集合（已确认）
-
-- 仅实现：`definition`、`example`、`note`。
-- 其他 theorem/lemma/claim 等后续按需加（不提前预埋大段样式）。
-
-### 6.2 label（显式优先；自动 label 计划）
-
-- v0.3.4（已落地）：显式 label 参数，用于 `\\label/\\ref`（自动带前缀 def:/ex:/note:）。
-- 自动 label（计划，拟 v0.3.6）：
-  - 仅当标题为 ASCII 且可归一化：小写 + 空格转 `_` + 去掉不安全字符。
-  - 中文等非 ASCII：默认不自动生成 label（避免不可记忆的 hash）。
-
-### 6.3 Box 与 Refs 的连接方式（避免联动修改）
-
-- v0.3.5 先落地最小实现：Refs 模块直接为 tcolorbox theorem counter（如 `tcb@cnt@definition`）配置 `\\crefname`/`\\Crefname`，目标输出形如 "Definition: 0.1"。
-- 后续增强（计划）：引入“注册宏”桥接（例如 `\\HypoRegisterCref{definition}{定义}{定义}`），让 Box 侧不感知 cleveref。
-
-
-## 7. 模块职责（拆分依据：你的集成文件）
-
-### 7.1 Core
-- `Hypo-Base`：kvoptions + `FinalOutputDir`。
-- `Hypo-Colors`：项目色名统一来源（禁止各处重复 `\\definecolor{MyRed...}`）。
-- `Hypo-Fonts`：字体策略；`fontset` 后续要么做 preset，要么删除。
-- `Hypo-Math`：数学基础 + `\\Abs` +（可选）成对定界符；不要在 class 里重复定义。
+### 7.1 Core ✅ v0.2.0-v0.2.3
+- [x] `Hypo-Base`：kvoptions + `FinalOutputDir` ✅
+- [x] `Hypo-Colors`：专业色系（浅/中/深）✅
+- [x] `Hypo-Fonts`：字体策略 + 降级策略 ✅
+- [x] `Hypo-Math`：数学速写（可关闭）✅
 
 ### 7.2 Modules
-- `Hypo-Code`：minted 配置（需要 `-shell-escape`，策略在构建层/文档中明确）。
-- 其他模块（refs/lists/content/cover）先写规范、后按需实现。
+- [x] `Hypo-Box`：三盒子系统 ✅
+- [x] `Hypo-Refs`：引用管理 ✅
+- [x] `Hypo-Code`：minted 配置 ✅
+- [ ] `Hypo-Algorithm`：算法环境（计划）
+- [ ] `Hypo-Lists`：列表增强（计划）
 
-### 7.3 Classes
-- `Hypo-Note`：舒适阅读版式。
-- `Hypo-Sheet`：紧凑/多栏版式。
-- 两者共享同一套对外接口（第 5 节冻结清单），差异只在 layout 与密度。
+### 7.3 Classes ✅ v0.2.4
+- [x] `Hypo-Note`：舒适阅读版式 ✅
+- [x] `Hypo-Sheet`：紧凑/多栏版式 ✅
+- [x] 统一接口：`shorthand`/`indent`/`boxes`/`refs`/`outputdir` ✅
 
+## 8. 开发路线图（当前进度 v0.4.3）
 
-## 8. 路线图（更可执行的版本）
+### ✅ 已完成（v0.1.0 - v0.4.3）
+- [x] `v0.1.0`：工程文档初始化 + 构建系统修复
+- [x] `v0.2.0`：Fonts 骨架 + 测试框架
+- [x] `v0.2.1`：Colors 色名体系
+- [x] `v0.2.2`：Base 参数系统
+- [x] `v0.2.3`：Math 速写系统
+- [x] `v0.2.4`：双入口框架
+- [x] `v0.3.0`：Definition 盒子
+- [x] `v0.3.1`：Example 盒子
+- [x] `v0.3.2`：专业色系重整
+- [x] `v0.3.3`：Note 盒子
+- [x] `v0.3.4`：显式 label 参数
+- [x] `v0.3.5`：Refs 引用系统
+- [x] `v0.4.0`：手册自举框架
+- [x] `v0.4.1-3`：中文手册 + 代码文档整理
 
-### V0.2：入口 + 接口冻结
-- 建立 `Hypo-Note` / `Hypo-Sheet` 两个入口文件（哪怕内部先简单转发）。
-- 冻结 FEATURES 中的接口（速写默认开启、最小盒子集、indent 开关、img/detail/vital）。
+### 🔄 进行中/待完成
+- [ ] `v0.5.0`：`\img` 命令实现
+- [ ] `v0.6.0`：Algorithm 模块
+- [ ] `v0.7.0`：Code 模块
+- [ ] `v0.8.0`：Note 模块，将 `.sty` 更新为 `.cls` 
+- [ ] `v0.9.0`：CHSH 模块支持
+- [ ] `v1.0.0`：正式版发布
+- [ ] `v1.1.0`：ASCII 标题自动 label、注册 LABEL 相关的宏
 
-### V0.3：Box 最小集落地
-- definition/example/note 三个盒子 + 自动 label + cref 注册宏。
-  - 约束：颜色不在本阶段强行定稿；先提供结构与可覆盖的样式。
+## 9. 当前支持的特征清单
 
-### V0.4：文档自举
-- manual 最小示例能编译，覆盖：速写、盒子、图片、引用/链接（若启用）。
+### ✅ 已实现的核心特征
+- [x] **双入口系统**: Hypo-Note / Hypo-Sheet
+- [x] **速写命令**: `\TX{}`, `\TBF{}`, `\MB{}`, `\MC{}`, `\BS{}`, `\Abs`
+- [x] **盒子环境**: definition, example, note
+- [x] **引用系统**: `\cref` 智能引用
+- [x] **颜色体系**: 专业的浅/中/深色系
+- [x] **构建系统**: Makefile + TEXINPUTS 支持
+- [x] **测试框架**: 主线测试 + 边缘用例
+- [x] **中文手册**: 完整的自举文档
 
+### ⚙️ 配置选项（全部可用）
+- `shorthand=true/false` - 速写开关
+- `indent=true/false` - 段首缩进
+- `boxes=true/false` - 盒子环境开关
+- `refs=true/false` - 引用系统开关
+- `outputdir=...` - 输出目录设置
 
-## 8.1 测试策略（你问“在哪里测试”）
-
-- **默认测试场**：`manual/`（Dogfooding / 集成测试）。
-  - 优点：始终用你自己的包写你自己的文档，最能暴露接口不一致问题。
-  - 命令：`make -C manual`。
-- **是否需要单独 tests/ 文件夹？**
-  - 可选，但不是必须。若你希望更“单元化”的最小用例（只测 Fonts、只测 Shorthand、只测 Boxes），可以建 `tests/` 放一组极小 `.tex`。
-  - 建议：测试输入（`.tex`）纳入版本控制；产物目录（例如 `tests/build/`）不纳入。
-- **ignore 策略**：目前 `.gitignore` 已忽略 `build/` 与各类 LaTeX 中间文件；因此 `manual/build/`、`tests/build/` 都会自动被忽略。
-
-
-## 8.2 建议 Tag / Version（支持你“边做边发”）
-
-下面按“最小可测 + 小步提交”的粒度给出建议 tag，你可以按实际进度微调：
-
-- `v0.2.0`：Step A（Fonts 最小可编译骨架）
-- `v0.2.1`：Step B（Colors 色名体系）
-- `v0.2.2`：Step C（Base：参数与 `FinalOutputDir`）
-- `v0.2.3`：Step D（Shorthand：默认开启 + 可关闭；`\TX/\TBF/\MB/\MC/\BS/\Abs`）
-- `v0.2.4`：Step E（两个入口文件 `Hypo-Note/Hypo-Sheet`：先转发/组织加载，接口一致）
-- `v0.3.0`：Step F（Definition 盒子最小落地：样式方案 2；编号默认按 section；提供 numbering=none/global/section/chapter 开关）
-- `v0.3.1`：Step G（Example 盒子补齐）
-- `v0.3.2`：Step H（颜色体系重整：专业配色 + 浅/中/深系列）
-- `v0.3.3`：Step I（Note 盒子补齐）
-- `v0.3.4`：Step J（显式 label 参数 + 可引用）
-- `v0.3.5`：Step K（Refs：cleveref 输出格式 "XXX: 0.1"）
-- `v0.3.6`：Step L（ASCII 标题自动 label）
-- `v0.4.0`：Step M（Manual 自举 + README 对齐 + 文档闭环）
-
-### 8.3 v0.5+（长期规划，按里程碑拆分）
-
-下面是建议的中期版本分期（可随实际进度微调）。原则：每个版本都应能回归编译、能写进 CHANGELOG、并且不破坏已冻结接口。
-
-- `v0.5.0`：Step N（内容与图片最小集）
-  - 落地 `\img{path}{caption}`（接口已在 FEATURES 声明）
-
-- `v0.6.0`：Step O（Algorithm / Pseudocode 模块）
-  - 新增独立模块（例如 `Hypo-Algorithm`），提供算法环境（实现库可选：algorithm2e 或 algpseudocode）
-  - 简化算法环境的接口：`\begin{Hypo-Alg}[h] \caption{...} \end{Hypo-Alg}`
-
-- `v0.7.0`：Step P（Code / Listings 模块收敛）
-  - 稳定 `Hypo-Code`：明确 minted 依赖、shell-escape 策略、输出目录策略
-  - 提供最小代码块接口（面向写作，而不是把所有 minted 选项暴露出来）
-
-- `v0.8.0`：Step Q（Note 的 Cover / Contents 工作流）
-  - 为 note 入口提供可选的 cover/目录生成工作流（make 目标 + class 版式）
-  - 确保 manual 自身也能 dogfooding
-
-- `v0.9.0`：Step R（CHSH 样式与整体排版收敛）
-  - 按你偏好落地 CHSH 风格（封面/目录/标题/页眉页脚/间距体系）
-  - 对 Note 与 Sheet 的差异做清晰边界
-
-- `v1.0.0`：正式版标准（Release Criteria）
-  - 接口冻结：FEATURES 列出的能力均有实现或明确标注为计划/不支持
-  - 文档闭环：README + Manual 可自举编译；examples/tests 回归稳定
-  - 兼容性：Linux 大小写一致；默认构建不依赖外部脚本；必要依赖在文档中明确
-
-
-## 9. 任务清单（按优先级）
-
-P0（阻塞可用性）：
-- 修复 `\\RequirePackage` 路径/大小写不一致（尤其 core 内部互相引用）。
-- 明确 minted 的 `-shell-escape` 策略（默认开启 vs 按需开启）。
-- README/模板/实际文件路径三者对齐。
-
-P1（接口闭环）：
-- 先把 [FEATURES.md](FEATURES.md) 作为“接口事实来源”写全（你现在就在做这个）。
-- 再把接口映射到 `Hypo-Note/Hypo-Sheet`（实现可以后置）。
-
-
-## 10. 文档工作流（你提出的双轨）
-
-- `FEATURES.md`：只写简述与接口（你维护，我协助整理）。
-- manual：当你把 `FEATURES.md` 发给我时，我据此生成更正式的 manual（章节化、示例更完整）。
-
-
-## 附录 A：当前仓库现状（2026-01-12）
-
-- 已有：`sty/core/`（Base/Colors/Fonts/Math）、`sty/modules/Hypo-Code.sty`、`make/Hypoxanthine.mk`、`templates/Makefile`。
-- manual：入口文件已存在（manual/Manual.tex），待补齐内容（v0.4.0）。
-
+### 📦 模块依赖关系
+```
+Hypo-Note/Hypo-Sheet
+    → Hypo-Base (core)
+    → Hypo-Colors (core) 
+    → Hypo-Fonts (core)
+    → Hypo-Math (core)
+    → Hypo-Box (module, 可选)
+    → Hypo-Refs (module, 可选)
+    → Hypo-Code (module, 可选)
