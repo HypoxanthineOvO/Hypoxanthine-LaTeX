@@ -1,14 +1,8 @@
 \documentclass[outputdir=build]{Hypo-Note}
 
-% 注意：本仓库曾多次遇到“\t 被编辑器/格式化器误处理为 Tab”的问题。
-% 为了让手册本身更稳健，这里尽量避免在源文件里直接出现以 \t 开头的控制序列
-% （例如 \title/\tableofcontents/\texttt/\textbf/\text 等）。
-
-\newcommand{\HypoDo}[1]{\csname #1\endcsname}
-\newcommand{\HypoTT}[1]{{\begingroup\HypoDo{ttfamily}#1\endgroup}}
-\newcommand{\HypoBF}[1]{{\begingroup\bfseries#1\endgroup}}
-\newcommand{\HypoIT}[1]{{\begingroup\itshape#1\endgroup}}
-\newcommand{\HypoBS}{\char`\\}
+% 文档排版辅助宏已下沉到 core 的 Hypo-Base（随 Hypo-Note 默认加载）。
+% 这里仅覆写反斜杠的输出方式，以保持手册既有等宽字体观感。
+\renewcommand{\HypoBS}{\char`\\}
 
 \HypoDo{title}{Hypoxanthine-LaTeX 使用手册}
 \HypoDo{author}{Hypoxanthine-LaTeX Project}

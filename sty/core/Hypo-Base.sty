@@ -19,3 +19,28 @@
 \else
     \let\FinalOutputDir\Hypo@outputdir
 \fi
+
+% 5. 文档排版辅助（面向 Manual/README/示例）
+%    目标：用“简单标记”稳定地排版命令名、反斜杠、代码等内容。
+%    备注：本仓库曾遇到“\t 被编辑器/格式化器误处理为 Tab”的问题，
+%    因此这里尽量避免直接依赖 \texttt/\textbf/\text 等以 \t 开头的控制序列。
+\providecommand{\HypoDo}[1]{\csname #1\endcsname}
+\providecommand{\HypoTT}[1]{{\begingroup\HypoDo{ttfamily}#1\endgroup}}
+\providecommand{\HypoBF}[1]{{\begingroup\bfseries#1\endgroup}}
+\providecommand{\HypoIT}[1]{{\begingroup\itshape#1\endgroup}}
+
+% 反斜杠：尽量选用 \textbackslash（不依赖 \t* 控制序列）。
+% Manual 可能会用 \renewcommand{\HypoBS}{\char`\\} 以保持特定等宽字体风格。
+\providecommand{\HypoBS}{\textbackslash}
+
+% 控制序列展示：\HypoCS{foo} -> \foo（等宽字体）
+\providecommand{\HypoCS}[1]{\HypoTT{\HypoBS#1}}
+
+% 代码/文本片段展示：\HypoCode{...}（等宽字体，默认做 detokenize 以便直接写反斜杠）
+% 说明：参数必须是“括号平衡”的普通宏参数（不支持 verbatim）。
+\providecommand{\HypoCode}[1]{\HypoTT{\detokenize{#1}}}
+
+% 常见文档标记（先给最小集合，后续可扩展）
+\providecommand{\HypoPkg}[1]{\HypoTT{#1}}
+\providecommand{\HypoEnv}[1]{\HypoTT{#1}}
+\providecommand{\HypoCls}[1]{\HypoTT{#1}}
