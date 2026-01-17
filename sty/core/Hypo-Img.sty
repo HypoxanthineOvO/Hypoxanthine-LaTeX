@@ -1,0 +1,93 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{Hypo-Img}[2026/01/16 v0.5.0 Hypoxanthine Image Helpers]
+
+\RequirePackage{expl3}
+\RequirePackage{xparse}
+\RequirePackage{graphicx}
+
+% Use expl3 key-value parsing (bundled with modern LaTeX)
+\ExplSyntaxOn
+
+\tl_new:N \l_hypo_img_label_tl
+\tl_new:N \l_hypo_img_width_tl
+\tl_new:N \l_hypo_img_placement_tl
+\bool_new:N \l_hypo_img_span_two_bool
+
+\keys_define:nn { hypo / img }
+  {
+    label .tl_set:N = \l_hypo_img_label_tl,
+    label .initial:n = ,
+
+    width .tl_set:N = \l_hypo_img_width_tl,
+    width .initial:n = 0.95\linewidth,
+
+    placement .tl_set:N = \l_hypo_img_placement_tl,
+    placement .initial:n = htbp,
+
+    span .choice:,
+    span / 1 .code:n = { \bool_set_false:N \l_hypo_img_span_two_bool },
+    span / 2 .code:n = { \bool_set_true:N \l_hypo_img_span_two_bool },
+    span .initial:n = 1,
+  }
+
+\cs_new_protected:Npn \hypo_img_begin:n #1
+  {
+    % The float placement option is NOT expanded by the float machinery, so we
+    % must expand it here into a pure character token list (e.g. htbp).
+    \use:x
+      {
+        \exp_not:N \begin {#1}[\l_hypo_img_placement_tl]
+      }
+  }
+
+\cs_new_protected:Npn \hypo_img_begin_figure:
+  {
+    \bool_if:NTF \l_hypo_img_span_two_bool
+      {\hypo_img_begin:n {figure*}}
+      {\hypo_img_begin:n {figure}}
+  }
+
+\cs_new_protected:Npn \hypo_img_end:n #1
+  {\use:x { \exp_not:N \end {#1} }}
+
+\cs_new_protected:Npn \hypo_img_end_figure:
+  {
+    \bool_if:NTF \l_hypo_img_span_two_bool
+      {\hypo_img_end:n {figure*}}
+      {\hypo_img_end:n {figure}}
+  }
+
+\cs_new_protected:Npn \hypo_img_maybe_label:
+  {
+    \tl_if_blank:VTF \l_hypo_img_label_tl
+      { }
+      {
+        % Project convention: user writes xxx, we add fig: prefix.
+        \use:x { \exp_not:N \label {fig:\l_hypo_img_label_tl} }
+      }
+  }
+
+% Public API:
+%   \img[<key=val list>]{<path>}{<caption>}
+% Keys:
+%   label=xxx        -> writes \label{fig:xxx}
+%   span=1|2         -> figure or figure*
+%   width=<dim>      -> default 0.95\linewidth
+%   placement=<spec> -> default htbp
+\NewDocumentCommand{\img}{ O{} m m }
+  {
+    \begingroup
+    \keys_set:nn { hypo / img } {#1}
+
+    \hypo_img_begin_figure:
+      \centering
+      \includegraphics[width=\tl_use:N \l_hypo_img_width_tl]{#2}
+      \caption{#3}
+      \hypo_img_maybe_label:
+    \hypo_img_end_figure:
+    \endgroup
+  }
+
+\ExplSyntaxOff
+
+\endinput

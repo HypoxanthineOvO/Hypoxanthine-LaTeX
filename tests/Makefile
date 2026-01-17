@@ -8,12 +8,19 @@ HYPO_PATH = ..
 HYPO_MK := $(HYPO_PATH)/make/Hypoxanthine.mk
 OUT_DIR ?= build
 
+ASSET_DIR := assets
+ASSET_TEX := $(ASSET_DIR)/example-image.tex
+ASSET_PDF := $(ASSET_DIR)/example-image.pdf
+
 .PHONY: all main edge clean watch help
 
 all: main
 
-main:
+main: $(ASSET_PDF)
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Main MAIN_FILE=Main.tex OUT_DIR=$(OUT_DIR) all
+
+$(ASSET_PDF): $(ASSET_TEX)
+	latexmk -xelatex -interaction=nonstopmode -halt-on-error -outdir=$(ASSET_DIR) $(ASSET_TEX)
 
 edge:
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=ShorthandOff MAIN_FILE=edge/ShorthandOff.tex OUT_DIR=$(OUT_DIR) all
@@ -21,6 +28,7 @@ edge:
 
 clean:
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) OUT_DIR=$(OUT_DIR) clean
+	latexmk -C -outdir=$(ASSET_DIR) $(ASSET_TEX)
 
 watch:
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Main MAIN_FILE=Main.tex OUT_DIR=$(OUT_DIR) watch
