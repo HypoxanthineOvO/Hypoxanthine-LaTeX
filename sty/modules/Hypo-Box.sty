@@ -62,8 +62,11 @@
     enhanced,
     breakable,
     boxrule=0.4pt,
-    colframe=black,
-    colback=white,
+    colframe=HypoBorderStrong,
+    colback=HypoSurface,
+    coltext=HypoText,
+    colbacktitle=HypoTitleBackground,
+    coltitle=HypoTitleText,
     left=1.0mm, right=1.0mm, top=0.8mm, bottom=0.8mm,
     arc=1mm,
     fonttitle=\bfseries,
@@ -78,9 +81,9 @@
 
 % 具体的颜色样式
 \tcbset{
-  hypo definition box/.style={hypo box, colframe=HypoBlueDark, colback=HypoBlueLight},
-  hypo example box/.style={hypo box, colframe=HypoGreenDark, colback=HypoGreenLight},
-  hypo note box/.style={hypo box, colframe=HypoAmberDark, colback=HypoAmberLight}
+  hypo definition box/.style={hypo box, colframe=HypoPrimary, colback=HypoPrimarySoft},
+  hypo example box/.style={hypo box, colframe=HypoSuccess, colback=HypoSuccessSoft},
+  hypo note box/.style={hypo box, colframe=HypoWarning, colback=HypoWarningSoft}
 }
 
 % ==============================================================================

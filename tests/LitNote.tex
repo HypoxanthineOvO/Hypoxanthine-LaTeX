@@ -1,0 +1,43 @@
+\documentclass[lists=true,litbox=true,colorscheme=CN]{Hypo-LitNote}
+
+\title{LitNote Test}
+\author{Test}
+\date{2026-01-17}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{InlineQuote}
+Inline: \InlineQuote{一段短引语}。
+
+\section{LitBox}
+\begin{poem}[title={Poem Title}]
+第一行\\
+第二行
+\end{poem}
+
+\begin{quotepara}[title={Quote Title}]
+这是一段引用文段，用于验证 breakable box。
+\end{quotepara}
+
+\section{Lists (4 levels)}
+\begin{itemize}
+  \item L1
+  \begin{itemize}
+    \item L2
+    \begin{itemize}
+      \item L3
+      \begin{itemize}
+        \item L4
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\begin{enumerate}
+  \item E1
+  \item E2
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,38 @@
+\documentclass[lists=true,litbox=true]{Hypo-LitNote}
+
+\title{文学笔记示例}
+\author{Hypoxanthine}
+\date{2026-01-17}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{行内引语}
+这里是一句行内引语：\InlineQuote{我将永远记得那天的风。}
+
+\section{诗词块}
+\begin{poem}[title={短诗}]
+春风又绿江南岸，明月何时照我还。
+\end{poem}
+
+\section{引用文段}
+\begin{quotepara}[title={摘录}]
+所谓文学的力量，常常来自对细节的坚持与对语言的节制。
+\end{quotepara}
+
+\section{列表（四级符号）}
+\begin{itemize}
+  \item 一级：\InlineQuote{黑圆点}
+  \begin{itemize}
+    \item 二级：\InlineQuote{空心圆}
+    \begin{itemize}
+      \item 三级：\InlineQuote{方块}
+      \begin{itemize}
+        \item 四级：\InlineQuote{三角形}
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\end{document}

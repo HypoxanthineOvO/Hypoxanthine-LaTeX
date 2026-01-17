@@ -13,6 +13,7 @@
 \DeclareBoolOption[true]{algorithm}
 \DeclareBoolOption[true]{code}
 \DeclareStringOption[build]{outputdir}
+\DeclareStringOption[Base]{colorscheme}
 \ProcessKeyvalOptions*
 
 % shorthand=false 时，用宏关闭 Hypo-Math 内置速写（不额外引入独立包）
@@ -29,6 +30,8 @@
 
 % Core 能力（无版式）
 \RequirePackage{Hypo-Fonts}
+% Allow choosing a color scheme before loading Hypo-Colors.
+\edef\HypoColorScheme{\HypoNote@colorscheme}
 \RequirePackage{Hypo-Colors}
 \RequirePackage[outputdir=\HypoNote@outputdir]{Hypo-Base}
 \RequirePackage{Hypo-Img}

@@ -1,0 +1,76 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{Hypo-LitBox}[2026/01/17 v0.9.0 Hypoxanthine Literature Boxes]
+
+\RequirePackage{expl3}
+\RequirePackage{xparse}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{Hypo-Colors}
+
+\tcbuselibrary{breakable,skins}
+
+% NOTE: tcolorbox key values are parsed under normal LaTeX2e catcodes.
+% Avoid expl3-style macro names (with '_' / ':') in key values.
+\providecommand{\HypoLitBoxPoemFont}{\itshape}
+\providecommand{\HypoLitBoxQuoteFont}{\itshape}
+\makeatletter
+\@ifundefined{kaishu}{}{%
+  \renewcommand{\HypoLitBoxPoemFont}{\kaishu}%
+  \renewcommand{\HypoLitBoxQuoteFont}{\kaishu}%
+}
+\makeatother
+
+\NewDocumentCommand{\InlineQuote}{m}
+  {{\begingroup
+    \setlength\fboxsep{0.25em}%
+    \colorbox{HypoSurfaceAlt}{\textcolor{HypoText}{\strut\,#1\,}}%
+  \endgroup}}
+
+% -----------------------------------------------------------------------------
+% Base styles
+% -----------------------------------------------------------------------------
+\tcbset{
+  hypo lit box/.style={
+    enhanced,
+    breakable,
+    boxrule=0.4pt,
+    colframe=HypoBorderStrong,
+    colback=HypoSurface,
+    coltext=HypoText,
+    % Title bar: always light bg + dark ink, but still scheme-aware.
+    coltitle=HypoTitleText,
+    colbacktitle=HypoTitleBackground,
+    left=1.0mm, right=1.0mm, top=0.8mm, bottom=0.8mm,
+    arc=1mm,
+    fonttitle=\bfseries,
+    before skip=6pt,
+    after skip=6pt,
+    separator sign={:},
+  },
+}
+
+\tcbset{
+  hypo lit poem/.style={
+    hypo lit box,
+    % Poem block: cleaner background, lighter frame.
+    colframe=HypoBorder,
+    colback=HypoBackground,
+    fontupper=\HypoLitBoxPoemFont,
+  },
+  hypo lit quotepara/.style={
+    hypo lit box,
+    colframe=HypoBorderStrong,
+    colback=HypoSurface,
+    % Quote title a bit more muted + italic, but still dark on light bg.
+    fonttitle=\bfseries\itshape,
+    fontupper=\HypoLitBoxQuoteFont,
+  },
+}
+
+% -----------------------------------------------------------------------------
+% Environments
+% -----------------------------------------------------------------------------
+% Use tcolorbox native keys (title=..., colback=..., etc.).
+\NewTColorBox{poem}{ O{} }{hypo lit poem, #1}
+\NewTColorBox{quotepara}{ O{} }{hypo lit quotepara, #1}
+
+\endinput

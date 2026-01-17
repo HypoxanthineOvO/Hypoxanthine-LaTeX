@@ -1,6 +1,6 @@
 # Hypoxanthine-LaTeX
 
-![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v0.8.0-orange) ![Status](https://img.shields.io/badge/status-Alpha-yellow)
+![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v0.9.0-orange) ![Status](https://img.shields.io/badge/status-Alpha-yellow)
 
 **Hypoxanthine-LaTeX** 是一个模块化、工程化维护的个人 LaTeX 生态：
 - 入口（Class）负责“场景与对外接口”（Hypo-Note / Hypo-Sheet）
@@ -47,6 +47,11 @@ Math: $\MB{x} + \MC{F}(\BS{\theta})$ and $\Abs{-3}=3$.
 \end{definition}
 See \cref{def:group}.
 \end{document}
+
+### 2.5) 最小示例（LitNote 入口，v0.9.0）
+
+见 tests/LitNote.tex（涵盖 poem/quotepara/InlineQuote + lists + colorscheme 示例）。
+
 兼容旧用法（仍可用）：
 
 ```latex

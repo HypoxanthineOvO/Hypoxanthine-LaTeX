@@ -1,0 +1,30 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{Hypo-Lists}[2026/01/17 v0.9.0 Hypoxanthine Lists]
+
+\RequirePackage{expl3}
+\RequirePackage{xparse}
+\ExplSyntaxOn
+
+% Allow entry classes/packages to disable list styling.
+\cs_if_exist:NT \HypoDisableLists
+  {
+    \ExplSyntaxOff
+    \endinput
+  }
+\ExplSyntaxOff
+
+\RequirePackage{amsmath, amssymb}
+\RequirePackage{enumitem}
+
+% Keep LaTeX default depth (4) and style it.
+% Target symbol sequence: bullet -> open circle -> square -> triangle.
+\setlist[itemize,1]{label=\ensuremath{\bullet}}
+\setlist[itemize,2]{label=\ensuremath{\circ}}
+\setlist[itemize,3]{label=\ensuremath{\blacksquare}}
+\setlist[itemize,4]{label=\ensuremath{\blacktriangle}}
+
+% Spacing + indentation (applies to all levels unless overridden above).
+\setlist[itemize]{leftmargin=*, itemsep=2pt, topsep=4pt, parsep=0pt, partopsep=0pt}
+\setlist[enumerate]{leftmargin=*, itemsep=2pt, topsep=4pt, parsep=0pt, partopsep=0pt}
+
+\endinput

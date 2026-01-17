@@ -14,6 +14,7 @@
 \bool_new:N \g_hypo_note_opt_algorithm_bool
 \bool_new:N \g_hypo_note_opt_code_bool
 \tl_new:N   \g_hypo_note_opt_outputdir_tl
+\tl_new:N   \g_hypo_note_opt_colorscheme_tl
 
 \cs_new_protected:Npn \hypo_note_pass_unknown_to_base:n #1
   {
@@ -67,6 +68,9 @@
     outputdir .tl_set:N = \g_hypo_note_opt_outputdir_tl,
     outputdir .initial:n = build,
 
+    colorscheme .tl_set:N = \g_hypo_note_opt_colorscheme_tl,
+    colorscheme .initial:n = Base,
+
     unknown .code:n = { \hypo_note_pass_unknown_to_base:n {#1} },
   }
 
@@ -109,7 +113,8 @@
         refs=\bool_if:NTF \g_hypo_note_opt_refs_bool {true}{false},
         algorithm=\bool_if:NTF \g_hypo_note_opt_algorithm_bool {true}{false},
         code=\bool_if:NTF \g_hypo_note_opt_code_bool {true}{false},
-        outputdir=\tl_use:N \g_hypo_note_opt_outputdir_tl
+        outputdir=\tl_use:N \g_hypo_note_opt_outputdir_tl,
+        colorscheme=\tl_use:N \g_hypo_note_opt_colorscheme_tl
       }
   }
 \hypo_note_core_opts_build:

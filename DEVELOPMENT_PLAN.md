@@ -98,7 +98,8 @@ Hypoxanthine-LaTeX/
 - [x] `Hypo-Refs`：引用管理 ✅
 - [x] `Hypo-Code`：代码模块（minted 优先 + listings fallback）✅
 - [x] `Hypo-Algorithm`：算法环境（algorithm2e）✅
-- [ ] `Hypo-Lists`：列表增强（计划）
+- [x] `Hypo-Lists`：列表增强（enumitem，最多 4 级嵌套）✅ v0.9.0
+- [x] `Hypo-LitBox`：文学向盒子（poem/quotepara + InlineQuote）✅ v0.9.0
 
 ### 7.3 Classes ✅ v0.2.4
 - [x] `Hypo-Note`：舒适阅读版式 ✅
@@ -128,9 +129,90 @@ Hypoxanthine-LaTeX/
 - [x] `v0.6.0`：Algorithm 模块
 - [x] `v0.7.0`：Code 模块
 - [x] `v0.8.0`：Note 模块，将 `.sty` 更新为 `.cls` 
-- [ ] `v0.9.0`：CHSH 模块支持
+- [x] `v0.9.0`：文学笔记模板（LitNote）：文学向盒子 + 列表美化 + 配色体系整理 ✅
+- [ ] `v0.9.5`：CHSH 模块支持（原 v0.9.0 后移）
 - [ ] `v1.0.0`：正式版发布
 - [ ] `v1.1.0`：ASCII 标题自动 label、注册 LABEL 相关的宏
+
+### v0.9.0 计划：文学笔记模板（Hypo-LitNote）
+
+> 目标：提供一份“专门为文学阅读/理解笔记”打造的入口（class + 模板），同时把列表美化能力推广到现有笔记。
+
+#### 1) 命名策略（先冻结）
+- 推荐入口名：`Hypo-LitNote`（Lit = Literature），对应 `\documentclass{Hypo-LitNote}`
+- 预留后续论文入口名：`Hypo-LitPaper`（文学论文模板，字体/版式更严格）
+- 复用命名原则：
+  - **场景入口**用 `Hypo-<Domain><Kind>`（Domain=Lit，Kind=Note/Paper）
+    - **通用能力**用 module（例如 `Hypo-Lists` / `Hypo-Margin`），避免把“写作动作”耦合进某个 class
+
+> 目录约定（先冻结）：文学相关 class 统一放在 `sty/classes/literature/`（后续 LitPaper 也在同一目录）。
+
+#### 2) 核心诉求拆解
+1) **文学向 Box**
+    - 诗词/诗行块（偏“作品原文”）：倾向使用楷体，适度留白
+    - 引用/文段块（Quote）：可选楷体或宋体，带边框/底色
+    - 行内引用（短诗句/引语）：希望有浅底色或轻量强调
+
+2) **列表（itemize）美化（对所有笔记生效）**
+    - 目标嵌套符号序列：黑圆点 → 空心圆 → 方块 → 三角形
+    - 需要兼容嵌套 `itemize` + `enumerate`，并控制缩进与间距
+
+3) **文学论文模板的可复用性**
+    - 高复用：文学向 box、行内引语、列表美化、旁注/批注能力
+    - 低复用：标题层级、目录/摘要/脚注规范、字体严格要求、行距/版心约束
+    - 方案：共享 modules（LitBox/Lists/Margin），分离 class（LitNote/LitPaper）
+
+4) **类似 `\todo` 的旁注块（可能拆分）**
+    - 冻结为独立 module：`Hypo-Margin`（旁注/批注能力），避免耦合在 LitNote
+    - 命名避冲突：仓库现有 Box 已使用 `note` 环境名，因此旁注能力避免再引入 `note`/`Note` 环境
+    - 对外接口（先按“短名”冻结）：`\MarginNote{...}` / `\MarginTodo{...}`
+    - 版本演进策略（与现有 shorthand 机制一致）：后续 release 前可统一内部实现为 `\HypoMarginNote`/`\HypoMarginTodo`，再通过一个独立的“缩写层”把短名映射出来（并允许用户关闭以规避命名冲突）
+    - v0.9.0 先冻结接口与样式规范；实现可单独落在 v0.9.x
+
+#### 3) 交付物拆分（v0.9.0）
+1) 新增文学笔记 class
+    - 文件：`sty/classes/literature/Hypo-LitNote.cls`
+    - 基类建议：`ctexart`（与现有 Note 保持一致，降低维护成本）
+    - 加载：核心能力 + Lit 相关 modules（见下）
+    - 提供：标准目录、适合阅读的默认版式与字体策略（在“不破坏现有 Note 体验”的前提下）
+
+1.5) 颜色系统整理（支撑 Lit / Tech / Simple 多主题）
+    - 文件：`sty/core/Hypo-Colors.sty`
+    - 目标：保留现有“基础色”（覆盖全面、向后兼容），新增多套主题色卡（国风/科技/简约）
+    - 新增：可切换的语义色（如 `HypoText/HypoBackground/HypoPrimary`）与入口别名（如 `HypoNoteText/HypoNotePrimary`）
+    - 接口：入口支持 `colorscheme=Base|CN|Tech|Simple`（并将旧值 `CN01..CNxx`、`Tech01..Techxx`、`Simple01..Simplexx` 作为别名归一化）
+    - 演进：modules 优先消费语义色/入口别名，而不是硬编码 `HypoBlue/HypoRed`
+
+2) 新增列表模块（全局可复用）
+    - 文件：`sty/modules/Hypo-Lists.sty`
+    - 依赖建议：`enumitem`
+    - 对外目标：统一 itemize/enumerate 样式（四级 label 序列 + 合理的 leftmargin/itemsep/topsep）
+    - 策略（先冻结）：不新造环境，采用 `enumitem` 对 `itemize`/`enumerate` 做样式层覆盖（由入口开关控制是否启用）
+    - 多级规则（先冻结）：最多支持 4 级（LaTeX 原生限制）；超过 4 级不鼓励，建议改用 `enumerate`/`description` 或拆分结构
+    - 对外选项（建议冻结）：`lists=true/false`（默认 true；由入口决定默认是否加载）
+
+3) 新增文学向盒子模块（建议独立于现有 Hypo-Box）
+    - 文件：`sty/modules/Hypo-LitBox.sty`
+    - 依赖：复用 `tcolorbox`（仓库已在 Box 系统使用）
+    - 计划提供环境（名称可再确认，但先冻结方向）：
+      - `poem`：诗词/诗行块（默认楷体 `\kaishu`，支持标题/出处等字段）
+      - `quotepara`：引用文段块（可选楷体/宋体，带浅底色）
+    - 计划提供命令：
+      - `\InlineQuote{...}`（短引语/诗句行内强调；具体命名可后续统一为 `\HypoInlineQuote`）
+
+4) 模板（供用户直接开写）
+    - 文件：`templates/LitNote.tex`（或 `templates/LitNote/Main.tex`）
+    - 目标：5 分钟内可跑通并展示 poem/quote/list/todo 的最小示例
+
+5) tests + docs
+    - tests：新增 `tests/LitNote.tex`（覆盖封面/目录/poem/quote/list 嵌套）
+    - docs：先更新 `FEATURES.md`（作为事实来源），再更新 `manual/Manual.tex`
+
+#### 4) 对外接口（v0.9.0 需要冻结）
+- 新入口：`\documentclass{Hypo-LitNote}`
+- 选项：`lists=true/false`（是否启用列表美化；最终默认策略由入口决定）
+- LitBox：至少冻结 2 个块级环境 + 1 个行内命令（名称可先用工作名，尽量避免与 LaTeX 原生命令冲突）
+- 旁注 todo（若纳入 v0.9.0）：先冻结 `\todo[<opts>]{<text>}` 风格的外观与位置规则，但实现可后续拆分
 
 ### v0.8.0 计划：Hypo-Note 从 .sty 升级为 .cls（理工笔记版式）
 

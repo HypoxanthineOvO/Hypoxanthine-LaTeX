@@ -5,6 +5,15 @@
 ## Unreleased
 
 
+## v0.9.0:LitNote+Themes (2026-01-17)
+- LitNote：新增文学笔记入口 `Hypo-LitNote.cls`（基类 `ctexart`），提供 poem/quote/行内引语与示例模板
+- LitBox：新增 `Hypo-LitBox`（`poem` / `quotepara` / `\InlineQuote`），并全面对接语义色（随 `colorscheme` 生效）
+- Lists：新增 `Hypo-Lists`（基于 enumitem），统一 itemize/enumerate 样式，最多支持 4 级嵌套
+- Colors：主题系统收敛为 `Base/CN/Tech/Simple` 四套规范 scheme；旧 `CN01..CNxx/Tech01..Techxx/Simple01..Simplexx` 作为别名归一化
+- Colors：新增/完善多层语义色（`HypoSurfaceAlt`、`HypoTitleBackground/TitleText`、`Hypo*Soft`）以支持更丰富的盒子背景层次
+- Box：definition/example/note 默认配色改为语义色 + 柔和底色（随 `colorscheme`），仍可通过 `\tcbset` 覆盖
+
+
 ## v0.8.0 (2026-01-17)
 - Note：新增 `Hypo-Note.cls`（基类 `ctexart`），支持作为 `\documentclass{Hypo-Note}` 使用
 - Note：新增元数据接口 `\HypoNoteSetup{...}` 与手动封面命令 `\makecover`

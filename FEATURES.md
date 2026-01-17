@@ -8,6 +8,7 @@
   - 推荐新用法：`\documentclass[...]{Hypo-Note}`（v0.8.0 起提供 `Hypo-Note.cls`）
   - 兼容旧用法：`\usepackage[...]{Hypo-Note}` 仍可用（内部改为加载 `Hypo-Note-Core`）
 - Hypo-Sheet：小抄入口（版式偏紧凑/多栏）
+- Hypo-LitNote：文学阅读/理解笔记入口（v0.9.0）
 - 目标：两者导出的命令/环境尽量一致，切换入口时正文无需大改。
 
 当前状态：已提供入口骨架（可加载 core 能力与统一选项）。
@@ -16,8 +17,26 @@
 - indent=true/false：控制段首缩进策略（两入口一致）
 - boxes=true/false：是否启用盒子环境（两入口一致，默认开启）
 - refs=true/false：是否启用引用模块（hyperref + cleveref，两入口一致，默认开启）
+  - colorscheme=<name>：选择配色方案（支持 Base、CN、Tech、Simple；旧值 CN01..CNxx、Tech01..Techxx、Simple01..Simplexx 作为别名兼容）
+    - 可用值（当前内置）：Base、CN、Tech、Simple；旧值 CN01..CNxx、Tech01..Techxx、Simple01..Simplexx 作为别名兼容
+  - 说明：该选项主要影响“语义色”和 Note-facing 别名色；旧的基础色卡（例如 HypoBlueDark）仍保留以兼容历史样式
 - outputdir=...：给 minted 等模块使用的输出目录（由 Hypo-Base 导出）
   - v0.8.0 起：这些选项也可作为 `Hypo-Note` class 的 class option 使用
+
+## 颜色（Core，v0.9.0 起逐步完善）
+- 基础色卡：保留历史颜色名（如 `HypoBlue/HypoBlueDark/...`），用于兼容旧模块/旧文档
+- 色系（Palette）：新增国风/科技/简约等色卡（命名示例：`HypoCN01...`、`HypoTech01...`、`HypoSimple01...`）
+- 语义色（Semantic Aliases，推荐新模块使用）：
+  - `HypoText` / `HypoTextMuted`
+  - `HypoBackground` / `HypoSurface` / `HypoBorder` / `HypoBorderStrong`
+  - `HypoSurfaceAlt`：第二层浅背景（用于行内引用/轻量强调）
+  - `HypoTitleBackground` / `HypoTitleText`：标题栏语义色（保证“浅底 + 深色字”，同时随 colorscheme 变 tint）
+  - `HypoPrimary` / `HypoSecondary` / `HypoAccent`
+  - `HypoSuccess` / `HypoWarning` / `HypoDanger`
+  - `HypoPrimarySoft` / `HypoSuccessSoft` / `HypoWarningSoft` / `HypoDangerSoft`：柔和底色（用于彩色盒子背景，随 colorscheme 自动派生）
+- Note-facing 别名（给用户稳定引用）：
+  - `HypoNoteText` / `HypoNoteBackground` / `HypoNoteBorder`
+  - `HypoNotePrimary` / `HypoNoteAccent`
 
 ## Note 元数据与封面（v0.8.0）
 - 元数据统一入口：`\HypoNoteSetup{title=..., subtitle=..., author=..., email=..., homepage=..., affiliation=..., date=...}`
@@ -76,9 +95,10 @@
 - note：笔记/提示盒子（v0.3.3 起可用）
 
 ### 盒子默认配色（可覆盖）
-- definition：边框 HypoBlueDark，底色 HypoBlueLight
-- example：边框 HypoGreenDark，底色 HypoGreenLight
-- note：边框 HypoAmberDark，底色 HypoAmberLight
+- v0.9.0 起：盒子默认配色改为“语义色 + 柔和底色”（随 colorscheme 切换）
+  - definition：边框 `HypoPrimary`，底色 `HypoPrimarySoft`
+  - example：边框 `HypoSuccess`，底色 `HypoSuccessSoft`
+  - note：边框 `HypoWarning`，底色 `HypoWarningSoft`
 
 覆盖方式：在导言区用 `\tcbset{hypo example box/.style={...}}` 等覆盖对应 hook。
 
