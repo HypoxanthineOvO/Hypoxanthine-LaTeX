@@ -37,8 +37,10 @@ Hypoxanthine-LaTeX/
 │   │   ├── Hypo-Code.sty     # minted 配置 ✅ 
 │   │   └── Hypo-Refs.sty     # hyperref + cleveref ✅ v0.3.5
 │   └── classes/              # 场景入口
-│       ├── note/             # Hypo-Note 类 ✅ v0.2.4
-│       └── sheet/            # Hypo-Sheet 类 ✅ v0.2.4
+│       ├── note/             # 技术笔记：Hypo-Note ✅（book-native）
+│       ├── literature/       # 文学笔记：Hypo-LitNote ✅
+│       ├── chsh/             # CheatSheet：Hypo-CHSH ✅
+│       └── sheet/            # Hypo-Sheet（历史入口，后续按需收敛）
 ├── make/Hypoxanthine.mk      # 构建系统 ✅
 ├── templates/Makefile        # 模板 ✅
 ├── FEATURES.md               # 功能/接口清单
@@ -106,7 +108,7 @@ Hypoxanthine-LaTeX/
 - [x] `Hypo-Sheet`：紧凑/多栏版式 ✅
 - [x] 统一接口：`shorthand`/`indent`/`boxes`/`refs`/`outputdir` ✅
 
-## 8. 开发路线图（当前进度 v0.8.0）
+## 8. 开发路线图（当前进度 v0.9.0）
 
 ### ✅ 已完成（v0.1.0 - v0.4.3）
 - [x] `v0.1.0`：工程文档初始化 + 构建系统修复
@@ -130,11 +132,69 @@ Hypoxanthine-LaTeX/
 - [x] `v0.7.0`：Code 模块
 - [x] `v0.8.0`：Note 模块，将 `.sty` 更新为 `.cls` 
 - [x] `v0.9.0`：文学笔记模板（LitNote）：文学向盒子 + 列表美化 + 配色体系整理 ✅
-- [ ] `v0.9.5`：CHSH 模块支持（原 v0.9.0 后移）
+- [x] `v0.9.0`：技术笔记/文学笔记入口迁移为 book-native（`ctexbook`），并补齐 chapter/TOC 兼容 ✅
+- [x] `v0.9.0`：技术笔记默认章节编号改为 `chapterstyle=en`（“1.”）；文学笔记引入 `sectionstyle` 避免标题出现 “1.1” ✅
+- [x] `v0.9.0`：CHSH 入口可用（多栏 + 代码块默认单栏 + 页面面积/纵横比参数）✅
+- [ ] `v0.9.1`：发布前收尾：整理 PLAN/FEATURES/CHANGELOG，补齐 release checklist（本次工作）
+- [ ] `v0.9.x`：Manual 大改（从 FEATURES 生成/对齐，补齐真实用例与最佳实践）
+- [ ] `v0.9.x`：完善安装/构建脚本（含依赖检测、shell-escape 开关、fonts 提示等）
+- [ ] `v0.9.x`：snippets 与 templates（VS Code snippet、模板目录与快速启动）
 - [ ] `v1.0.0`：正式版发布
 - [ ] `v1.1.0`：ASCII 标题自动 label、注册 LABEL 相关的宏
 
-### v0.9.0 计划：文学笔记模板（Hypo-LitNote）
+### v0.9.0 已交付：CHSH（CheatSheet）入口
+
+> 定位：CHSH 是一个“独立的速查/小抄入口（class）”。
+> 目标：接口尽量复用现有生态（definition/example/note、refs、code、lists 等），但渲染按 CHSH 的信息密度与版面规则走，不追求与 Note/LitNote 完全同源。
+
+#### 1) 核心能力（当前实现）
+1) **单页面积基准 = A4（可缩放）**
+    - 需求动机：字体大小固定时，希望每页可容纳信息量与视觉密度稳定；避免“纸张太小→打印时被放大→字突然变大”。
+    - 方案：将“页面面积”定义为 A4 面积乘一个比例：
+      - `paperarea=a4`（基准面积，默认）
+      - `areascale=<num>`（面积缩放因子，默认 1；允许 0.5、1、2...）
+
+2) **允许自定义纸张纵横比（宽高比）**
+    - `paperaspect=<num>` 表示 W/H（默认等同 A4 比例 210/297）。
+    - 页面尺寸按公式计算（允许超出 A4 外框）：
+      - 令 A = A4_area * areascale
+      - 令 r = paperaspect
+      - 则 W = sqrt(A*r), H = sqrt(A/r)
+    - 说明：由于允许超出 A4 外框，打印到 A4 时由打印机/拼版工具按需缩放；CHSH 的设计目标是“版面密度稳定”，而不是“无缩放落在 A4 内”。
+
+3) **分栏数量可配（等宽即可）**
+    - `columns=<int>`（默认 3）
+    - `colsep=<dim>`（列间距）
+    - 实现优先使用 multicol（等宽分栏足够；不做列宽比例）。
+
+4) **显式换栏控制**
+    - 提供命令 `\CHSHColumnBreak`：强制换到下一栏（用于速查结构化布局）。
+
+5) **chapter 换栏/换页策略可选（默认不干预）**
+    - `chapterbreak=none|column|page`（默认 none）
+    - 说明：避免侵入式重定义 `\chapter`；只有在用户明确选择时才做“章=换栏/换页”的映射。
+
+6) **不新增 detail/vital 体系**
+    - CHSH 不引入新的“内容裁剪语义”；如需裁剪由用户自行组织内容。
+
+#### 2) 交付物（已完成）
+1) CHSH class
+    - 文件：`sty/classes/chsh/Hypo-CHSH.cls`
+    - 基类建议：`ctexart`
+    - 目标：最小可用（页面尺寸计算 + 分栏 + CHSH 盒子/列表/代码/引用按需加载）
+
+2) CHSH 样式覆写（不改动 Note/LitNote）
+    - Box：对 `Hypo-Box` 的样式做“紧凑预设”（更小 padding/skip、更细边框、标题更小）
+    - Lists：对 `Hypo-Lists` 设定更紧凑的 enumitem 参数
+    - Code/Algorithm：缩小字号、收紧间距（仍保持 minted 优先 / listings fallback）
+
+3) tests
+    - 新增 `tests/CHSH.tex` 覆盖：paperaspect+areascale 计算、columns、`\CHSHColumnBreak`、盒子/列表/refs/code 基本回归
+
+4) docs
+    - 发布前：在 Manual 的“大改”阶段补充 CHSH 用法与打印建议（例如 n-up 拼版由外部工具完成）。
+
+### v0.9.0 已交付：文学笔记模板（Hypo-LitNote）
 
 > 目标：提供一份“专门为文学阅读/理解笔记”打造的入口（class + 模板），同时把列表美化能力推广到现有笔记。
 
@@ -172,7 +232,7 @@ Hypoxanthine-LaTeX/
 #### 3) 交付物拆分（v0.9.0）
 1) 新增文学笔记 class
     - 文件：`sty/classes/literature/Hypo-LitNote.cls`
-    - 基类建议：`ctexart`（与现有 Note 保持一致，降低维护成本）
+    - 基底：`ctexbook`（book-native），提供原生 `\chapter/\part` 等
     - 加载：核心能力 + Lit 相关 modules（见下）
     - 提供：标准目录、适合阅读的默认版式与字体策略（在“不破坏现有 Note 体验”的前提下）
 
@@ -214,10 +274,10 @@ Hypoxanthine-LaTeX/
 - LitBox：至少冻结 2 个块级环境 + 1 个行内命令（名称可先用工作名，尽量避免与 LaTeX 原生命令冲突）
 - 旁注 todo（若纳入 v0.9.0）：先冻结 `\todo[<opts>]{<text>}` 风格的外观与位置规则，但实现可后续拆分
 
-### v0.8.0 计划：Hypo-Note 从 .sty 升级为 .cls（理工笔记版式）
+### v0.8.0（已完成）：Hypo-Note 从 .sty 升级为 .cls（理工笔记版式）
 
 #### 目标与约束
-- 新入口：支持 `\documentclass{Hypo-Note}`（基于 `ctexart`）
+- 新入口：支持 `\documentclass{Hypo-Note}`（基于 `ctexbook`，book-native）
 - 兼容：保留 `\usepackage{Hypo-Note}` 的旧用法，不破坏历史文档
 - 信息字段：默认不显示；用户显式设置后才显示
 - 封面：手动 `\makecover`
@@ -225,7 +285,7 @@ Hypoxanthine-LaTeX/
 
 #### 交付物拆分
 1) 新增 class：`sty/classes/note/Hypo-Note.cls`
-    - 基类：`ctexart`
+    - 基底：`ctexbook`
     - 集成：`geometry`（版心）、`fancyhdr`（页眉页脚）、标准目录
     - 提供：`\makecover`（不自动触发）
 

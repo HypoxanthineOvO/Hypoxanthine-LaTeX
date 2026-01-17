@@ -7,7 +7,15 @@
 - Hypo-Note：笔记入口（版式偏舒适阅读）
   - 推荐新用法：`\documentclass[...]{Hypo-Note}`（v0.8.0 起提供 `Hypo-Note.cls`）
   - 兼容旧用法：`\usepackage[...]{Hypo-Note}` 仍可用（内部改为加载 `Hypo-Note-Core`）
+  - 内容层级：默认基底为 `ctexbook`（book-like），提供原生 `\chapter/\part` 等。
+  - 默认策略：book 模式下默认注入 `oneside/openany`（可通过传入 `twoside/openright` 等覆盖）。
+  - 章节编号风格：`chapterstyle=en`（默认，“1.”）或 `chapterstyle=cn`（“第一章”）。
 - Hypo-Sheet：小抄入口（版式偏紧凑/多栏）
+- Hypo-CHSH：CheatSheet / 小抄入口（信息密度优先）
+  - 基底：`ctexart`
+  - 多栏：基于 `multicol` 的等宽分栏（默认 3 栏）
+  - 代码块：在多栏中默认自动“退回单栏”排版，避免跨列造成的断行/溢出
+  - 页面尺寸：支持 `paperarea=a4` + `areascale` + `paperaspect` 进行面积/纵横比控制
 - Hypo-LitNote：文学阅读/理解笔记入口（v0.9.0）
 - 目标：两者导出的命令/环境尽量一致，切换入口时正文无需大改。
 
@@ -17,8 +25,9 @@
 - indent=true/false：控制段首缩进策略（两入口一致）
 - boxes=true/false：是否启用盒子环境（两入口一致，默认开启）
 - refs=true/false：是否启用引用模块（hyperref + cleveref，两入口一致，默认开启）
-  - colorscheme=<name>：选择配色方案（支持 Base、CN、Tech、Simple；旧值 CN01..CNxx、Tech01..Techxx、Simple01..Simplexx 作为别名兼容）
-    - 可用值（当前内置）：Base、CN、Tech、Simple；旧值 CN01..CNxx、Tech01..Techxx、Simple01..Simplexx 作为别名兼容
+- lists=true/false：是否启用列表美化（基于 enumitem；入口默认开启）
+- colorscheme=<name>：选择配色方案（支持 Base、CN、Tech、Simple；旧值 CN01..CNxx、Tech01..Techxx、Simple01..Simplexx 作为别名兼容）
+  - 可用值（当前内置）：Base、CN、Tech、Simple；旧值 CN01..CNxx、Tech01..Techxx、Simple01..Simplexx 作为别名兼容
   - 说明：该选项主要影响“语义色”和 Note-facing 别名色；旧的基础色卡（例如 HypoBlueDark）仍保留以兼容历史样式
 - outputdir=...：给 minted 等模块使用的输出目录（由 Hypo-Base 导出）
   - v0.8.0 起：这些选项也可作为 `Hypo-Note` class 的 class option 使用
@@ -41,7 +50,7 @@
 ## Note 元数据与封面（v0.8.0）
 - 元数据统一入口：`\HypoNoteSetup{title=..., subtitle=..., author=..., email=..., homepage=..., affiliation=..., date=...}`
 - 封面：`\makecover`（手动触发；未设置任何元数据时会 Warning 且不输出空封面）
-- 页眉页脚：默认页眉包含 Title + Author + 当前章节（rightmark），页脚居中页码
+- 页眉页脚：book-like（twoside 时奇偶页分离），章首页使用 plain 样式，仅保留页码
 
 ### 封面图（规划中，未实现）
 - 目标：在 `\makecover` 里支持封面图/Logo/背景图（默认不显示，设置才显示）
@@ -88,6 +97,19 @@
 ## 内容层级（拟定）
 - detail 环境：sheet 下默认隐藏；note 下显示（样式可后定）
 - vital 环境：强调重点（两入口一致）
+
+### Chapter / Book（补充说明）
+- 现状：`Hypo-Note` / `Hypo-LitNote` 默认以 `ctexbook` 为基底，具备更完整的 book 语义。
+- 章节编号风格：可用 `chapterstyle=cn|en` 一键切换“第一章”/“1.”（技术笔记默认 `chapterstyle=en`）。
+
+### CHSH（补充说明）
+- 现状：`Hypo-CHSH` 为独立 class（`ctexart` 基底），面向“速查/小抄”场景。
+- 关键点：多栏下 `hypocode` 默认单栏排版；可通过 `columns/colsep/balance` 调整版面密度。
+
+### LitNote 的小节编号（补充说明）
+- 目标：在文学笔记里避免标题出现 “1.1” 这种观感。
+- 默认：`Hypo-LitNote` 使用 `sectionstyle=outline`，即 section 用 “一、二、三…”，subsection 用 “（一）（二）…”。
+- 可选：`sectionstyle=arabic`，即 section 用 “1,2,3…”，subsection 用 “(1)(2)…”。
 
 ## 盒子（当前最小集）
 - definition：定义盒子（v0.3.0 起可用）

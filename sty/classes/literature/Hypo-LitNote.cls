@@ -1,9 +1,9 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{Hypo-LitNote}[2026/01/17 v0.9.0 Hypoxanthine Literature Note Class]
+\ProvidesClass{Hypo-LitNote}[2026/01/17 v0.9.3 Hypoxanthine Literature Note Class]
 
 % Options:
 % - Pass Hypoxanthine entry options to Hypo-Note-Core and local modules.
-% - Pass unknown options to base class (ctexbook/ctexart).
+% - Pass unknown options to base class (ctexbook).
 \RequirePackage{expl3}
 \RequirePackage{l3keys2e}
 \ExplSyntaxOn
@@ -18,7 +18,8 @@
 \bool_new:N \g_hypo_litnote_opt_litbox_bool
 \tl_new:N   \g_hypo_litnote_opt_outputdir_tl
 \tl_new:N   \g_hypo_litnote_opt_colorscheme_tl
-\tl_new:N   \g_hypo_litnote_opt_base_tl
+\tl_new:N   \g_hypo_litnote_opt_chapterstyle_tl
+\tl_new:N   \g_hypo_litnote_opt_sectionstyle_tl
 \seq_new:N  \g_hypo_litnote_base_unknown_opts_seq
 \bool_new:N \g_hypo_litnote_base_user_side_bool
 \bool_new:N \g_hypo_litnote_base_user_open_bool
@@ -45,11 +46,31 @@
 
 \keys_define:nn { hypo / litnote / class }
   {
+    % Back-compat: keep base=... but only book is supported now.
     base .choice:,
-    base / book    .code:n = { \tl_set:Nn \g_hypo_litnote_opt_base_tl { ctexbook } },
-    base / article .code:n = { \tl_set:Nn \g_hypo_litnote_opt_base_tl { ctexart } },
+    base / book .code:n = { },
+    base / article .code:n =
+      {
+        \msg_error:nnn { hypo } { note-base-article-removed } { Hypo-LitNote }
+      },
     base .default:n = book,
     base .initial:n = book,
+
+    chapterstyle .choice:,
+    chapterstyle / cn .code:n = { \tl_set:Nn \g_hypo_litnote_opt_chapterstyle_tl { cn } },
+    chapterstyle / en .code:n = { \tl_set:Nn \g_hypo_litnote_opt_chapterstyle_tl { en } },
+    chapterstyle .default:n = cn,
+    chapterstyle .initial:n = cn,
+
+    % Section numbering style (avoid 1.1 in headings by default).
+    % - outline: 一、二、三… / （一）（二）…
+    % - arabic:  1,2,3… / (1)(2)…
+    sectionstyle .choice:,
+    sectionstyle / outline .code:n = { \tl_set:Nn \g_hypo_litnote_opt_sectionstyle_tl { outline } },
+    sectionstyle / arabic  .code:n = { \tl_set:Nn \g_hypo_litnote_opt_sectionstyle_tl { arabic } },
+    sectionstyle .default:n = outline,
+    sectionstyle .initial:n = outline,
+
     shorthand .choice:,
     shorthand / true  .code:n = { \bool_set_true:N  \g_hypo_litnote_opt_shorthand_bool },
     shorthand / false .code:n = { \bool_set_false:N \g_hypo_litnote_opt_shorthand_bool },
@@ -110,23 +131,27 @@
 \ProcessKeysOptions{ hypo / litnote / class }
 \ExplSyntaxOff
 
-% Pass collected unknown options to the chosen base class, then load it.
 \ExplSyntaxOn
-\seq_map_inline:Nn \g_hypo_litnote_base_unknown_opts_seq
-  { \PassOptionsToClass{##1}{\g_hypo_litnote_opt_base_tl} }
-
-\str_if_eq:VnT \g_hypo_litnote_opt_base_tl { ctexbook }
-  {
-    \bool_if:NF \g_hypo_litnote_base_user_side_bool
-      { \PassOptionsToClass{oneside}{ctexbook} }
-    \bool_if:NF \g_hypo_litnote_base_user_open_bool
-      { \PassOptionsToClass{openany}{ctexbook} }
-  }
-% Bake the selected base class name into a plain macro (no expl3 commands).
-\cs_set:Npx \HypoLitNoteBaseClass { \tl_use:N \g_hypo_litnote_opt_base_tl }
+\msg_new:nnn { hypo } { note-base-article-removed }
+  { The~ #1~ class~ no~ longer~ supports~ base=article.~ Use~ the~ book~ base~ (default). }
 \ExplSyntaxOff
 
-\LoadClass{\HypoLitNoteBaseClass}
+% Pass collected unknown options to the base class, then load it.
+\ExplSyntaxOn
+\seq_map_inline:Nn \g_hypo_litnote_base_unknown_opts_seq
+  { \PassOptionsToClass{##1}{ctexbook} }
+
+\bool_if:NF \g_hypo_litnote_base_user_side_bool
+  { \PassOptionsToClass{oneside}{ctexbook} }
+\bool_if:NF \g_hypo_litnote_base_user_open_bool
+  { \PassOptionsToClass{openany}{ctexbook} }
+
+% Bake style choices into plain macros (no expl3 commands used later).
+\cs_set:Npx \HypoLitNoteChapterStyle { \tl_use:N \g_hypo_litnote_opt_chapterstyle_tl }
+\cs_set:Npx \HypoLitNoteSectionStyle { \tl_use:N \g_hypo_litnote_opt_sectionstyle_tl }
+\ExplSyntaxOff
+
+\LoadClass{ctexbook}
 
 % -----------------------------------------------------------------------------
 % Layout (minimal first version)
@@ -142,14 +167,52 @@
 \renewcommand{\footrulewidth}{0pt}
 
 \makeatletter
-\@ifundefined{chapter}
-  {\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}}
-  {\renewcommand{\chaptermark}[1]{\markboth{\thechapter\ #1}{\thechapter\ #1}}%
-   \renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}}
-\makeatother
+\newcommand\Hypo@ChapterMarkNumber{\thechapter}
+\@ifundefined{ctexset}{}{%
+  \edef\Hypo@tmpstyle{\HypoLitNoteChapterStyle}
+  \def\Hypo@style@cn{cn}
+  \ifx\Hypo@tmpstyle\Hypo@style@cn
+    \ctexset{chapter={name={第,章},number=\chinese{chapter},aftername=\quad}}
+    \renewcommand\Hypo@ChapterMarkNumber{第\chinese{chapter}章}
+  \else
+    \ctexset{chapter={name={,},number=\arabic{chapter},aftername=.\quad}}
+    \renewcommand\Hypo@ChapterMarkNumber{\arabic{chapter}}
+  \fi
+}
 
-\fancyhead[L]{\nouppercase{\rightmark}}
-\fancyhead[R]{\thepage}
+% Section numbering: LitNote defaults to outline style to avoid “1.1” headings.
+\edef\Hypo@tmpsectstyle{\HypoLitNoteSectionStyle}
+\def\Hypo@sectstyle@outline{outline}
+\ifx\Hypo@tmpsectstyle\Hypo@sectstyle@outline
+  \renewcommand\thesection{\chinese{section}}
+  \renewcommand\thesubsection{（\chinese{subsection}）}
+  \renewcommand\thesubsubsection{\arabic{subsubsection}}
+\else
+  \renewcommand\thesection{\arabic{section}}
+  \renewcommand\thesubsection{(\arabic{subsection})}
+  \renewcommand\thesubsubsection{\arabic{subsubsection}}
+\fi
+
+\renewcommand{\chaptermark}[1]{\markboth{\Hypo@ChapterMarkNumber\ #1}{\Hypo@ChapterMarkNumber\ #1}}%
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}%
+
+\if@twoside
+  \fancyhead[LE]{\thepage}
+  \fancyhead[RO]{\thepage}
+  \fancyhead[RE]{\nouppercase{\leftmark}}
+  \fancyhead[LO]{\nouppercase{\rightmark}}
+\else
+  \fancyhead[L]{\nouppercase{\rightmark}}
+  \fancyhead[R]{\thepage}
+\fi
+
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}%
+  \fancyfoot[C]{\thepage}%
+}
+\makeatother
 
 % -----------------------------------------------------------------------------
 % Load Hypoxanthine capabilities

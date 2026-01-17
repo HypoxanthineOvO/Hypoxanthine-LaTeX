@@ -13,15 +13,19 @@ ASSET_TEX := $(ASSET_DIR)/example-image.tex
 ASSET_PDF := $(ASSET_DIR)/example-image.pdf
 
 
-.PHONY: all main class litnote chsh edge clean watch help
 
-all: main class litnote chsh
+.PHONY: all main class class-en litnote chsh edge clean watch help
+
+all: main class class-en litnote chsh
 
 main: $(ASSET_PDF)
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Main MAIN_FILE=Main.tex OUT_DIR=$(OUT_DIR) all
 
 class: $(ASSET_PDF)
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=ClassNote MAIN_FILE=ClassNote.tex OUT_DIR=$(OUT_DIR) all
+
+class-en: $(ASSET_PDF)
+	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=ClassNoteEN MAIN_FILE=ClassNoteEN.tex OUT_DIR=$(OUT_DIR) all
 
 litnote: $(ASSET_PDF)
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=LitNote MAIN_FILE=LitNote.tex OUT_DIR=$(OUT_DIR) all

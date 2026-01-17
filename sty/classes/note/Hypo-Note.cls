@@ -1,8 +1,8 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{Hypo-Note}[2026/01/17 v0.8.0 Hypoxanthine Note Class]
+\ProvidesClass{Hypo-Note}[2026/01/17 v0.9.3 Hypoxanthine Note Class]
 
 % Route options: pass Hypo-Note specific options to Hypo-Note-Core,
-% and pass everything else to the base class (ctexbook/ctexart).
+% and pass everything else to the base class (ctexbook).
 \RequirePackage{expl3}
 \RequirePackage{l3keys2e}
 \ExplSyntaxOn
@@ -13,9 +13,10 @@
 \bool_new:N \g_hypo_note_opt_refs_bool
 \bool_new:N \g_hypo_note_opt_algorithm_bool
 \bool_new:N \g_hypo_note_opt_code_bool
+\bool_new:N \g_hypo_note_opt_lists_bool
 \tl_new:N   \g_hypo_note_opt_outputdir_tl
 \tl_new:N   \g_hypo_note_opt_colorscheme_tl
-\tl_new:N   \g_hypo_note_opt_base_tl
+\tl_new:N   \g_hypo_note_opt_chapterstyle_tl
 \seq_new:N  \g_hypo_note_base_unknown_opts_seq
 \bool_new:N \g_hypo_note_base_user_side_bool
 \bool_new:N \g_hypo_note_base_user_open_bool
@@ -43,11 +44,21 @@
 
 \keys_define:nn { hypo / note / class }
   {
+    % Back-compat: keep base=... but only book is supported now.
     base .choice:,
-    base / book    .code:n = { \tl_set:Nn \g_hypo_note_opt_base_tl { ctexbook } },
-    base / article .code:n = { \tl_set:Nn \g_hypo_note_opt_base_tl { ctexart } },
+    base / book .code:n = { },
+    base / article .code:n =
+      {
+        \msg_error:nnn { hypo } { note-base-article-removed } { Hypo-Note }
+      },
     base .default:n = book,
     base .initial:n = book,
+
+    chapterstyle .choice:,
+    chapterstyle / cn .code:n = { \tl_set:Nn \g_hypo_note_opt_chapterstyle_tl { cn } },
+    chapterstyle / en .code:n = { \tl_set:Nn \g_hypo_note_opt_chapterstyle_tl { en } },
+    chapterstyle .default:n = en,
+    chapterstyle .initial:n = en,
     shorthand .choice:,
     shorthand / true  .code:n = { \bool_set_true:N  \g_hypo_note_opt_shorthand_bool },
     shorthand / false .code:n = { \bool_set_false:N \g_hypo_note_opt_shorthand_bool },
@@ -84,6 +95,12 @@
     code .default:n = true,
     code .initial:n = true,
 
+    lists .choice:,
+    lists / true  .code:n = { \bool_set_true:N  \g_hypo_note_opt_lists_bool },
+    lists / false .code:n = { \bool_set_false:N \g_hypo_note_opt_lists_bool },
+    lists .default:n = true,
+    lists .initial:n = true,
+
     outputdir .tl_set:N = \g_hypo_note_opt_outputdir_tl,
     outputdir .initial:n = build,
 
@@ -96,24 +113,27 @@
 \ProcessKeysOptions{ hypo / note / class }
 \ExplSyntaxOff
 
-% Pass collected unknown options to the chosen base class, then load it.
 \ExplSyntaxOn
-\seq_map_inline:Nn \g_hypo_note_base_unknown_opts_seq
-  { \PassOptionsToClass{##1}{\g_hypo_note_opt_base_tl} }
-
-% In book mode, default to a note-friendly pagination unless the user overrides.
-\str_if_eq:VnT \g_hypo_note_opt_base_tl { ctexbook }
-  {
-    \bool_if:NF \g_hypo_note_base_user_side_bool
-      { \PassOptionsToClass{oneside}{ctexbook} }
-    \bool_if:NF \g_hypo_note_base_user_open_bool
-      { \PassOptionsToClass{openany}{ctexbook} }
-  }
-% Bake the selected base class name into a plain macro (no expl3 commands).
-\cs_set:Npx \HypoNoteBaseClass { \tl_use:N \g_hypo_note_opt_base_tl }
+\msg_new:nnn { hypo } { note-base-article-removed }
+  { The~ #1~ class~ no~ longer~ supports~ base=article.~ Use~ the~ book~ base~ (default). }
 \ExplSyntaxOff
 
-\LoadClass{\HypoNoteBaseClass}
+% Pass collected unknown options to the base class, then load it.
+\ExplSyntaxOn
+\seq_map_inline:Nn \g_hypo_note_base_unknown_opts_seq
+  { \PassOptionsToClass{##1}{ctexbook} }
+
+% Default to a note-friendly pagination unless the user overrides.
+\bool_if:NF \g_hypo_note_base_user_side_bool
+  { \PassOptionsToClass{oneside}{ctexbook} }
+\bool_if:NF \g_hypo_note_base_user_open_bool
+  { \PassOptionsToClass{openany}{ctexbook} }
+
+% Bake style choices into plain macros (no expl3 commands used later).
+\cs_set:Npx \HypoNoteChapterStyle { \tl_use:N \g_hypo_note_opt_chapterstyle_tl }
+\ExplSyntaxOff
+
+\LoadClass{ctexbook}
 
 % ------------------------------------------------------------------------------
 % Style: layout + header/footer
@@ -128,15 +148,49 @@
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0pt}
 
-% Section marks for article-like classes
+% Chapter style (cn: "第一章"; en: "1.") and marks.
 \makeatletter
-\@ifundefined{chapter}
-  {\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}}
-  {%
-    % Book-like: leftmark = chapter, rightmark = section
-    \renewcommand{\chaptermark}[1]{\markboth{\thechapter\ #1}{\thechapter\ #1}}%
-    \renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}%
-  }
+\newcommand\Hypo@ChapterMarkNumber{\thechapter}
+\@ifundefined{ctexset}{}{%
+  \edef\Hypo@tmpstyle{\HypoNoteChapterStyle}
+  \def\Hypo@style@cn{cn}
+  \ifx\Hypo@tmpstyle\Hypo@style@cn
+    % Prefer "第一章" style (Chinese numerals).
+    \ctexset{chapter={name={第,章},number=\chinese{chapter},aftername=\quad}}
+    \renewcommand\Hypo@ChapterMarkNumber{第\chinese{chapter}章}
+  \else
+    % Prefer plain Arabic numbering "1.".
+    \ctexset{chapter={name={,},number=\arabic{chapter},aftername=.\quad}}
+    % For technical notes, keep section-like headings consistent: "1.1.".
+    \ctexset{section={aftername=.\quad},subsection={aftername=.\quad},subsubsection={aftername=.\quad}}
+    \renewcommand\Hypo@ChapterMarkNumber{\arabic{chapter}}
+  \fi
+}
+
+% leftmark = chapter, rightmark = section
+\renewcommand{\chaptermark}[1]{\markboth{\Hypo@ChapterMarkNumber\ #1}{\Hypo@ChapterMarkNumber\ #1}}%
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}%
+
+% Header/footer layout:
+% - twoside: inner header = chapter, outer header = section, outer header = page
+% - oneside: left header = section, right header = page
+\if@twoside
+  \fancyhead[LE]{\thepage}
+  \fancyhead[RO]{\thepage}
+  \fancyhead[RE]{\nouppercase{\leftmark}}
+  \fancyhead[LO]{\nouppercase{\rightmark}}
+\else
+  \fancyhead[L]{\nouppercase{\rightmark}}
+  \fancyhead[R]{\thepage}
+\fi
+
+% Chapter opening pages use plain pagestyle in book; make it clean.
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}%
+  \fancyfoot[C]{\thepage}%
+}
 \makeatother
 
 % ------------------------------------------------------------------------------
@@ -155,6 +209,7 @@
         refs=\bool_if:NTF \g_hypo_note_opt_refs_bool {true}{false},
         algorithm=\bool_if:NTF \g_hypo_note_opt_algorithm_bool {true}{false},
         code=\bool_if:NTF \g_hypo_note_opt_code_bool {true}{false},
+        lists=\bool_if:NTF \g_hypo_note_opt_lists_bool {true}{false},
         outputdir=\tl_use:N \g_hypo_note_opt_outputdir_tl,
         colorscheme=\tl_use:N \g_hypo_note_opt_colorscheme_tl
       }
@@ -202,11 +257,6 @@
 
 \cs_new:Npn \hypo_note_hdr_title: {\tl_use:N \g_hypo_note_title_tl}
 \cs_new:Npn \hypo_note_hdr_author: {\tl_use:N \g_hypo_note_author_tl}
-
-\fancyhead[L]{\hypo_note_hdr_title:}
-\fancyhead[C]{\hypo_note_hdr_author:}
-\fancyhead[R]{\nouppercase{\rightmark}}
-\fancyfoot[C]{\thepage}
 
 \cs_new_protected:Npn \hypo_note_cover_line:nn #1 #2
   {

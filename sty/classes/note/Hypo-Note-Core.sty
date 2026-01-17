@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{Hypo-Note-Core}[2026/01/17 Hypoxanthine Note Entry Core]
+\ProvidesPackage{Hypo-Note-Core}[2026/01/17 v0.9.3 Hypoxanthine Note Entry Core]
 
 \RequirePackage{kvoptions}
 
@@ -12,6 +12,7 @@
 \DeclareBoolOption[true]{refs}
 \DeclareBoolOption[true]{algorithm}
 \DeclareBoolOption[true]{code}
+\DeclareBoolOption[true]{lists}
 \DeclareStringOption[build]{outputdir}
 \DeclareStringOption[Base]{colorscheme}
 \ProcessKeyvalOptions*
@@ -36,6 +37,13 @@
 \RequirePackage[outputdir=\HypoNote@outputdir]{Hypo-Base}
 \RequirePackage{Hypo-Img}
 \RequirePackage{Hypo-Math}
+
+% Lists styling (enumitem-based). Can be disabled by lists=false.
+\ifHypoNote@lists
+\else
+    \def\HypoDisableLists{}
+\fi
+\RequirePackage{Hypo-Lists}
 
 \ifHypoNote@boxes
     \RequirePackage{Hypo-Box}

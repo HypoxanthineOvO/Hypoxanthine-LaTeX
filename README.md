@@ -48,11 +48,17 @@ Math: $\MB{x} + \MC{F}(\BS{\theta})$ and $\Abs{-3}=3$.
 See \cref{def:group}.
 \end{document}
 
+```
+
+> 内容层级说明：`Hypo-Note` 现在默认以 `ctexbook` 为基底（更贴近“原生 book”的章/节语义）。
+> - 默认会以更“笔记友好”的方式加载 book（例如默认 `oneside/openany`，避免无意义空白页；你仍可自行传入 `twoside/openright` 覆盖）。
+> - 章节编号风格可一键切换：`chapterstyle=en`（默认，“1.”）或 `chapterstyle=cn`（“第一章”）。
+
 ### 2.5) 最小示例（LitNote 入口，v0.9.0）
 
 见 tests/LitNote.tex（涵盖 poem/quotepara/InlineQuote + lists + colorscheme 示例）。
 
-兼容旧用法（仍可用）：
+兼容旧用法（仍可用；适合你自己选 `article/ctexart` 等基底）：
 
 ```latex
 \documentclass{article}

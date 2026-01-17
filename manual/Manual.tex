@@ -83,6 +83,19 @@ v0.8.0 起，\HypoTT{Hypo-Note} 也提供 class 入口（\HypoTT{Hypo-Note.cls}�
 \end{document}
 \end{verbatim}
 
+\subsubsection{内容层级：\HypoTT{\HypoBS chapter} 与原生 Book}
+
+\HypoTT{Hypo-Note} 现在默认以 \HypoTT{ctexbook}（book-like）为基底，以获得更原生的章/节语义。
+同时，入口会默认采用更“笔记友好”的 book 策略（例如默认 \HypoTT{oneside/openany}，避免无意义的空白页；你仍可自行传入 \HypoTT{twoside/openright} 覆盖）。
+
+但很多长期整理的笔记确实需要更像 book 的结构（例如 \HypoTT{\HypoBS part}、\HypoTT{\HypoBS chapter}、以及更完整的章/节标记与分页语义）。
+
+当前状态：
+\begin{itemize}
+\item 默认 book 基底下，\HypoTT{\HypoBS chapter} 等为原生能力。
+\item 章节编号风格可一键切换：\HypoTT{chapterstyle=en}（默认，“1.”）或 \HypoTT{chapterstyle=cn}（“第一章”）。
+\end{itemize}
+
 说明：如果不设置 \HypoTT{date}，封面默认使用 \HypoTT{\HypoBS today}。
 
 封面图（封面主图/Logo/背景图）能力目前属于“规划中”，尚未实现；对应的接口草案与计划维护在 \HypoTT{DEVELOPMENT\_PLAN.md}。

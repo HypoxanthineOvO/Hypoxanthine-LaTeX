@@ -5,8 +5,14 @@
 ## Unreleased
 
 
+## v0.9.3:NoteSyntax (2026-01-17)
+- Note：补齐 `lists=true/false` 选项（与 LitNote/CHSH 对齐），并默认启用列表美化（enumitem）
+- Note：`chapterstyle=en` 为技术笔记默认，章节/小节标题更贴近技术文档的 “1.” / “1.1.” 观感
+- Docs：对齐 FEATURES/CHANGELOG 中与 Note 系列相关的事实描述（以发布为准）
+
+
 ## v0.9.0:LitNote+Themes (2026-01-17)
-- LitNote：新增文学笔记入口 `Hypo-LitNote.cls`（基类 `ctexart`），提供 poem/quote/行内引语与示例模板
+- LitNote：新增文学笔记入口 `Hypo-LitNote.cls`（基底 `ctexbook`），提供 poem/quote/行内引语与示例模板
 - LitBox：新增 `Hypo-LitBox`（`poem` / `quotepara` / `\InlineQuote`），并全面对接语义色（随 `colorscheme` 生效）
 - Lists：新增 `Hypo-Lists`（基于 enumitem），统一 itemize/enumerate 样式，最多支持 4 级嵌套
 - Colors：主题系统收敛为 `Base/CN/Tech/Simple` 四套规范 scheme；旧 `CN01..CNxx/Tech01..Techxx/Simple01..Simplexx` 作为别名归一化
@@ -15,7 +21,7 @@
 
 
 ## v0.8.0 (2026-01-17)
-- Note：新增 `Hypo-Note.cls`（基类 `ctexart`），支持作为 `\documentclass{Hypo-Note}` 使用
+- Note：新增 `Hypo-Note.cls`（基底 `ctexbook`），支持作为 `\documentclass{Hypo-Note}` 使用
 - Note：新增元数据接口 `\HypoNoteSetup{...}` 与手动封面命令 `\makecover`
 - Note：新增页眉页脚（Title + Author + 章节标题），并保留标准目录能力（`\tableofcontents`）
 - Icon：新增 `Hypo-Icon` 模块，统一接口 `\HypoIcon{key}`，并允许用户通过 `\HypoIconDeclare/\HypoIconSetup` 维护映射
