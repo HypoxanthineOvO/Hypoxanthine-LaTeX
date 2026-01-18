@@ -4,6 +4,23 @@
 % 依赖（保持精简：只提供数学命令，不引入 box/code/refs）
 \RequirePackage{amsmath, amssymb, mathtools}
 
+% 可选：physics（常用微分/导数/量子括号等；缺失时不应导致编译失败）
+% 说明：physics 会“静默覆盖”同名命令；因此在这里固定其选项，确保工程内表现稳定。
+% 如需自定义，可在加载 Hypo-Math 之前预先定义 \HypoPhysicsOptions。
+\providecommand{\HypoPhysicsOptions}{trig,uprightdiff,bolddel}
+\IfFileExists{physics.sty}{
+	\makeatletter
+	\@ifpackageloaded{physics}{
+		\PackageWarningNoLine{Hypo-Math}{physics already loaded; Hypo-Math will not enforce fixed options (\string\HypoPhysicsOptions)}
+	}{
+		\PassOptionsToPackage{\HypoPhysicsOptions}{physics}
+		\RequirePackage{physics}
+	}
+	\makeatother
+}{
+	\PackageWarningNoLine{Hypo-Math}{physics.sty not found; physics macros (e.g. \string\dd) are unavailable}
+}
+
 % 数集符号（可选能力；不作为“速写重点”，但保留常用）
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\N}{\mathbb{N}}

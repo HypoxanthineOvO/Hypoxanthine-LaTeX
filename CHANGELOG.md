@@ -5,6 +5,13 @@
 ## Unreleased
 
 
+## v1.1.0 (Planned)
+
+### v1.0.1 (2026-01-18)
+- Math：固化可选 physics 的加载行为（默认 `trig,uprightdiff,bolddel`），并提供 `\HypoPhysicsOptions` 覆盖钩子
+- Docs：Manual 增加 physics 速查小节（微分/导数、定界符、矢量算符、Dirac 记号），并保证缺包时可编译
+
+
 ## v1.0.0 (2026-01-18)
 - Release：发布 v1.0.0 正式版（Stable）
 - Scripts：新增并完善 `scripts/hypo.py`（doctor / template / snippets install），面向 submodule/子目录引入的工作流

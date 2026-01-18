@@ -222,6 +222,55 @@ Hypoxanthine 通过不同的文档类（Class）暴露给终端用户。
     \item 样式: \HypoCS{MB\{x\}} ($\MB{x}$), \HypoCS{MC\{x\}} ($\MC{x}$)
 \end{itemize}
 
+\subsection{physics 速查（可选）}
+\HypoPkg{Hypo-Math} 会在检测到 \HypoPkg{physics} 存在时自动加载，并固定一组选项以保证风格稳定：
+\HypoTT{trig,uprightdiff,bolddel}。
+如需覆盖，可在加载入口 Class 或 \HypoPkg{Hypo-Math} \HypoBF{之前}定义：
+\HypoCS{\textbackslash HypoPhysicsOptions}。
+
+\newif\ifHypoManualPhysicsAvailable
+\IfFileExists{physics.sty}{\HypoManualPhysicsAvailabletrue}{\HypoManualPhysicsAvailablefalse}
+
+\ifHypoManualPhysicsAvailable
+\subsubsection{微分与导数}
+\begin{verbatim}
+\[
+    \dd x,\quad \dd{\vb{x}},\quad \dv{f}{x},\quad \pdv{f}{x},\quad \pdv[2]{f}{x}
+\]
+\end{verbatim}
+效果：
+\[
+    \dd x,\quad \dd{\vb{x}},\quad \dv{f}{x},\quad \pdv{f}{x},\quad \pdv[2]{f}{x}
+\]
+
+\subsubsection{自动定界符与范数}
+\begin{verbatim}
+\[
+        \qty(\frac{a}{b}),\quad \abs{\frac{a}{b}},\quad \norm{\vb{v}},\quad \eval{f(x)}_{x=0}^{x=1}
+\]
+\end{verbatim}
+效果：
+\[
+    \qty(\frac{a}{b}),\quad \abs{\frac{a}{b}},\quad \norm{\vb{v}},\quad \eval{f(x)}_{x=0}^{x=1}
+\]
+
+\subsubsection{矢量算符与 Dirac 记号}
+\begin{verbatim}
+\[
+        \vnabla f,\quad \grad f,\quad \div \vb{A},\quad \curl \vb{A},\quad \laplacian f,
+        \qquad \ket{\psi},\ \bra{\phi},\ \braket{\phi}{\psi}
+\]
+\end{verbatim}
+效果：
+\[
+    \vnabla f,\quad \grad f,\quad \div \vb{A},\quad \curl \vb{A},\quad \laplacian f,
+    \qquad \ket{\psi},\ \bra{\phi},\ \braket{\phi}{\psi}
+\]
+\else
+\HypoBF{提示}: 当前环境未安装 \HypoPkg{physics}（找不到 \HypoTT{physics.sty}）。
+\HypoPkg{Hypo-Math} 会继续编译，但 physics 提供的命令（如 \HypoCS{dd}/\HypoCS{dv}/\HypoCS{ket} 等）不可用。
+\fi
+
 \chapter{功能模块 (Modules)}
 
 模块按需加载，通常由 Class 选项控制。

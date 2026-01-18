@@ -1,8 +1,8 @@
 # Hypoxanthine-LaTeX Architecture & Development Plan
 
-**Version**: `v1.0.0` (Stable Release)
-**Date**: 2026-01-01
-**Status**: Maintenance & Incremental Feature Dev
+**Version**: `v1.0.1` (Maintenance Patch)
+**Date**: 2026-01-18
+**Status**: Maintenance & Release-Train Planning
 
 ---
 
@@ -147,7 +147,7 @@ Hypoxanthine-LaTeX/
 ### 3.3 环境体系
 * **技术类盒子** (Hypo-Box)：
     * `definition`, `example`, `note`。
-    * 支持可选参数 `[Title]` 和 `[label_suffix]`。
+    * 统一签名：`{title}{label}`（第 2 个参数可为空 `{}`）。
 * **文学类盒子** (Hypo-LitBox)：
     * `poem` (诗歌), `quotepara` (引用段落), `\InlineQuote` (行内引用)。
 * **代码与算法**：
@@ -201,6 +201,13 @@ Hypoxanthine-LaTeX/
 
 ## 5. 演进路线图 (Roadmap)
 
+### Release Train 规则（后续版本分组推送）
+
+从 v1.0.1 起，Roadmap 按“版本组（train）”组织：
+- 每个 minor 版本（例如 v1.1.0）作为一个 train 的顶层目标与对外叙事。
+- train 内允许出现多个 patch 版本（例如 v1.0.1 / v1.0.2 / ...），它们以“小步、安全、可回滚”为原则推进。
+- 发布节奏：优先完成一组 patch（文档/修复/小增强）并验证通过后，再整体推进到对应的 minor 版本交付。
+
 ### v1.0.0 (Current Stable)
 
 * [x] **架构冻结**：完成 Note/LitNote/CHSH 三大 Class 的接口固化。
@@ -209,6 +216,12 @@ Hypoxanthine-LaTeX/
 * [x] **测试通过**：核心功能与边缘用例 (Edge Cases) 回归测试通过。
 
 ### v1.1.0 (Planned)
+
+#### v1.0.1 (Maintenance Patch, in v1.1.0 train)
+
+* [x] **Math/physics 固化**：Hypo-Math 在检测到 `physics.sty` 时加载 physics，并固定默认 options（`trig,uprightdiff,bolddel`）。
+* [x] **可配置钩子**：提供 `\HypoPhysicsOptions` 覆盖 physics options（需在加载 Hypo-Math 前定义）。
+* [x] **文档补齐**：Manual 增加 physics 速查小节，并保证缺包时仍可编译。
 
 * [ ] **Label 增强**：支持 ASCII 标题自动转 Label (例如 `\section{Introduction}` -> `sec:introduction`)。
 * [ ] **封面图支持**：在 `\makecover` 中增加 Hero Image / Logo / Background 的标准接口。

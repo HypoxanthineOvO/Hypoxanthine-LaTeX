@@ -178,6 +178,11 @@ Keys（含默认值）：
 
 基础：加载 `amsmath/amssymb/mathtools`
 
+可选：physics（若存在 `physics.sty` 则自动加载；缺失时不应导致编译失败）
+- 默认固定 options：`trig,uprightdiff,bolddel`
+- 可覆盖：在加载 Hypo-Math 之前定义 `\HypoPhysicsOptions`（内容会透传给 `physics`）
+- 说明：若用户已手动加载 `physics`，则 Hypo-Math 不会强制改写其 options（会 Warning）
+
 命令（已实现）：
 - 数集：`\R` / `\N` / `\Z`
 - 成对定界符：`\Paren` / `\Brack` / `\Set` / `\Abs`
