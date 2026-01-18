@@ -1,0 +1,176 @@
+{
+    "Hypo-Note: document skeleton": {
+        "prefix": [
+            "hypo-note",
+            "hypo-note-doc"
+        ],
+        "description": "Hypo-Note 文档骨架（含封面/目录/章节）",
+        "body": [
+            "\\documentclass[outputdir=build,chapterstyle=en]{Hypo-Note}",
+            "",
+            "% Metadata (optional)",
+            "\\HypoNoteSetup{title={${1:Title}},subtitle={${2:Subtitle}},author={${3:Author}},email={${4:email@example.com}},homepage={${5:https://example.com}},affiliation={${6:Affiliation}},date={\\today}}",
+            "",
+            "\\begin{document}",
+            "\\makecover",
+            "",
+            "\\tableofcontents",
+            "",
+            "\\chapter{${7:Chapter}}",
+            "\\section{${8:Section}}",
+            "${0}",
+            "\\end{document}"
+        ]
+    },
+    "Hypo-LitNote: document skeleton": {
+        "prefix": [
+            "hypo-litnote",
+            "hypo-litnote-doc"
+        ],
+        "description": "Hypo-LitNote 文档骨架（默认 outline 小节编号）",
+        "body": [
+            "\\documentclass[outputdir=build,chapterstyle=cn,sectionstyle=outline,colorscheme=CN]{Hypo-LitNote}",
+            "",
+            "\\begin{document}",
+            "\\tableofcontents",
+            "",
+            "\\chapter{${1:章节}}",
+            "\\section{${2:小节}}",
+            "${0}",
+            "\\end{document}"
+        ]
+    },
+    "Hypo-CHSH: cheat sheet skeleton": {
+        "prefix": [
+            "hypo-chsh",
+            "hypo-chsh-doc"
+        ],
+        "description": "Hypo-CHSH 小抄骨架（多栏 + 小字号）",
+        "body": [
+            "\\documentclass[columns=3,colsep=10pt,textsize=footnotesize,colorscheme=Base]{Hypo-CHSH}",
+            "",
+            "\\title{${1:Cheat Sheet Title}}",
+            "\\author{${2:Author}}",
+            "\\date{${3:\\today}}",
+            "",
+            "\\begin{document}",
+            "\\maketitle",
+            "",
+            "\\section{${4:Section}}",
+            "${0}",
+            "\\end{document}"
+        ]
+    },
+    "Hypo-Box: definition": {
+        "prefix": [
+            "hypo-def",
+            "hypo-definition"
+        ],
+        "description": "definition 盒子（Hypo-Box）",
+        "body": [
+            "\\begin{definition}{${1:Title}}{${2:label}}",
+            "  ${0}",
+            "\\end{definition}"
+        ]
+    },
+    "Hypo-Box: example": {
+        "prefix": [
+            "hypo-ex",
+            "hypo-example"
+        ],
+        "description": "example 盒子（Hypo-Box）",
+        "body": [
+            "\\begin{example}{${1:Title}}{${2:label}}",
+            "  ${0}",
+            "\\end{example}"
+        ]
+    },
+    "Hypo-Box: note": {
+        "prefix": [
+            "hypo-note-box",
+            "hypo-box-note"
+        ],
+        "description": "note 盒子（Hypo-Box）",
+        "body": [
+            "\\begin{note}{${1:Title}}{${2:label}}",
+            "  ${0}",
+            "\\end{note}"
+        ]
+    },
+    "Hypo-Code: hypocode": {
+        "prefix": [
+            "hypocode",
+            "hypo-code"
+        ],
+        "description": "hypocode 代码块（minted 优先，listings 回退）",
+        "body": [
+            "\\begin{hypocode}[linenos=false]{${1:python}}",
+            "${0}",
+            "\\end{hypocode}"
+        ]
+    },
+    "Hypo-Img: img": {
+        "prefix": [
+            "hypo-img",
+            "\\img"
+        ],
+        "description": "\\img 插图命令（label/span/width/placement）",
+        "body": [
+            "\\img[label=${1:label},span=${2:1},width=${3:0.95\\linewidth},placement=${4:htbp}]{${5:path/to/image}}{${0:Caption}}"
+        ]
+    },
+    "Hypo-LitBox: poem": {
+        "prefix": [
+            "hypo-poem",
+            "poem"
+        ],
+        "description": "poem 环境（Hypo-LitBox）",
+        "body": [
+            "\\begin{poem}",
+            "${0}",
+            "\\end{poem}"
+        ]
+    },
+    "Hypo-LitBox: quotepara": {
+        "prefix": [
+            "hypo-quotepara",
+            "quotepara"
+        ],
+        "description": "quotepara 环境（Hypo-LitBox）",
+        "body": [
+            "\\begin{quotepara}",
+            "${0}",
+            "\\end{quotepara}"
+        ]
+    },
+    "Hypo-LitBox: InlineQuote": {
+        "prefix": [
+            "hypo-inlinequote",
+            "inlinequote"
+        ],
+        "description": "\\InlineQuote 行内引用（Hypo-LitBox）",
+        "body": [
+            "\\InlineQuote{${0:quote}}"
+        ]
+    },
+    "Hypo-Colors: scheme": {
+        "prefix": [
+            "hypo-colorscheme",
+            "hypo-scheme"
+        ],
+        "description": "切换配色方案（Hypo-Colors）",
+        "body": [
+            "\\HypoColorSchemeSetup{scheme=${1:CN}}"
+        ]
+    },
+    "Hypo-Note: makecover": {
+        "prefix": [
+            "hypo-makecover",
+            "makecover"
+        ],
+        "description": "生成封面（Hypo-Note）",
+        "body": [
+            "\\makecover"
+        ]
+    }
+}

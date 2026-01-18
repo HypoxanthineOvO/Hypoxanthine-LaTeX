@@ -5,6 +5,15 @@
 ## Unreleased
 
 
+## v1.0.0 (2026-01-18)
+- Release：发布 v1.0.0 正式版（Stable）
+- Scripts：新增并完善 `scripts/hypo.py`（doctor / template / snippets install），面向 submodule/子目录引入的工作流
+- Templates：模板体系收敛为“复制 templates 文件 + Makefile 注入”，避免在脚本里 hardcode 文档骨架
+- Snippets：新增 VS Code workspace snippets（`snippets/hypoxanthine-latex.code-snippets`），支持一键安装到项目 `.vscode/`
+- Docs：Manual 扩写为“Quick Start + 参数说明 + 可运行示例 + 效果展示”的参考手册，并保证可编译
+- Docs：FEATURES/DEVELOPMENT_PLAN 对齐实现事实与构建/子模块工作流说明
+
+
 ## v0.9.3:NoteSyntax (2026-01-17)
 - Note：补齐 `lists=true/false` 选项（与 LitNote/CHSH 对齐），并默认启用列表美化（enumitem）
 - Note：`chapterstyle=en` 为技术笔记默认，章节/小节标题更贴近技术文档的 “1.” / “1.1.” 观感

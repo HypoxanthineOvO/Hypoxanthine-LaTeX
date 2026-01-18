@@ -1,9 +1,9 @@
 # Hypoxanthine-LaTeX
 
-![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v0.9.0-orange) ![Status](https://img.shields.io/badge/status-Alpha-yellow)
+![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v1.0.0-brightgreen) ![Status](https://img.shields.io/badge/status-Stable-brightgreen)
 
 **Hypoxanthine-LaTeX** 是一个模块化、工程化维护的个人 LaTeX 生态：
-- 入口（Class）负责“场景与对外接口”（Hypo-Note / Hypo-Sheet）
+- 入口（Class）负责“场景与对外接口”（Hypo-Note / Hypo-LitNote / Hypo-CHSH）
 - Core 提供“原子能力”（Fonts/Colors/Base/Math）
 - Modules 提供“按需插件”（Box/Refs/Code ...）
 
@@ -14,27 +14,59 @@
 
 - **Core (内核层)**: `sty/core/` - 提供数学符号、字体策略、品牌色等原子能力。
 - **Modules (组件层)**: `sty/modules/` - 按需加载的代码高亮、伪代码、绘图插件。
-- **Classes (场景层)**: `sty/classes/` - 针对不同场景的预设基底（如 `note`, `sheet`）。
+- **Classes (场景层)**: `sty/classes/` - 针对不同场景的预设基底（如 `note`, `literature`, `cheatsheet`）。
 
 接口/能力以 [FEATURES.md](FEATURES.md) 为事实来源；版本更新见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 🚀 Quick Start / 快速上手
 
-### 1) 获取仓库
+### 1) 获取仓库（子目录 / submodule）
 
 推荐将本仓库作为子目录（或 git submodule）放在你的项目里，例如：
 
 ```bash
-git clone git@github.com:HypoxanthineOvO/Hypoxanthine-LaTeX.git
+# 推荐：submodule
+git submodule add git@github.com:HypoxanthineOvO/Hypoxanthine-LaTeX.git Hypoxanthine-LaTeX
+git submodule update --init --recursive
+
+# 或：普通 clone
+# git clone git@github.com:HypoxanthineOvO/Hypoxanthine-LaTeX.git
 
 ```
 
-### 2) 最小示例（Note 入口）
+### 2) 使用脚本生成模板（推荐）
+
+仓库自带脚本：`scripts/hypo.py`。
+
+```bash
+# 依赖自检（可选）
+python3 Hypoxanthine-LaTeX/scripts/hypo.py doctor
+
+# 生成 Hypo-Note 模板到 ./demo-note（同时安装 VS Code snippets）
+python3 Hypoxanthine-LaTeX/scripts/hypo.py template note \
+    --dest ./demo-note \
+    --hypo-path ./Hypoxanthine-LaTeX \
+    --with-snippets
+
+cd ./demo-note
+make
+
+# 可选：启用 minted（需要 -shell-escape + pygmentize）
+make SHELL_ESCAPE=1
+```
+
+只安装 snippets（可选但推荐）：
+
+```bash
+python3 Hypoxanthine-LaTeX/scripts/hypo.py snippets install
+```
+
+### 3) 最小示例（Hypo-Note 入口）
 
 新建 `main.tex`：
 
 ```latex
-% v0.8.0 起推荐用 class 入口
+% v0.8.0 起推荐用 class 入口（v1.0.0 仍推荐）
 \documentclass[outputdir=build]{Hypo-Note}
 
 \begin{document}
@@ -54,7 +86,7 @@ See \cref{def:group}.
 > - 默认会以更“笔记友好”的方式加载 book（例如默认 `oneside/openany`，避免无意义空白页；你仍可自行传入 `twoside/openright` 覆盖）。
 > - 章节编号风格可一键切换：`chapterstyle=en`（默认，“1.”）或 `chapterstyle=cn`（“第一章”）。
 
-### 2.5) 最小示例（LitNote 入口，v0.9.0）
+### 3.5) 最小示例（Hypo-LitNote 入口）
 
 见 tests/LitNote.tex（涵盖 poem/quotepara/InlineQuote + lists + colorscheme 示例）。
 
@@ -68,9 +100,7 @@ Hello.
 \end{document}
 ```
 
-```
-
-### 3) 使用 Makefile 构建
+### 4) 使用 Makefile 构建（不使用脚本时）
 
 复制模板 Makefile 到你的项目根目录（它会设置 `TEXINPUTS`，从而允许 `\usepackage{Hypo-Note}` 直接加载本仓库的 `sty/`）：
 
@@ -89,7 +119,8 @@ make
 
 ## ✅ 当前能力（摘自 FEATURES）
 
-- 入口：Hypo-Note / Hypo-Sheet（对外选项尽量一致）
+- 入口类：Hypo-Note / Hypo-LitNote / Hypo-CHSH
+- 兼容入口包：Hypo-Note（wrapper）/ Hypo-Sheet（package）
 - Core：Fonts / Colors / Base（`outputdir` + `\FinalOutputDir`）/ Math（含可关闭速写）
 - Box：definition / example / note（显式 label：`def:` / `ex:` / `note:` 前缀）
 - Refs：默认启用 hyperref + cleveref（可 `refs=false` 关闭），`\cref{...}` 输出形如 "Definition: 0.1"

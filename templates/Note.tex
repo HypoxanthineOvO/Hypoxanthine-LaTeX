@@ -1,0 +1,31 @@
+% Hypoxanthine template: Hypo-Note
+\documentclass[outputdir=build,chapterstyle=en]{Hypo-Note}
+
+\HypoNoteSetup{
+  title={Technical Note},
+  subtitle={Subtitle},
+  author={Author},
+  email={email@example.com},
+  homepage={https://example.com},
+  affiliation={Affiliation},
+  date={\today}
+}
+
+\begin{document}
+\makecover
+\tableofcontents
+
+\chapter{Chapter}
+\section{Section}
+
+\begin{definition}{Group}{group}
+A group is a set $G$ with an operation.
+\end{definition}
+See \cref{def:group}.
+
+\begin{hypocode}[linenos=false]{python}
+def add(a, b):
+    return a + b
+\end{hypocode}
+
+\end{document}
