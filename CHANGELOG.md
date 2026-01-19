@@ -5,7 +5,12 @@
 ## Unreleased
 
 
-## v1.1.0 (Planned)
+## v1.1.0 (2026-01-19)
+
+- Plot：新增模块 `Hypo-Plot`，提供 `HypoPyPlot` 环境：在 TeX 内嵌 Python/Matplotlib 代码，自动生成图片并插入文档
+- Plot：支持常用参数：`name=<id>`（必填）、`width/height`（传给 `\includegraphics`）、`figwidth/figheight`、`dpi`、`format=png|pdf`
+- Plot：产物按 `outputdir` 统一落盘：脚本 `build/scripts/<name>.py`，图片 `build/figures/<name>.<format>`
+- Build：绘图与代码高亮同属外部调用能力；如需执行绘图，请开启 `-shell-escape`（Makefile 体系：`make SHELL_ESCAPE=1`），并保证本机 Python 环境可用（Matplotlib）
 
 ### v1.0.1 (2026-01-18)
 - Math：固化可选 physics 的加载行为（默认 `trig,uprightdiff,bolddel`），并提供 `\HypoPhysicsOptions` 覆盖钩子

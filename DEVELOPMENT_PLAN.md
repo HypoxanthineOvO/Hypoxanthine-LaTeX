@@ -1,8 +1,8 @@
 # Hypoxanthine-LaTeX Architecture & Development Plan
 
-**Version**: `v1.0.1` (Maintenance Patch)
-**Date**: 2026-01-18
-**Status**: Maintenance & Release-Train Planning
+**Version**: `v1.1.0` (Feature Release)
+**Date**: 2026-01-19
+**Status**: Released
 
 ---
 
@@ -222,6 +222,8 @@ Hypoxanthine-LaTeX/
 * [x] **Math/physics 固化**：Hypo-Math 在检测到 `physics.sty` 时加载 physics，并固定默认 options（`trig,uprightdiff,bolddel`）。
 * [x] **可配置钩子**：提供 `\HypoPhysicsOptions` 覆盖 physics options（需在加载 Hypo-Math 前定义）。
 * [x] **文档补齐**：Manual 增加 physics 速查小节，并保证缺包时仍可编译。
+
+* [x] **Plot 绘图模块**：新增 `Hypo-Plot`（`HypoPyPlot` 环境），支持在 TeX 中内嵌 Python/Matplotlib 代码，生成图片并插入文档；产物按 `outputdir` 落盘到 `build/scripts/` 与 `build/figures/`。
 
 * [ ] **Label 增强**：支持 ASCII 标题自动转 Label (例如 `\section{Introduction}` -> `sec:introduction`)。
 * [ ] **封面图支持**：在 `\makecover` 中增加 Hero Image / Logo / Background 的标准接口。

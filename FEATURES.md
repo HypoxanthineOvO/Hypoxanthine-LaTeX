@@ -244,6 +244,50 @@ Keys（含默认值）：
 - `minted=<raw options>`（仅 minted 生效）
 - `listings=<raw options>`（仅 listings 生效）
 
+### Hypo-Plot
+
+定位：在文档内嵌 Python/Matplotlib 代码，自动生成图片并插入。
+
+加载：手动 `\usepackage{Hypo-Plot}`（目前不由入口类自动加载）。
+
+依赖与构建：
+- 需要编译开启 `-shell-escape`（Makefile 体系：`make SHELL_ESCAPE=1`）
+- 需要可用的 Python（默认 `python3`；可用 `\HypoSetPythonBin{<path>}` 指定）
+- Python 侧需要 Matplotlib（以及你在脚本里 import 的其他库，如 numpy）
+
+环境：`HypoPyPlot`
+
+用法：
+
+```latex
+\begin{HypoPyPlot}[
+  name=demo_sine,
+  width=0.75\linewidth,
+  figwidth=4.8,
+  figheight=2.6,
+  dpi=160,
+  format=png
+]
+x = np.linspace(0, 2*np.pi, 256)
+y = np.sin(x)
+plt.plot(x, y, color=HYPO_BLUE)
+\end{HypoPyPlot}
+```
+
+Keys（含默认值/行为）：
+- `name=<id>`：必填；用于脚本名/输出图名
+- `width=` / `height=`：传给 `\includegraphics`（支持 `0.75\linewidth` 等长度表达式）
+- `figwidth=6` / `figheight=4`：Matplotlib `figsize`（单位 inch）
+- `dpi=150`
+- `format=pdf|png`（默认 `pdf`）
+
+文件布局（遵循 `\FinalOutputDir`）：
+- 生成脚本：`\FinalOutputDir/scripts/<name>.py`
+- 输出图片：`\FinalOutputDir/figures/<name>.<format>`
+
+运行时注入：
+- 自动注入主题色（如 `HYPO_BLUE/HYPO_ORANGE/...`），用于 Matplotlib 配色与风格对齐
+
 ### Hypo-Lists
 
 加载：由入口选项 `lists=true` 控制（Note/LitNote/CHSH 默认 `true`）。

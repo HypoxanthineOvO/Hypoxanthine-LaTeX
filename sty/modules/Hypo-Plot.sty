@@ -155,9 +155,8 @@
 \cs_new_protected:Npn \hypo_plot_include_graphics:nn #1#2
   {
     \group_begin:
-      % Don't fully expand #1 (options like width=0.75\linewidth) because
-      % \linewidth must remain unexpanded until \includegraphics is called.
-      % Only fully expand #2 (file path) to resolve expl3 tl vars.
+      % #1 contains pre-computed dimensions (like width=123.45pt), pass as-is
+      % #2 is the file path, expand to resolve expl3 tl vars
       \tl_set:Nn \l_tmpa_tl {#1}
       \tl_set:Nx \l_tmpb_tl {#2}
       \file_if_exist:VTF \l_tmpb_tl
@@ -168,7 +167,14 @@
             {
               \tl_if_eq:VnTF \l_tmpa_tl {undefined}
                 { \includegraphics{\tl_use:N \l_tmpb_tl} }
-                { \includegraphics[\tl_use:N \l_tmpa_tl]{\tl_use:N \l_tmpb_tl} }
+                {
+                  % Expand option list BEFORE passing to \includegraphics
+                  % to ensure keyval parsers see the equals signs.
+                  \use:x
+                    {
+                      \exp_not:N \includegraphics [ \tl_use:N \l_tmpa_tl ] { \tl_use:N \l_tmpb_tl }
+                    }
+                }
             }
         }
         {
@@ -232,13 +238,23 @@
     \tl_gclear:N \g_hypo_plot_include_opts_tl
     \tl_if_blank:VTF \l_hypo_plot_width_tl
       { }
-      { \tl_gput_right:Nn \g_hypo_plot_include_opts_tl { width=\l_hypo_plot_width_tl } }
+      { 
+        % Pre-compute width to resolve \linewidth and other dynamic lengths
+        \dim_set:Nn \l_tmpa_dim { \l_hypo_plot_width_tl }
+        \tl_gput_right:Nx \g_hypo_plot_include_opts_tl { width=\dim_use:N \l_tmpa_dim }
+      }
     \tl_if_blank:VTF \l_hypo_plot_height_tl
       { }
       {
         \tl_if_blank:VTF \g_hypo_plot_include_opts_tl
-          { \tl_gput_right:Nn \g_hypo_plot_include_opts_tl { height=\l_hypo_plot_height_tl } }
-          { \tl_gput_right:Nn \g_hypo_plot_include_opts_tl { ,height=\l_hypo_plot_height_tl } }
+          { 
+            \dim_set:Nn \l_tmpa_dim { \l_hypo_plot_height_tl }
+            \tl_gput_right:Nx \g_hypo_plot_include_opts_tl { height=\dim_use:N \l_tmpa_dim }
+          }
+          { 
+            \dim_set:Nn \l_tmpa_dim { \l_hypo_plot_height_tl }
+            \tl_gput_right:Nx \g_hypo_plot_include_opts_tl { ,height=\dim_use:N \l_tmpa_dim }
+          }
       }
   }
 

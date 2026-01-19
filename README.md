@@ -1,6 +1,6 @@
 # Hypoxanthine-LaTeX
 
-![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v1.0.0-brightgreen) ![Status](https://img.shields.io/badge/status-Stable-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v1.1.0-brightgreen) ![Status](https://img.shields.io/badge/status-Stable-brightgreen)
 
 **Hypoxanthine-LaTeX** 是一个模块化、工程化维护的个人 LaTeX 生态：
 - 入口（Class）负责“场景与对外接口”（Hypo-Note / Hypo-LitNote / Hypo-CHSH）
@@ -164,7 +164,7 @@ print("monokai")
 
 ## 🗺 路线图
 
-路线图以 [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) 为准（包含 v0.5+ 到 v1.0.0 的里程碑拆分）。
+路线图以 [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) 为准（包含 v0.5+ 到 v1.1.0 的里程碑拆分）。
 
 ## 🤝 Contribution
 

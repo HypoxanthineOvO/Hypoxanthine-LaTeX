@@ -378,6 +378,48 @@ print("listings tabsize")
 \end{hypocode}
 \end{verbatim}
 
+\section{绘图 (Plot)}
+由 \HypoPkg{Hypo-Plot} 提供。
+
+\subsection{定位}
+\HypoPkg{Hypo-Plot} 允许你在文档里直接写 Python/Matplotlib 代码，编译时自动生成图片并插入正文。
+它适合：\HypoBF{论文/笔记里的快速画图}、\HypoBF{与主题色对齐的可复现图}、\HypoBF{把绘图脚本随文档一并版本化}。
+
+\subsection{依赖与构建要求}
+\begin{itemize}
+    \item 需要启用 \HypoTT{-shell-escape}（Makefile 体系：\HypoCode{make SHELL_ESCAPE=1}）。
+    \item 需要可用的 Python（默认 \HypoTT{python3}；可用 \HypoCS{HypoSetPythonBin} 指定）。
+    \item Python 环境需要 Matplotlib（以及你在脚本中 import 的其他库，例如 numpy）。
+\end{itemize}
+
+\subsection{环境：\HypoEnv{HypoPyPlot}}
+环境通过 Key-Value 参数控制输出文件名、图像尺寸与插图宽度。
+其中 \HypoTT{name} 为\HypoBF{必填}：
+
+\begin{hypocode}[linenos=false]{tex}
+\begin{HypoPyPlot}[
+  name=demo_sine,
+  width=0.75\linewidth,
+  figwidth=4.8,
+  figheight=2.6,
+  dpi=160,
+  format=png
+]
+x = np.linspace(0, 2*np.pi, 256)
+y = np.sin(x)
+plt.plot(x, y, color=HYPO_BLUE, linewidth=2.0)
+plt.grid(True, alpha=0.3)
+\end{HypoPyPlot}
+\end{hypocode}
+
+说明：
+\begin{itemize}
+    \item \HypoTT{width/height} 传给 \HypoCS{includegraphics}，支持 \HypoCode{0.75\linewidth} 这类长度表达式。
+    \item \HypoTT{figwidth/figheight} 对应 Matplotlib 的 \HypoTT{figsize}（单位 inch）。
+    \item 会按 \HypoCS{FinalOutputDir} 落盘：脚本在 \HypoTT{build/scripts/}，图片在 \HypoTT{build/figures/}。
+    \item 会注入主题色（如 \HypoTT{HYPO\_BLUE/HYPO\_ORANGE/...}）方便绘图配色与文档一致。
+\end{itemize}
+
 \section{算法与伪代码 (Algorithm)}
 由 \HypoPkg{Hypo-Algorithm} 提供，封装了 \HypoPkg{algorithm2e}。
 \begin{itemize}
