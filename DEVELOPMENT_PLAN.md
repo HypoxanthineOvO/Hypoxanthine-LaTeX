@@ -208,14 +208,25 @@ Hypoxanthine-LaTeX/
 - train 内允许出现多个 patch 版本（例如 v1.0.1 / v1.0.2 / ...），它们以“小步、安全、可回滚”为原则推进。
 - 发布节奏：优先完成一组 patch（文档/修复/小增强）并验证通过后，再整体推进到对应的 minor 版本交付。
 
-### v1.0.0 (Current Stable)
+### Roadmap 维护规则（用于定期整理）
+
+本文件用于“规划与复盘”，建议按固定节奏维护：
+- **每 2–4 周**：集中整理一次 Roadmap（把已完成事项出栈，把新需求入栈）。
+- **每次 Release**：冻结该 train；未完成事项必须迁移到下一 train（避免历史 train 持续挂着 TODO）。
+
+整理时的落地规则：
+- **已实现**：在本文件勾选为 `[x]`，并同步更新 `CHANGELOG.md` 与 `FEATURES.md`（必要时更新 `manual/` 与 `tests/`）。
+- **仍在规划**：只保留在本文件（不要提前写入 `FEATURES.md` 的真值表）。
+- **条目写法建议**：`[ ] 标题：一句话目标 / 退出标准（Exit Criteria）/ 涉及范围（core|module|class|build）`。
+
+### v1.0.0 (Released)
 
 * [x] **架构冻结**：完成 Note/LitNote/CHSH 三大 Class 的接口固化。
 * [x] **文档交付**：`manual/` 自举文档完成，`FEATURES.md` 作为单一事实来源。
 * [x] **工程套件**：Makefile 构建流、VS Code Snippets、环境自检脚本已就绪。
 * [x] **测试通过**：核心功能与边缘用例 (Edge Cases) 回归测试通过。
 
-### v1.1.0 (Planned)
+### v1.1.0 (Released, 2026-01-19)
 
 #### v1.0.1 (Maintenance Patch, in v1.1.0 train)
 
@@ -225,9 +236,12 @@ Hypoxanthine-LaTeX/
 
 * [x] **Plot 绘图模块**：新增 `Hypo-Plot`（`HypoPyPlot` 环境），支持在 TeX 中内嵌 Python/Matplotlib 代码，生成图片并插入文档；产物按 `outputdir` 落盘到 `build/scripts/` 与 `build/figures/`。
 
-* [ ] **Label 增强**：支持 ASCII 标题自动转 Label (例如 `\section{Introduction}` -> `sec:introduction`)。
+### v1.2.0 (Planned)
+
+* [ ] **Label 增强**：支持 ASCII 标题自动转 Label（例如 `\section{Introduction}` -> `sec:introduction`）。
 * [ ] **封面图支持**：在 `\makecover` 中增加 Hero Image / Logo / Background 的标准接口。
 * [ ] **新入口 Hypo-LitPaper**：针对更严格的文学论文排版需求，提供独立的 Class（基于 `ctexart` 或 `ctexbook` 的严格子集）。
+* [ ] **Plot 后续整理**：补齐更多示例/边缘用例与错误提示（例如 Python 缺包、shell-escape 关闭、Windows 路径）。
 
 ### v1.x (Long Term)
 
