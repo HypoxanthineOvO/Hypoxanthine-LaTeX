@@ -14,7 +14,7 @@ ASSET_PDF := $(ASSET_DIR)/example-image.pdf
 
 
 
-.PHONY: all main class class-en litnote chsh edge clean watch help
+.PHONY: all main class class-en litnote chsh plot edge clean watch help
 
 all: main class class-en litnote chsh
 
@@ -32,6 +32,9 @@ litnote: $(ASSET_PDF)
 
 chsh: $(ASSET_PDF)
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=CHSH MAIN_FILE=CHSH.tex OUT_DIR=$(OUT_DIR) all
+
+plot: $(ASSET_PDF)
+	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Plot MAIN_FILE=Plot.tex OUT_DIR=$(OUT_DIR) SHELL_ESCAPE=1 all
 
 $(ASSET_PDF): $(ASSET_TEX)
 	latexmk -xelatex -interaction=nonstopmode -halt-on-error -outdir=$(ASSET_DIR) $(ASSET_TEX)
@@ -52,6 +55,7 @@ help:
 	@echo "  make       - Build mainline test PDF"
 	@echo "  make class - Build class test PDF"
 	@echo "  make chsh  - Build CHSH test PDF"
+	@echo "  make plot  - Build Hypo-Plot test PDF (needs python3 + tikz)"
 	@echo "  make edge  - Build edge-case test PDFs"
 	@echo "  make watch - Watch & rebuild mainline PDF"
 	@echo "  make clean - Remove build directory"

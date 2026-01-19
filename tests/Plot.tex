@@ -1,0 +1,32 @@
+\documentclass{article}
+
+% Add parent directory to TEXINPUTS path
+\makeatletter
+\def\input@path{{../sty/}{../sty/classes/note/}{../sty/core/}{../sty/modules/}}
+\makeatother
+
+\usepackage[outputdir=build]{Hypo-Note}
+\usepackage{Hypo-Plot}
+\usepackage{standalone}
+\HypoSetPythonBin{/home/heyx/miniconda3/bin/python}
+\begin{document}
+
+\section*{Hypo-Plot Test}
+FinalOutputDir = \texttt{\FinalOutputDir}
+
+\subsection*{Python Pipeline}
+\begin{HypoPyPlot}[name=demo_sine,width={0.75\linewidth},figwidth=4.8,figheight=2.6,dpi=160,format=png]
+x = np.linspace(0, 2*np.pi, 256)
+y1 = np.sin(x)
+y2 = np.cos(x)
+plt.plot(x, y1, color=HYPO_BLUE,  linewidth=2.0, label='sin')
+plt.plot(x, y2, color=HYPO_ORANGE, linewidth=2.0, label='cos')
+plt.grid(True, alpha=0.3)
+plt.legend(loc='best')
+plt.title('Theme colors from LaTeX')
+\end{HypoPyPlot}
+
+\subsection*{TikZ Pipeline}
+\includestandalone[width={0.75\linewidth}]{my_network}
+
+\end{document}

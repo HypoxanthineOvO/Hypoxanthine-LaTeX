@@ -1,0 +1,447 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{Hypo-Plot}[2026/01/20 v1.0.2 Plotting Module]
+
+\RequirePackage{expl3}
+\RequirePackage{xparse}
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{fancyvrb}
+\RequirePackage{tcolorbox}
+\tcbuselibrary{external}
+
+\makeatletter
+\@ifundefined{tcbiffileprocess}{\InputIfFileExists{tcbprocessing.code.tex}{}{}}{}
+\makeatother
+
+\RequirePackage{Hypo-Colors}
+
+\makeatletter
+\@ifundefined{FinalOutputDir}{\def\FinalOutputDir{build}}{}
+\makeatother
+
+\ExplSyntaxOn
+
+% -----------------------------------------------------------------------------
+% Configuration: Python Binary Path
+% -----------------------------------------------------------------------------
+% 定义一个全局变量存储 Python 路径，默认值为 python3
+\tl_new:N \g_hypo_plot_python_bin_tl
+\tl_gset:Nn \g_hypo_plot_python_bin_tl { python3 }
+
+% 提供接口让用户修改路径
+\NewDocumentCommand \HypoSetPythonBin { m }
+  {
+    \tl_gset:Nn \g_hypo_plot_python_bin_tl { #1 }
+  }
+
+% -----------------------------------------------------------------------------
+% Paths
+% -----------------------------------------------------------------------------
+\tl_new:N \g_hypo_plot_fig_dir_tl
+\tl_new:N \g_hypo_plot_script_dir_tl
+\tl_gset:Nn \g_hypo_plot_fig_dir_tl    {\FinalOutputDir/figures}
+\tl_gset:Nn \g_hypo_plot_script_dir_tl {\FinalOutputDir/scripts}
+
+\NewDocumentCommand \HypoPlotFigDir {} { \tl_use:N \g_hypo_plot_fig_dir_tl }
+\NewDocumentCommand \HypoPlotScriptDir {} { \tl_use:N \g_hypo_plot_script_dir_tl }
+
+% -----------------------------------------------------------------------------
+% Shell-escape helpers
+% -----------------------------------------------------------------------------
+\bool_new:N \g_hypo_plot_shell_escape_bool
+\bool_gset_false:N \g_hypo_plot_shell_escape_bool
+
+\cs_new_protected:Npn \hypo_plot_detect_shell_escape:
+  {
+    \int_compare:nNnTF { \ShellEscapeStatus } = { 1 }
+      { \bool_gset_true:N \g_hypo_plot_shell_escape_bool }
+      { \bool_gset_false:N \g_hypo_plot_shell_escape_bool }
+  }
+
+\cs_new_protected:Npn \hypo_plot_shell_now:n #1
+  {
+    \bool_if:NTF \g_hypo_plot_shell_escape_bool
+      {
+        \group_begin:
+          \edef\hypo@plot@cmd{#1}
+          \immediate\write18{\hypo@plot@cmd}
+        \group_end:
+      }
+      {
+        \PackageWarningNoLine{Hypo-Plot}{shell-escape disabled; cannot run:~#1}
+      }
+  }
+
+\cs_new_protected:Npn \hypo_plot_ensure_dirs:
+  {
+    \bool_if:NTF \g_hypo_plot_shell_escape_bool
+      {
+        \immediate\write18{mkdir\space -p\space "\tl_use:N \g_hypo_plot_fig_dir_tl"}
+        \immediate\write18{mkdir\space -p\space "\tl_use:N \g_hypo_plot_script_dir_tl"}
+      }
+      {
+        \PackageWarningNoLine{Hypo-Plot}{shell-escape disabled; cannot create output dirs}
+      }
+  }
+
+\AtBeginDocument{%
+  \hypo_plot_detect_shell_escape:%
+  \hypo_plot_ensure_dirs:%
+}
+
+% -----------------------------------------------------------------------------
+% Color sync logic
+% -----------------------------------------------------------------------------
+\cs_new:Npn \hypo_plot_hex_tmp: {}
+\cs_new:Npn \hypo_plot_spec_tmp: {}
+
+\cs_new_protected:Npn \hypo_plot_hex_set:Nn #1#2
+  {
+    \group_begin:
+      \extractcolorspec{#2}{\hypo_plot_spec_tmp:}
+      \expandafter\convertcolorspec\hypo_plot_spec_tmp:{HTML}\hypo_plot_hex_tmp:
+      % NOTE: This is used to populate module-level variables that are later
+      % written out to external files (Python/TikZ). The assignment must
+      % survive this group.
+      \tl_gset:Nx #1 { \hypo_plot_hex_tmp: }
+    \group_end:
+  }
+
+\cs_new:Npn \hypo_plot_get_hex_to:Nn #1#2
+  { \hypo_plot_hex_set:Nn #1 {#2} }
+
+\NewDocumentCommand \HypoGetHex { m }
+  {
+    \group_begin:
+      \hypo_plot_hex_set:Nn \l_tmpa_tl {#1}
+      \tl_use:N \l_tmpa_tl
+    \group_end:
+  }
+
+\tl_new:N \l_hypo_plot_hex_blue_tl
+\tl_new:N \l_hypo_plot_hex_red_tl
+\tl_new:N \l_hypo_plot_hex_green_tl
+\tl_new:N \l_hypo_plot_hex_orange_tl
+\tl_new:N \l_hypo_plot_hex_purple_tl
+
+\cs_new_protected:Npn \hypo_plot_collect_theme_fingerprint:N #1
+  {
+    \hypo_plot_hex_set:Nn \l_hypo_plot_hex_blue_tl   {HypoBlue}
+    \hypo_plot_hex_set:Nn \l_hypo_plot_hex_red_tl    {HypoRed}
+    \hypo_plot_hex_set:Nn \l_hypo_plot_hex_green_tl  {HypoGreen}
+    \hypo_plot_hex_set:Nn \l_hypo_plot_hex_orange_tl {HypoOrange}
+    \hypo_plot_hex_set:Nn \l_hypo_plot_hex_purple_tl {HypoPurple}
+    \tl_set:Nx #1
+      {
+        scheme=\HypoColorSchemeName;
+        HypoBlue=\tl_use:N \l_hypo_plot_hex_blue_tl;
+        HypoRed=\tl_use:N \l_hypo_plot_hex_red_tl;
+        HypoGreen=\tl_use:N \l_hypo_plot_hex_green_tl;
+        HypoOrange=\tl_use:N \l_hypo_plot_hex_orange_tl;
+        HypoPurple=\tl_use:N \l_hypo_plot_hex_purple_tl;
+      }
+  }
+
+% -----------------------------------------------------------------------------
+% Caching wrapper
+% -----------------------------------------------------------------------------
+\cs_new_protected:Npn \hypo_plot_process_if_needed:nnn #1#2#3
+  {
+    \tcbiffileprocess{1}{#1}{#1.md5}{#2}
+      {#3}
+      { }
+  }
+
+\cs_new_protected:Npn \hypo_plot_include_graphics:nn #1#2
+  {
+    \group_begin:
+      % Don't fully expand #1 (options like width=0.75\linewidth) because
+      % \linewidth must remain unexpanded until \includegraphics is called.
+      % Only fully expand #2 (file path) to resolve expl3 tl vars.
+      \tl_set:Nn \l_tmpa_tl {#1}
+      \tl_set:Nx \l_tmpb_tl {#2}
+      \file_if_exist:VTF \l_tmpb_tl
+        {
+          % Avoid feeding keyval with 'undefined' (or an empty list).
+          \tl_if_blank:VTF \l_tmpa_tl
+            { \includegraphics{\tl_use:N \l_tmpb_tl} }
+            {
+              \tl_if_eq:VnTF \l_tmpa_tl {undefined}
+                { \includegraphics{\tl_use:N \l_tmpb_tl} }
+                { \includegraphics[\tl_use:N \l_tmpa_tl]{\tl_use:N \l_tmpb_tl} }
+            }
+        }
+        {
+          \fbox{
+            \begin{tabular}{l}
+              \ttfamily\bfseries Hypo-Plot~Error \\
+              \ttfamily Missing:~\tl_to_str:V \l_tmpb_tl \\
+              \ttfamily Check~build/scripts/~logs
+            \end{tabular}
+          }
+        }
+    \group_end:
+  }
+
+% -----------------------------------------------------------------------------
+% HypoPyPlot
+% -----------------------------------------------------------------------------
+\tl_new:N \l_hypo_plot_width_tl
+\tl_new:N \l_hypo_plot_height_tl
+\int_new:N \l_hypo_plot_dpi_int
+\fp_new:N  \l_hypo_plot_figwidth_fp
+\fp_new:N  \l_hypo_plot_figheight_fp
+\tl_new:N  \l_hypo_plot_format_tl
+\tl_set:Nn \l_hypo_plot_format_tl {pdf}  % Set default value
+\tl_new:N  \g_hypo_plot_name_tl  % Must declare before use in keys
+
+\keys_define:nn { hypo / plot / pyplot }
+  {
+    name      .tl_gset:N = \g_hypo_plot_name_tl,
+    name      .value_required:n = true,
+    width     .tl_set:N = \l_hypo_plot_width_tl,
+    width     .initial:n = ,
+    height    .tl_set:N = \l_hypo_plot_height_tl,
+    height    .initial:n = ,
+    dpi       .int_set:N = \l_hypo_plot_dpi_int,
+    dpi       .initial:n = 150,
+    figwidth  .fp_set:N  = \l_hypo_plot_figwidth_fp,
+    figwidth  .initial:n = 6,
+    figheight .fp_set:N  = \l_hypo_plot_figheight_fp,
+    figheight .initial:n = 4,
+    format .choice:,
+    format / pdf .code:n = { \tl_set:Nn \l_hypo_plot_format_tl {pdf} },
+    format / png .code:n = { \tl_set:Nn \l_hypo_plot_format_tl {png} },
+  }
+
+\iow_new:N \l_hypo_plot_iow
+\tl_new:N  \g_hypo_plot_script_path_tl
+\tl_new:N  \g_hypo_plot_output_path_tl
+\tl_new:N  \g_hypo_plot_script_tex_path_tl
+\tl_new:N  \g_hypo_plot_output_tex_path_tl
+\tl_new:N  \g_hypo_plot_script_tmp_tex_tl
+\tl_new:N  \g_hypo_plot_output_shell_path_tl
+\tl_new:N  \g_hypo_plot_include_opts_tl
+\tl_new:N  \g_hypo_plot_theme_fp_tl
+\tl_new:N  \g_hypo_plot_script_tmp_tl
+\tl_new:N  \g_hypo_plot_figwidth_dec_tl
+\tl_new:N  \g_hypo_plot_figheight_dec_tl
+
+\cs_new_protected:Npn \hypo_plot_set_include_opts:
+  {
+    \tl_gclear:N \g_hypo_plot_include_opts_tl
+    \tl_if_blank:VTF \l_hypo_plot_width_tl
+      { }
+      { \tl_gput_right:Nn \g_hypo_plot_include_opts_tl { width=\l_hypo_plot_width_tl } }
+    \tl_if_blank:VTF \l_hypo_plot_height_tl
+      { }
+      {
+        \tl_if_blank:VTF \g_hypo_plot_include_opts_tl
+          { \tl_gput_right:Nn \g_hypo_plot_include_opts_tl { height=\l_hypo_plot_height_tl } }
+          { \tl_gput_right:Nn \g_hypo_plot_include_opts_tl { ,height=\l_hypo_plot_height_tl } }
+      }
+  }
+
+\cs_new_protected:Npn \hypo_plot_pyplot_setup:n #1
+  {
+    \keys_set:nn { hypo / plot / pyplot } {#1}
+    % Check if name is set
+    \tl_if_empty:NT \g_hypo_plot_name_tl
+      { \PackageError{Hypo-Plot}{Missing~'name'~option}{You~must~provide~name=filename~in~HypoPyPlot~options} }
+    \hypo_plot_set_include_opts:
+
+    \tl_gset:Nx \g_hypo_plot_script_tex_path_tl { scripts/\g_hypo_plot_name_tl.py }
+    \tl_gset:Nx \g_hypo_plot_script_tmp_tex_tl { scripts/\g_hypo_plot_name_tl.tmp.py }
+    % For \includegraphics, use a filesystem-visible path (TeX input search does
+    % not reliably include -output-directory).
+    \tl_gset:Nx \g_hypo_plot_output_tex_path_tl
+      { \tl_use:N \g_hypo_plot_fig_dir_tl/\g_hypo_plot_name_tl.\l_hypo_plot_format_tl }
+
+    \tl_gset:Nx \g_hypo_plot_script_path_tl { \tl_use:N \g_hypo_plot_script_dir_tl/\g_hypo_plot_name_tl.py }
+    \tl_gset:Nx \g_hypo_plot_script_tmp_tl { \tl_use:N \g_hypo_plot_script_dir_tl/\g_hypo_plot_name_tl.tmp.py }
+    \tl_gset_eq:NN \g_hypo_plot_output_path_tl \g_hypo_plot_output_tex_path_tl
+    \tl_gset_eq:NN \g_hypo_plot_output_shell_path_tl \g_hypo_plot_output_tex_path_tl
+
+    \hypo_plot_collect_theme_fingerprint:N \g_hypo_plot_theme_fp_tl
+    \tl_gset:Nx \g_hypo_plot_figwidth_dec_tl  { \fp_to_decimal:N \l_hypo_plot_figwidth_fp }
+    \tl_gset:Nx \g_hypo_plot_figheight_dec_tl { \fp_to_decimal:N \l_hypo_plot_figheight_fp }
+  }
+
+% Hybrid: xparse for options, VerbatimOut for body
+\NewDocumentEnvironment{HypoPyPlot}{ O{} }
+  {
+    \hypo_plot_pyplot_setup:n {#1}
+    % Ensure directories exist before VerbatimOut tries to write
+    \hypo_plot_shell_now:n { mkdir~-p~" \tl_use:N \g_hypo_plot_script_dir_tl " }
+    \hypo_plot_shell_now:n { mkdir~-p~" \tl_use:N \g_hypo_plot_fig_dir_tl " }
+    % Use VerbatimOut to capture body verbatim
+    \VerbatimOut{\g_hypo_plot_script_tmp_tex_tl.body}
+  }
+  {
+    \endVerbatimOut
+    % Now assemble the full script
+    \hypo_plot_assemble_and_execute:
+  }
+
+% Assemble header + body + footer and execute
+\cs_new_protected:Npn \hypo_plot_assemble_and_execute:
+  {
+    % Write header (use _tex path for \iow because outputdir changes working directory)
+    \iow_open:Nn \l_hypo_plot_iow { \g_hypo_plot_script_tmp_tex_tl .header }
+    \iow_now:Nn \l_hypo_plot_iow { import~matplotlib.pyplot~as~plt }
+    \iow_now:Nn \l_hypo_plot_iow { import~numpy~as~np }
+    \iow_now:Nn \l_hypo_plot_iow { }
+    \iow_now:Nx \l_hypo_plot_iow { \c_hash_str \c_hash_str ~---~Dynamic~Color~Injection~--- }
+    \iow_now:Nx \l_hypo_plot_iow { HYPO_BLUE~=~" \c_hash_str \tl_use:N \l_hypo_plot_hex_blue_tl " }
+    \iow_now:Nx \l_hypo_plot_iow { HYPO_RED~=~" \c_hash_str \tl_use:N \l_hypo_plot_hex_red_tl " }
+    \iow_now:Nx \l_hypo_plot_iow { HYPO_GREEN~=~" \c_hash_str \tl_use:N \l_hypo_plot_hex_green_tl " }
+    \iow_now:Nx \l_hypo_plot_iow { HYPO_ORANGE~=~" \c_hash_str \tl_use:N \l_hypo_plot_hex_orange_tl " }
+    \iow_now:Nx \l_hypo_plot_iow { HYPO_PURPLE~=~" \c_hash_str \tl_use:N \l_hypo_plot_hex_purple_tl " }
+    \iow_now:Nn \l_hypo_plot_iow { }
+    \iow_now:Nx \l_hypo_plot_iow { \c_hash_str \c_hash_str ~---~Theme~fingerprint~--- }
+    \iow_now:Nx \l_hypo_plot_iow { \c_hash_str \c_hash_str ~\tl_use:N \g_hypo_plot_theme_fp_tl }
+    \iow_now:Nx \l_hypo_plot_iow { \c_hash_str \c_hash_str ~dpi= \int_use:N \l_hypo_plot_dpi_int ,~figwidth= \tl_use:N \g_hypo_plot_figwidth_dec_tl ,~figheight= \tl_use:N \g_hypo_plot_figheight_dec_tl ,~format= \tl_use:N \l_hypo_plot_format_tl }
+    \iow_now:Nn \l_hypo_plot_iow { }
+    \iow_now:Nn \l_hypo_plot_iow { plt.rcParams['font.family']~=~'sans-serif' }
+    \iow_now:Nx \l_hypo_plot_iow { plt.figure(figsize=( \tl_use:N \g_hypo_plot_figwidth_dec_tl ,~ \tl_use:N \g_hypo_plot_figheight_dec_tl )) }
+    \iow_now:Nn \l_hypo_plot_iow { }
+    \iow_close:N \l_hypo_plot_iow
+    
+    % Write footer (use _tex path)
+    \iow_open:Nn \l_hypo_plot_iow { \g_hypo_plot_script_tmp_tex_tl .footer }
+    \iow_now:Nn \l_hypo_plot_iow { }
+    \iow_now:Nn \l_hypo_plot_iow { plt.tight_layout() }
+    \iow_now:Nx \l_hypo_plot_iow { plt.savefig(r" \tl_use:N \g_hypo_plot_output_shell_path_tl ",~bbox_inches='tight',~dpi= \int_use:N \l_hypo_plot_dpi_int ) }
+    \iow_close:N \l_hypo_plot_iow
+    
+    % Concatenate all parts (use shell paths - relative to project root)
+    \hypo_plot_shell_now:n
+      { cat~" \g_hypo_plot_script_tmp_tl .header"~" \g_hypo_plot_script_tmp_tl .body"~" \g_hypo_plot_script_tmp_tl .footer"~>~" \g_hypo_plot_script_tmp_tl "~&&~rm~-f~" \g_hypo_plot_script_tmp_tl .header"~" \g_hypo_plot_script_tmp_tl .body"~" \g_hypo_plot_script_tmp_tl .footer" }
+    
+    % Move file if changed
+    \hypo_plot_shell_now:n
+      { if~cmp~-s~" \tl_use:N \g_hypo_plot_script_tmp_tl "~" \tl_use:N \g_hypo_plot_script_path_tl "~2>/dev/null;~then~rm~-f~" \tl_use:N \g_hypo_plot_script_tmp_tl ";~else~mv~-f~" \tl_use:N \g_hypo_plot_script_tmp_tl "~" \tl_use:N \g_hypo_plot_script_path_tl ";~fi }
+    
+    % Process if needed
+    \hypo_plot_process_if_needed:nnn
+      {\g_hypo_plot_script_tex_path_tl}
+      {\g_hypo_plot_output_tex_path_tl}
+      {
+        \exp_args:Nx \hypo_plot_shell_now:n
+          { \tl_use:N \g_hypo_plot_python_bin_tl \c_space_tl " \tl_use:N \g_hypo_plot_script_path_tl " }
+      }
+    
+    % Include generated graphics
+    \hypo_plot_include_graphics:nn
+      {\tl_use:N \g_hypo_plot_include_opts_tl}
+      {\g_hypo_plot_output_tex_path_tl}
+  }
+
+% -----------------------------------------------------------------------------
+% HypoTikZFile (Unchanged logic, just for completeness)
+% -----------------------------------------------------------------------------
+\tl_new:N \l_hypo_plot_tikz_include_opts_tl
+\tl_new:N \l_hypo_plot_tikz_name_tl
+\tl_new:N \l_hypo_plot_tikz_src_tl
+\tl_new:N \l_hypo_plot_tikz_wrapper_tl
+\tl_new:N \l_hypo_plot_tikz_wrapper_tmp_tl
+\tl_new:N \l_hypo_plot_tikz_pdf_tl
+\tl_new:N \l_hypo_plot_tikz_wrapper_tex_tl
+\tl_new:N \l_hypo_plot_tikz_wrapper_tmp_tex_tl
+\tl_new:N \l_hypo_plot_tikz_pdf_tex_tl
+\tl_new:N \l_hypo_plot_tikz_src_ts_tl
+\tl_new:N \l_hypo_plot_tikz_src_copy_tl
+\tl_new:N \l_hypo_plot_tikz_src_copy_tmp_tl
+\tl_new:N \l_hypo_plot_tikz_src_copy_tex_tl
+\tl_new:N \l_hypo_plot_tikz_src_copy_tmp_tex_tl
+
+\keys_define:nn { hypo / plot / tikz }
+  {
+    width  .tl_set:N = \l_hypo_plot_width_tl,
+    width  .initial:n = ,
+    height .tl_set:N = \l_hypo_plot_height_tl,
+    height .initial:n = ,
+  }
+
+\cs_new_protected:Npn \hypo_plot_write_tikz_wrapper:nnn #1#2#3
+  {
+    \hypo_plot_collect_theme_fingerprint:N \l_hypo_plot_theme_fp_tl
+    \file_get_timestamp:nN {#3} \l_hypo_plot_tikz_src_ts_tl
+
+    \iow_open:Nn \l_hypo_plot_iow {#1}
+    \iow_now:Nn \l_hypo_plot_iow {\documentclass[border=2pt]{standalone}}
+    \iow_now:Nn \l_hypo_plot_iow {\usepackage{tikz}}
+    \iow_now:Nn \l_hypo_plot_iow {\usepackage{Hypo-Colors}}
+    \iow_now:Ne \l_hypo_plot_iow
+      {\c_percent_str\c_percent_str~HYPO_THEME_FINGERPRINT:~\tl_use:N \l_hypo_plot_theme_fp_tl}
+    \iow_now:Ne \l_hypo_plot_iow
+      {\c_percent_str\c_percent_str~HYPO_TIKZ_SOURCE:~#3}
+    \iow_now:Ne \l_hypo_plot_iow
+      {\c_percent_str\c_percent_str~HYPO_TIKZ_TIMESTAMP:~\l_hypo_plot_tikz_src_ts_tl}
+    \iow_now:Nn \l_hypo_plot_iow {\begin{document}}
+    % Input a local copy stored alongside the wrapper (more robust than
+    % relying on assets/ relative paths during external compilation).
+    % IMPORTANT: Expand #2 now so the generated wrapper never contains expl3
+    % commands like \tl_use:N (standalone compilation won't load expl3).
+    \iow_now:Ne \l_hypo_plot_iow {\input{#2.tikz}}
+    \iow_now:Nn \l_hypo_plot_iow {\end{document}}
+    \iow_close:N \l_hypo_plot_iow
+  }
+
+\NewDocumentCommand{\HypoTikZFile}{ O{} m m }
+  {
+    \keys_set:nn { hypo / plot / tikz } {#1}
+    \tl_set:Nn \l_hypo_plot_tikz_name_tl {#2}
+    \tl_set:Nn \l_hypo_plot_tikz_src_tl  {#3}
+
+    \hypo_plot_set_include_opts:
+    \tl_set_eq:NN \l_hypo_plot_tikz_include_opts_tl \l_hypo_plot_include_opts_tl
+
+    \tl_set:Nn \l_hypo_plot_tikz_wrapper_tex_tl { scripts/\l_hypo_plot_tikz_name_tl.tex }
+    \tl_set:Nn \l_hypo_plot_tikz_wrapper_tmp_tex_tl { scripts/\l_hypo_plot_tikz_name_tl.tmp.tex }
+    % For \includegraphics, use a filesystem-visible path.
+    \tl_set:Nx \l_hypo_plot_tikz_pdf_tex_tl
+      { \tl_use:N \g_hypo_plot_fig_dir_tl/\l_hypo_plot_tikz_name_tl.pdf }
+    \tl_set:Nx \l_hypo_plot_tikz_wrapper_tl { \tl_use:N \g_hypo_plot_script_dir_tl/\l_hypo_plot_tikz_name_tl.tex }
+    \tl_set:Nx \l_hypo_plot_tikz_wrapper_tmp_tl { \tl_use:N \g_hypo_plot_script_dir_tl/\l_hypo_plot_tikz_name_tl.tmp.tex }
+    \tl_set:Nx \l_hypo_plot_tikz_pdf_tl { \tl_use:N \g_hypo_plot_fig_dir_tl/\l_hypo_plot_tikz_name_tl.pdf }
+
+    % Also copy the raw TikZ source into the scripts dir (same folder as wrapper)
+    % so the external compilation never depends on assets/ path resolution.
+    \tl_set:Nn \l_hypo_plot_tikz_src_copy_tex_tl { scripts/\l_hypo_plot_tikz_name_tl.tikz }
+    \tl_set:Nn \l_hypo_plot_tikz_src_copy_tmp_tex_tl { scripts/\l_hypo_plot_tikz_name_tl.tmp.tikz }
+    \tl_set:Nx \l_hypo_plot_tikz_src_copy_tl { \tl_use:N \g_hypo_plot_script_dir_tl/\l_hypo_plot_tikz_name_tl.tikz }
+    \tl_set:Nx \l_hypo_plot_tikz_src_copy_tmp_tl { \tl_use:N \g_hypo_plot_script_dir_tl/\l_hypo_plot_tikz_name_tl.tmp.tikz }
+
+    \hypo_plot_write_tikz_wrapper:nnn
+      {\l_hypo_plot_tikz_wrapper_tmp_tex_tl}
+      {\tl_use:N \l_hypo_plot_tikz_name_tl}
+      {\tl_use:N \l_hypo_plot_tikz_src_tl}
+
+    % Copy TikZ source (keeps mtime stable via cmp/mv)
+    \hypo_plot_shell_now:n
+      { cp\space -f\space "\tl_use:N \l_hypo_plot_tikz_src_tl"\space "\tl_use:N \l_hypo_plot_tikz_src_copy_tmp_tl" }
+    \hypo_plot_shell_now:n
+      { if\space cmp\space -s\space "\tl_use:N \l_hypo_plot_tikz_src_copy_tmp_tl"\space "\tl_use:N \l_hypo_plot_tikz_src_copy_tl"\space 2>/dev/null;\space then\space rm\space -f\space "\tl_use:N \l_hypo_plot_tikz_src_copy_tmp_tl";\space else\space mv\space -f\space "\tl_use:N \l_hypo_plot_tikz_src_copy_tmp_tl"\space "\tl_use:N \l_hypo_plot_tikz_src_copy_tl";\space fi }
+
+    \hypo_plot_shell_now:n
+      {
+        (\space cmp\space -s\space "\tl_use:N \l_hypo_plot_tikz_wrapper_tmp_tl"\space "\tl_use:N \l_hypo_plot_tikz_wrapper_tl"\space 2>/dev/null\space ||\space mv\space -f\space "\tl_use:N \l_hypo_plot_tikz_wrapper_tmp_tl"\space "\tl_use:N \l_hypo_plot_tikz_wrapper_tl"\space )\space &&\space rm\space -f\space "\tl_use:N \l_hypo_plot_tikz_wrapper_tmp_tl"
+      }
+
+    \hypo_plot_process_if_needed:nnn
+      {\l_hypo_plot_tikz_wrapper_tex_tl}
+      {\l_hypo_plot_tikz_pdf_tex_tl}
+      {
+        \hypo_plot_shell_now:n
+          { latexmk\space -xelatex\space -halt-on-error\space -interaction=batchmode\space -outdir="\tl_use:N \g_hypo_plot_fig_dir_tl"\space -jobname="\tl_use:N \l_hypo_plot_tikz_name_tl"\space "\tl_use:N \l_hypo_plot_tikz_wrapper_tl" }
+      }
+
+    \hypo_plot_include_graphics:nn
+      {\tl_use:N \l_hypo_plot_tikz_include_opts_tl}
+      {\l_hypo_plot_tikz_pdf_tex_tl}
+  }
+
+\ExplSyntaxOff
+
+\endinput

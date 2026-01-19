@@ -1,0 +1,46 @@
+% 这是一个纯 TikZ 代码片段，不需要 \documentclass
+% Hypo-Plot 的 Wrapper 会自动处理环境
+
+% 可以在这里加载特定的 tikz 库， wrapper 会读入它
+\usetikzlibrary{positioning, arrows.meta, shadows}
+
+\begin{tikzpicture}[
+    % 定义节点样式
+    node distance=2.5cm,
+    layer/.style={
+        circle,
+        draw=white,
+        line width=1.5pt,
+        minimum size=1.2cm,
+        text=white,
+        font=\sffamily\bfseries,
+        drop shadow
+    },
+    % 定义连接线样式
+    arrow/.style={
+        ->,
+        >={Stealth[length=3mm]},
+        very thick,
+        color=HypoOrange % 测试 HypoOrange
+    }
+]
+
+    % 1. 绘制节点 (测试填充色)
+    % Input 层 - 使用 HypoBlue
+    \node[layer, fill=HypoBlue] (I1) {In};
+    
+    % Hidden 层 - 使用 HypoRed
+    \node[layer, fill=HypoRed, right=of I1] (H1) {Hid};
+    
+    % Output 层 - 使用 HypoGreen
+    \node[layer, fill=HypoGreen, right=of H1] (O1) {Out};
+
+    % 2. 绘制连接 (测试线条颜色)
+    \draw[arrow] (I1) -- (H1);
+    \draw[arrow] (H1) -- (O1);
+
+    % 3. 添加说明文字 (测试字体色)
+    \node[below=0.8cm of H1, color=HypoPurple, font=\sffamily\small] 
+        {Hypoxanthine Engine};
+
+\end{tikzpicture}
