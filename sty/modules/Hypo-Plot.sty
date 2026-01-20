@@ -440,7 +440,7 @@
     % relying on assets/ relative paths during external compilation).
     % IMPORTANT: Expand #2 now so the generated wrapper never contains expl3
     % commands like \tl_use:N (standalone compilation won't load expl3).
-    \iow_now:Ne \l_hypo_plot_iow {\input{#2.tikz}}
+    \iow_now:Ne \l_hypo_plot_iow {\exp_not:N \input{\tl_use:N \g_hypo_plot_script_dir_tl/#2.tikz}}
     \iow_now:Nn \l_hypo_plot_iow {\end{document}}
     \iow_close:N \l_hypo_plot_iow
   }
@@ -454,7 +454,7 @@
     \tl_set:Nn \l_hypo_plot_tikz_src_tl  {#3}
 
     \hypo_plot_set_include_opts:
-    \tl_set_eq:NN \l_hypo_plot_tikz_include_opts_tl \l_hypo_plot_include_opts_tl
+    \tl_set_eq:NN \l_hypo_plot_tikz_include_opts_tl \g_hypo_plot_include_opts_tl
 
     \tl_set:Nn \l_hypo_plot_tikz_wrapper_tex_tl { scripts/\l_hypo_plot_tikz_name_tl.tex }
     \tl_set:Nn \l_hypo_plot_tikz_wrapper_tmp_tex_tl { scripts/\l_hypo_plot_tikz_name_tl.tmp.tex }

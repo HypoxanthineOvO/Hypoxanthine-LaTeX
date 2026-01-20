@@ -22,6 +22,7 @@
 # Build Directory
 # ========================
 # 我们的 Makefile 指定了 build 文件夹，必须忽略
+temp/
 build/
 dist/
 
