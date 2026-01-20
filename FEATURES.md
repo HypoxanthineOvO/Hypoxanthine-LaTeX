@@ -277,6 +277,7 @@ plt.plot(x, y, color=HYPO_BLUE)
 Keys（含默认值/行为）：
 - `name=<id>`：必填；用于脚本名/输出图名
 - `width=` / `height=`：传给 `\includegraphics`（支持 `0.75\linewidth` 等长度表达式）
+- `centering=true|false`：是否在插图输出时自动居中（默认 `true`）
 - `figwidth=6` / `figheight=4`：Matplotlib `figsize`（单位 inch）
 - `dpi=150`
 - `format=pdf|png`（默认 `pdf`）

@@ -163,28 +163,61 @@
         {
           % Avoid feeding keyval with 'undefined' (or an empty list).
           \tl_if_blank:VTF \l_tmpa_tl
-            { \includegraphics{\tl_use:N \l_tmpb_tl} }
+            {
+              \bool_if:NTF \l_hypo_plot_centering_bool
+                { \par\noindent\hfil\includegraphics{\tl_use:N \l_tmpb_tl}\hfil\par }
+                { \includegraphics{\tl_use:N \l_tmpb_tl} }
+            }
             {
               \tl_if_eq:VnTF \l_tmpa_tl {undefined}
-                { \includegraphics{\tl_use:N \l_tmpb_tl} }
+                {
+                  \bool_if:NTF \l_hypo_plot_centering_bool
+                    { \par\noindent\hfil\includegraphics{\tl_use:N \l_tmpb_tl}\hfil\par }
+                    { \includegraphics{\tl_use:N \l_tmpb_tl} }
+                }
                 {
                   % Expand option list BEFORE passing to \includegraphics
                   % to ensure keyval parsers see the equals signs.
-                  \use:x
+                  \bool_if:NTF \l_hypo_plot_centering_bool
                     {
-                      \exp_not:N \includegraphics [ \tl_use:N \l_tmpa_tl ] { \tl_use:N \l_tmpb_tl }
+                      \par\noindent\hfil
+                      \use:x
+                        {
+                          \exp_not:N \includegraphics [ \tl_use:N \l_tmpa_tl ] { \tl_use:N \l_tmpb_tl }
+                        }
+                      \hfil\par
+                    }
+                    {
+                      \use:x
+                        {
+                          \exp_not:N \includegraphics [ \tl_use:N \l_tmpa_tl ] { \tl_use:N \l_tmpb_tl }
+                        }
                     }
                 }
             }
         }
         {
-          \fbox{
-            \begin{tabular}{l}
-              \ttfamily\bfseries Hypo-Plot~Error \\
-              \ttfamily Missing:~\tl_to_str:V \l_tmpb_tl \\
-              \ttfamily Check~build/scripts/~logs
-            \end{tabular}
-          }
+          \bool_if:NTF \l_hypo_plot_centering_bool
+            {
+              \par\noindent\hfil
+              \fbox{
+                \begin{tabular}{l}
+                  \ttfamily\bfseries Hypo-Plot~Error \\
+                  \ttfamily Missing:~\tl_to_str:V \l_tmpb_tl \\
+                  \ttfamily Check~build/scripts/~logs
+                \end{tabular}
+              }
+              \hfil\par
+            }
+            {
+              \fbox{
+                \begin{tabular}{l}
+                  \ttfamily\bfseries Hypo-Plot~Error \\
+                  \ttfamily Missing:~\tl_to_str:V \l_tmpb_tl \\
+                  \ttfamily Check~build/scripts/~logs
+                \end{tabular}
+              }
+            }
         }
     \group_end:
   }
@@ -194,6 +227,8 @@
 % -----------------------------------------------------------------------------
 \tl_new:N \l_hypo_plot_width_tl
 \tl_new:N \l_hypo_plot_height_tl
+\bool_new:N \l_hypo_plot_centering_bool
+\bool_set_true:N \l_hypo_plot_centering_bool
 \int_new:N \l_hypo_plot_dpi_int
 \fp_new:N  \l_hypo_plot_figwidth_fp
 \fp_new:N  \l_hypo_plot_figheight_fp
@@ -209,6 +244,8 @@
     width     .initial:n = ,
     height    .tl_set:N = \l_hypo_plot_height_tl,
     height    .initial:n = ,
+    centering .bool_set:N = \l_hypo_plot_centering_bool,
+    centering .initial:n = true,
     dpi       .int_set:N = \l_hypo_plot_dpi_int,
     dpi       .initial:n = 150,
     figwidth  .fp_set:N  = \l_hypo_plot_figwidth_fp,
@@ -377,6 +414,8 @@
     width  .initial:n = ,
     height .tl_set:N = \l_hypo_plot_height_tl,
     height .initial:n = ,
+    centering .bool_set:N = \l_hypo_plot_centering_bool,
+    centering .initial:n = true,
   }
 
 \cs_new_protected:Npn \hypo_plot_write_tikz_wrapper:nnn #1#2#3

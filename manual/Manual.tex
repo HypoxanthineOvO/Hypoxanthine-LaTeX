@@ -415,6 +415,7 @@ plt.grid(True, alpha=0.3)
 说明：
 \begin{itemize}
     \item \HypoTT{width/height} 传给 \HypoCS{includegraphics}，支持 \HypoCode{0.75\linewidth} 这类长度表达式。
+    \item \HypoTT{centering=true|false} 控制插图是否自动居中（默认 \HypoTT{true}）。
     \item \HypoTT{figwidth/figheight} 对应 Matplotlib 的 \HypoTT{figsize}（单位 inch）。
     \item 会按 \HypoCS{FinalOutputDir} 落盘：脚本在 \HypoTT{build/scripts/}，图片在 \HypoTT{build/figures/}。
     \item 会注入主题色（如 \HypoTT{HYPO\_BLUE/HYPO\_ORANGE/...}）方便绘图配色与文档一致。
