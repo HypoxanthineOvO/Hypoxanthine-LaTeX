@@ -297,6 +297,8 @@
 
 \cs_new_protected:Npn \hypo_plot_pyplot_setup:n #1
   {
+    % Reset per-call defaults (avoid state leaking across environments)
+    \bool_set_true:N \l_hypo_plot_centering_bool
     \keys_set:nn { hypo / plot / pyplot } {#1}
     % Check if name is set
     \tl_if_empty:NT \g_hypo_plot_name_tl
@@ -445,6 +447,8 @@
 
 \NewDocumentCommand{\HypoTikZFile}{ O{} m m }
   {
+    % Reset per-call defaults (avoid state leaking from HypoPyPlot or previous calls)
+    \bool_set_true:N \l_hypo_plot_centering_bool
     \keys_set:nn { hypo / plot / tikz } {#1}
     \tl_set:Nn \l_hypo_plot_tikz_name_tl {#2}
     \tl_set:Nn \l_hypo_plot_tikz_src_tl  {#3}
