@@ -1,319 +1,139 @@
-# Hypoxanthine-LaTeX 功能清单（真值表）
+# Hypoxanthine-LaTeX 上下文 (AI Context)
 
-本文档只记录“已经实现并可用”的能力与接口；不写规划、不写愿景。
+> **致 AI Agent**: 本文档描述了 **Hypoxanthine-LaTeX** 系统。当被要求使用此系统编写 LaTeX 代码时，请遵循以下定义的模式和规则。
 
-## 入口（Classes / Entry Packages）
+## 1. 系统概览
+Hypoxanthine 是一个模块化的 LaTeX 框架，设计用于：
+1.  **笔记** (`Hypo-Note`): 结构化知识库、讲义 (基于 `ctexbook`)。
+2.  **速查表** (`Hypo-CHSH`): 高密度、多栏参考表 (基于 `ctexart`)。
+3.  **文学** (`Hypo-LitNote`): 散文、诗歌和人文内容。
 
-### Hypo-Note（class）
+## 2. 入口类 (Entry Classes)
+根据用户的意图选择类。
 
-推荐用法：
-
+### 标准笔记 (`Hypo-Note`)
+用于通用文档。
 ```latex
-\documentclass[outputdir=build]{Hypo-Note}
+\documentclass[outputdir=build, code=true, boxes=true]{Hypo-Note}
+
+\HypoNoteSetup{
+    title={文档标题},
+    author={作者名},
+    email={email@example.com},
+    date={\today},
+    colorscheme=Tech  % 选项: Base, CN, Tech, Simple
+}
+
+\begin{document}
+\makecover
+\tableofcontents
+
+\chapter{简介}
+...
+\end{document}
 ```
 
-实现状态：
-- 基类：`ctexbook`（原生 book 语义：`\chapter/\part` 等均可用）
-- 默认注入（仅当用户未显式指定时）：`oneside` + `openany`
-- 章节编号风格：`chapterstyle=en|cn`（默认 `en`）
-- 自动加载：`Hypo-Note-Core`（能力包）+ `Hypo-Icon`（封面图标映射）
-
-Class options（含默认值）：
-- `base=book`（仅保留兼容占位；`base=article` 会报错）
-- `chapterstyle=en|cn`（默认 `en`）
-- `shorthand=true|false`（默认 `true`）
-- `indent=true|false`（默认 `true`）
-- `boxes=true|false`（默认 `true`）
-- `refs=true|false`（默认 `true`）
-- `algorithm=true|false`（默认 `true`）
-- `code=true|false`（默认 `true`）
-- `lists=true|false`（默认 `true`）
-- `outputdir=<dir>`（默认 `build`）
-- `colorscheme=Base|CN|Tech|Simple`（默认 `Base`；大小写不敏感；支持 `CN01/Tech01/...` 别名）
-
-Note 元数据与封面（已实现）：
-- `\HypoNoteSetup{title=..., subtitle=..., author=..., email=..., homepage=..., affiliation=..., date=...}`
-- 便捷命令：`\HypoSetTitle` / `\HypoSetSubtitle` / `\HypoSetAuthor` / `\HypoSetEmail` / `\HypoSetHomepage` / `\HypoSetAffiliation` / `\HypoSetDate`
-- `\makecover`：生成封面（若未设置任何元数据，会给出 Warning 且不输出空封面）
-
-### Hypo-LitNote（class）
-
-推荐用法：
-
+### 速查表 (`Hypo-CHSH`)
+用于紧凑、密集的摘要。
 ```latex
-\documentclass{Hypo-LitNote}
+\documentclass[columns=3]{Hypo-CHSH}
+% 注意: 该类通常不需要 \makecover 或 \tableofcontents
+% 文档直接在多栏模式下开始
+
+\begin{document}
+\section{速查节标题}
+...
+\end{document}
 ```
 
-实现状态：
-- 基类：`ctexbook`
-- 默认 `chapterstyle=cn`
-- 默认 `sectionstyle=outline`（避免标题出现“1.1”观感）
-- 默认启用文学向盒子：`litbox=true`（加载 `Hypo-LitBox`）
+## 3. 核心模块与语法
 
-Class options（含默认值）：
-- `base=book`（仅保留兼容占位；`base=article` 会报错）
-- `chapterstyle=cn|en`（默认 `cn`）
-- `sectionstyle=outline|arabic`（默认 `outline`）
-- `shorthand=true|false`（默认 `true`）
-- `indent=true|false`（默认 `true`）
-- `boxes=true|false`（默认 `true`）
-- `refs=true|false`（默认 `true`）
-- `algorithm=true|false`（默认 `true`）
-- `code=true|false`（默认 `true`）
-- `lists=true|false`（默认 `true`）
-- `litbox=true|false`（默认 `true`）
-- `outputdir=<dir>`（默认 `build`）
-- `colorscheme=Base|CN|Tech|Simple`（默认 `Base`）
+### 3.1 颜色与主题 (Colors & Schemes)
+- **方案**: `Base` (基础), `CN` (国风/莫兰迪), `Tech` (科技/深蓝), `Simple` (极简灰)。
+- **语义色**: 请使用以下代号而非硬编码颜色：
+    - 主色: `HypoPrimary`
+    - 强调: `HypoAccent`
+    - 文本: `HypoText`
+    - 背景: `HypoBackground` (或用于盒子的 `HypoSurface`)
+    - 边框: `HypoBorder`
 
-### Hypo-CHSH（class）
-
-推荐用法：
+### 3.2 盒子 (`Hypo-Box`)
+使用基于 `tcolorbox` 的环境。
+**签名**: `\begin{env}{标题}{标签} ... \end{env}`.
+- `标签` 是可选的（如果不需要引用，可以留空 `{}`）。
+- `标签` 会自动获得前缀 (`def:`, `ex:`, `note:`)。
 
 ```latex
-\documentclass{Hypo-CHSH}
-```
-
-实现状态：
-- 基类：`ctexart`
-- 多栏：基于 `multicol`（默认 3 栏；在 `\begin{document}` 后自动进入多栏）
-- 代码块：支持在多栏内正常排版（不跨列溢出）
-- 页面尺寸：按“面积 + 纵横比”计算（见 options）
-
-Class options（含默认值）：
-- `shorthand=true|false`（默认 `true`）
-- `indent=true|false`（默认 `false`）
-- `boxes=true|false`（默认 `true`）
-- `refs=true|false`（默认 `true`）
-- `algorithm=true|false`（默认 `false`）
-- `code=true|false`（默认 `true`）
-- `lists=true|false`（默认 `true`）
-- `balance=true|false`（默认 `false`；`false` 时使用 `multicols*`）
-- `codelinenos=true|false`（默认 `false`；用于覆盖 CHSH 的“默认关闭代码行号”策略）
-- `outputdir=<dir>`（默认 `build`）
-- `colorscheme=Base|CN|Tech|Simple`（默认 `Base`）
-- `columns=<int>`（默认 `3`）
-- `colsep=<dim>`（默认 `10pt`）
-- `chapterbreak=none|column|page`（默认 `none`；在 `\section` 前插入换栏/换页策略）
-- `paperarea=a4`（默认 `a4`；其他值会 Warning 并回退到 `a4`）
-- `areascale=<num>`（默认 `1`；必须为正数，否则报错）
-- `paperaspect=<num>`（默认 `210/297`；必须为正数，否则报错）
-- `textsize=normal|small|footnotesize|scriptsize`（默认 `footnotesize`）
-
-辅助命令：
-- `\CHSHColumnBreak`：强制换到下一栏
-- `\CHSHBeginColumns` / `\CHSHEndColumns`：手动开始/结束多栏（一般不需要）
-
-### Hypo-Note（package wrapper）与 Hypo-Note-Core（能力包）
-
-为兼容旧用法保留：
-
-```latex
-\usepackage[outputdir=build]{Hypo-Note}
-```
-
-`Hypo-Note` 包内部仅转发加载 `Hypo-Note-Core`。
-
-`Hypo-Note-Core` 支持的 options：
-- `shorthand=true|false`（默认 `true`；`false` 时会定义 `\HypoDisableShorthand` 来关闭数学速写）
-- `indent=true|false`（默认 `true`；`false` 时设置 `\parindent=0pt`）
-- `boxes=true|false`（默认 `true`；控制是否加载 `Hypo-Box`）
-- `refs=true|false`（默认 `true`；控制是否加载 `Hypo-Refs`）
-- `algorithm=true|false`（默认 `true`；控制是否加载 `Hypo-Algorithm`）
-- `code=true|false`（默认 `true`；控制是否加载 `Hypo-Code`）
-- `lists=true|false`（默认 `true`；控制是否加载 `Hypo-Lists`）
-- `outputdir=<dir>`（默认 `build`；传给 `Hypo-Base` 并导出 `\FinalOutputDir`）
-- `colorscheme=Base|CN|Tech|Simple`（默认 `Base`；会在加载 `Hypo-Colors` 前设置 `\HypoColorScheme`）
-
-补充能力（已实现，面向“更深层级/非 book 基类”）：
-- `\HypoEnableDeepSections[<depth>]`：设置 `secnumdepth/tocdepth`（默认 5）
-- `\HypoParagraphBlockHeadings`：将 `\paragraph/\subparagraph` 调整为块状标题
-- `\HypoEnableChapters`：为“article-like 基类”启用 `chapter` 层级计数体系
-  - 当基类不存在 `\chapter` 时，`Hypo-Note-Core` 会提供 `\chapter`（含编号与 TOC 支持）
-
-### Hypo-Sheet（entry package）
-
-文件为 `Hypo-Sheet.sty`（目前不是 class）。它加载与 `Hypo-Note-Core` 类似的一组 core/modules，但不包含 `lists` 开关（即：不自动加载 `Hypo-Lists`）。
-
-## Core（原子能力）
-
-### Hypo-Fonts
-- 依赖 `xeCJK` + `fontspec`（因此推荐 XeLaTeX）
-- 英文字体：优先 DejaVu，降级 Latin Modern
-- 中文字体：优先 LXGW WenKai，降级 Noto Serif CJK SC，再降级 Fandol
-
-### Hypo-Colors
-
-配色选择：
-- 入口通常通过 `colorscheme=...` 注入 `\HypoColorScheme` 后再加载本包
-- 也可直接调用：`\HypoColorSchemeSetup{scheme=<name>}`
-
-支持的 scheme 名称（会归一化为这四种）：`Base` / `CN` / `Tech` / `Simple`
-- 别名：`CN01..CN99` -> `CN`，`Tech01..` -> `Tech`，`Simple01..` -> `Simple`
-
-查询当前 scheme：`\HypoColorSchemeName`
-
-### Hypo-Base
-
-输出目录：
-- option：`outputdir=<dir>`（默认 `build`）
-- 导出：`\FinalOutputDir`（供 `minted` 等使用）
-
-文档排版辅助（面向 Manual/README/示例；已实现）：
-- `\HypoBS`：反斜杠
-- `\HypoCS{foo}`：排版控制序列 `\foo`
-- `\HypoCode{...}`：等宽显示一段代码（对参数做 `\detokenize`）
-- 以及 `\HypoTT` / `\HypoBF` / `\HypoIT` / `\HypoPkg` / `\HypoEnv` / `\HypoCls`
-
-### Hypo-Img
-
-命令：`\img[<key=val>]{<path>}{<caption>}`
-
-Keys（含默认值）：
-- `label=`（默认空；非空时写入 `\label{fig:<label>}`）
-- `width=0.95\linewidth`
-- `placement=htbp`
-- `span=1|2`（默认 `1`；`2` 使用 `figure*`）
-
-### Hypo-Math
-
-基础：加载 `amsmath/amssymb/mathtools`
-
-可选：physics（若存在 `physics.sty` 则自动加载；缺失时不应导致编译失败）
-- 默认固定 options：`trig,uprightdiff,bolddel`
-- 可覆盖：在加载 Hypo-Math 之前定义 `\HypoPhysicsOptions`（内容会透传给 `physics`）
-- 说明：若用户已手动加载 `physics`，则 Hypo-Math 不会强制改写其 options（会 Warning）
-
-命令（已实现）：
-- 数集：`\R` / `\N` / `\Z`
-- 成对定界符：`\Paren` / `\Brack` / `\Set` / `\Abs`
-- 速写（仅在未定义 `\HypoDisableShorthand` 时启用）：`\TX` / `\TBF` / `\MB` / `\MC` / `\BS`
-
-## Modules（可选插件）
-
-### Hypo-Box
-
-加载：由入口选项 `boxes=true` 控制（默认开启）。
-
-可用环境：
-- `definition`
-- `example`
-- `note`
-
-用法（tcolorbox theorem 形式）：
-
-```latex
-\begin{definition}{Title}{label}
-  ...
+\begin{definition}{质能方程}{mass_energy}
+    $E = mc^2$
 \end{definition}
+
+参见 \cref{def:mass_energy}。
 ```
+**可用环境**:
+- `definition` (主色)
+- `example` (成功色/绿色)
+- `note` (警告色/橙色)
 
-- 第 2 个参数为空 `{}` 时不生成 `\label`
-- Label 前缀：`definition` -> `def:`，`example` -> `ex:`，`note` -> `note:`
-
-选项：`numbering=none|global|section|chapter`（默认 `section`）
-
-### Hypo-Refs
-
-加载：由入口选项 `refs=true` 控制（默认开启）。
-
-内容：
-- `hyperref`（`hidelinks`）
-- `cleveref`，并为 `Hypo-Box` 的计数器配置名称（如 `Definition:` / `Example:` / `Note:`）
-
-### Hypo-Algorithm
-
-加载：由入口选项 `algorithm=true` 控制（Note/LitNote 默认 `true`，CHSH 默认 `false`）。
-
-内容：
-- `algorithm2e` 默认风格：`ruled` + `linesnumbered` + `vlined`
-- 若已加载 `cleveref`，则配置 `algocf` 的 `\cref` 名称为 `Algorithm:`
-
-### Hypo-Code
-
-加载：由入口选项 `code=true` 控制（默认开启；CHSH 默认开启）。
-
-环境：`hypocode`
-
-后端选择：
-- 若存在 `minted.sty` 且启用 shell-escape：使用 `minted`（并传入 `outputdir=\FinalOutputDir`）
-- 否则回退到 `listings`，并仅 Warning 一次
-
-可选参数（两种后端都接受）：
-- `linenos=true|false`（默认 `true`；CHSH 会默认关闭行号，可用 `codelinenos=true` 反转）
-- `theme=<pygments style>`（仅 minted 生效）
-- `minted=<raw options>`（仅 minted 生效）
-- `listings=<raw options>`（仅 listings 生效）
-
-### Hypo-Plot
-
-定位：在文档内嵌 Python/Matplotlib 代码，自动生成图片并插入。
-
-加载：手动 `\usepackage{Hypo-Plot}`（目前不由入口类自动加载）。
-
-依赖与构建：
-- 需要编译开启 `-shell-escape`（Makefile 体系：`make SHELL_ESCAPE=1`）
-- 需要可用的 Python（默认 `python3`；可用 `\HypoSetPythonBin{<path>}` 指定）
-- Python 侧需要 Matplotlib（以及你在脚本里 import 的其他库，如 numpy）
-
-环境：`HypoPyPlot`
-
-用法：
+### 3.3 代码 (`Hypo-Code`)
+使用 `hypocode` 环境。**避免**使用标准的 `minted` 或 `lstlisting` 以确保可移植性。
+**签名**: `\begin{hypocode}[选项]{语言} ... \end{hypocode}`.
 
 ```latex
-\begin{HypoPyPlot}[
-  name=demo_sine,
-  width=0.75\linewidth,
-  figwidth=4.8,
-  figheight=2.6,
-  dpi=160,
-  format=png
-]
-x = np.linspace(0, 2*np.pi, 256)
-y = np.sin(x)
-plt.plot(x, y, color=HYPO_BLUE)
+\begin{hypocode}[linenos=false]{python}
+def hello():
+    print("Hello AI")
+\end{hypocode}
+```
+**重要**: `hypocode` 环境是鲁棒的，可在 Beamer 帧中安全使用（通过 `fragile`）。
+
+### 3.4 图标 (`Hypo-Icon`)
+使用 `\HypoIcon{key}` 获取图标。
+**常用 Keys**:
+- **界面/操作**: `user`, `search`, `home`, `settings`, `check`, `warn`, `link`, `download`, `upload`
+- **文件类型**: `file`, `pdf`, `word`, `image`, `video`, `zip`, `code`
+- **社交**: `twitter`, `github`, `weixin`, `telegram`, `discord`, `zhihu`
+- **技术栈**: `python`, `java`, `linux`, `docker`, `git`, `react`, `vue`, `node`, `cpp`
+- **学术/联系**: `article`, `book`, `school`, `email`, `phone`
+
+### 3.5 图像 (`Hypo-Img`)
+使用 `\img` 获取简化的插图插入。
+**签名**: `\img[选项]{文件名}{标题}`.
+- 如果在选项中提供了 `label`，会自动生成 `fig:<label>`。
+
+```latex
+\img[width=0.8\linewidth, label=my_plot]{assets/plot.png}{演示图}
+
+参见 \cref{fig:my_plot}。
+```
+
+### 3.6 数学 (`Hypo-Math`)
+如果 `shorthand=true` (在 `Hypo-Note` 中默认开启)，则使用：
+- 集合: `\R`, `\N`, `\Z`
+- 定界符: `\Set{x}`, `\Paren{x}`, `\Abs{x}`
+- 物理 (如果检测到 `physics` 包): `\dd{x}`, `\pdv{f}{x}`, `\ket{\psi}`.
+
+### 3.7 绘图 (`Hypo-Plot`)
+直接内嵌 Python 绘图代码，或编译外部 TikZ 文件。
+
+**Python 绘图**:
+```latex
+\begin{HypoPyPlot}[name=sine_wave, width=0.8\linewidth]
+x = np.linspace(0, 10, 100)
+plt.plot(x, np.sin(x), color=HYPO_PRIMARY) # 使用注入的主题色
 \end{HypoPyPlot}
 ```
+*提示*: 可通过 `make PYTHON_BIN=/path/to/python` 指定解释器路径。
 
-Keys（含默认值/行为）：
-- `name=<id>`：必填；用于脚本名/输出图名
-- `width=` / `height=`：传给 `\includegraphics`（支持 `0.75\linewidth` 等长度表达式）
-- `centering=true|false`：是否在插图输出时自动居中（默认 `true`）
-- `figwidth=6` / `figheight=4`：Matplotlib `figsize`（单位 inch）
-- `dpi=150`
-- `format=pdf|png`（默认 `pdf`）
+**TikZ 外部编译**:
+```latex
+% 自动处理依赖指纹与增量编译
+\HypoTikZFile[width=0.8\linewidth]{network_diagram}{assets/network.tikz}
+```
 
-文件布局（遵循 `\FinalOutputDir`）：
-- 生成脚本：`\FinalOutputDir/scripts/<name>.py`
-- 输出图片：`\FinalOutputDir/figures/<name>.<format>`
-
-运行时注入：
-- 自动注入主题色（如 `HYPO_BLUE/HYPO_ORANGE/...`），用于 Matplotlib 配色与风格对齐
-
-### Hypo-Lists
-
-加载：由入口选项 `lists=true` 控制（Note/LitNote/CHSH 默认 `true`）。
-
-行为：
-- 使用 `enumitem` 统一 `itemize/enumerate` 的缩进与间距
-- `itemize` 1~4 级符号：`\bullet` / `\circ` / `\blacksquare` / `\blacktriangle`
-
-### Hypo-LitBox
-
-加载：由 `Hypo-LitNote` 的 `litbox=true` 控制（默认开启）。
-
-命令与环境：
-- `\InlineQuote{...}`：行内浅底强调
-- `poem`：文学向诗词块（tcolorbox）
-- `quotepara`：文学向引用段落块（tcolorbox）
-
-### Hypo-Icon
-
-加载：`Hypo-Note` class 会加载。
-
-接口：
-- `\HypoIcon{<key>}`：取出一个 icon 内容
-- `\HypoIconDeclare{key}{value}`：声明/覆盖单个映射
-- `\HypoIconSetup{key={value}, ...}`：批量声明映射
-
-默认映射：`email/homepage/github`
-- 若存在 `fontawesome5`，默认使用 `\faIcon{...}`；否则降级为可读文本标记
+## 4. AI 最佳实践
+1.  **优先 `cref`**: 始终使用 `\cref{...}` 而非 `\ref{...}` 进行智能引用。
+2.  **使用相对路径**: 对于图片，假设标准结构（例如 `assets/`）。
+3.  **语义化宏**: 只要可用，就是用 `\Hypo...` 命令。
+4.  **无长导言**: 不要添加长导言区。Class 会处理宏包加载。仅在绝对必要时添加 `\usepackage`。
+5.  **使用 `hypo` 脚本**: 指导用户时，建议使用 `scripts/hypo` 或 `scripts/hypo.bat` 进行构建。

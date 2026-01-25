@@ -9,33 +9,119 @@
 \IfFontExistsTF{DejaVu Sans}{\setsansfont{DejaVu Sans}}{\setsansfont{Latin Modern Sans}}
 \IfFontExistsTF{DejaVu Sans Mono}{\setmonofont{DejaVu Sans Mono}}{\setmonofont{Latin Modern Mono}}
 
-% 正文文楷，加粗黑体
-% CJK 主字体优先级：LXGW WenKai -> Noto Serif CJK SC -> FandolSong-Regular
-\IfFontExistsTF{LXGW WenKai}{
-    \setCJKmainfont[
-        BoldFont       = Noto Sans CJK SC,
-        ItalicFont     = LXGW WenKai Mono,
-        BoldItalicFont = Noto Sans CJK SC,
-        RawFeature     = {+palt}
-    ]{LXGW WenKai}
-}{
-    \IfFontExistsTF{Noto Serif CJK SC}{
-        \setCJKmainfont[
-            BoldFont       = Noto Sans CJK SC,
-            BoldItalicFont = Noto Sans CJK SC,
-            RawFeature     = {+palt}
-        ]{Noto Serif CJK SC}
-    }{
-        \setCJKmainfont[
-            BoldFont       = FandolHei-Regular,
-            BoldItalicFont = FandolHei-Regular,
-            RawFeature     = {+palt}
-        ]{FandolSong-Regular}
-    }
-}
+% ==============================================================================
+% Font Selection Strategy
+% ==============================================================================
+\RequirePackage{expl3}
+\RequirePackage{l3keys2e}
+\ExplSyntaxOn
 
-% CJK sans 优先级：Noto Sans CJK SC -> FandolHei-Regular
-\IfFontExistsTF{Noto Sans CJK SC}{\setCJKsansfont{Noto Sans CJK SC}}{\setCJKsansfont{FandolHei-Regular}}
+\tl_new:N \g_hypo_fonts_fontset_tl
+\keys_define:nn { hypo / fonts }
+  {
+    fontset .tl_set:N = \g_hypo_fonts_fontset_tl,
+    fontset .initial:n = tech, % Default to Tech
+  }
 
-% CJK mono 优先级：LXGW WenKai Mono -> FandolFang-Regular
-\IfFontExistsTF{LXGW WenKai Mono}{\setCJKmonofont[AutoFakeSlant]{LXGW WenKai Mono}}{\setCJKmonofont[AutoFakeSlant]{FandolFang-Regular}}
+\NewDocumentCommand{\HypoFontSetup}{m}
+  {
+    \keys_set:nn { hypo / fonts } {#1}
+  }
+
+\ProcessKeysOptions{ hypo / fonts }
+
+% ------------------------------------------------------------------------------
+% Strategy: Tech (Noto Sans CJK / FandolHei)
+% ------------------------------------------------------------------------------
+% Clean, modern sans-serif look for technical documentation.
+% Bold weights are strictly from the same family.
+\cs_new_protected:Npn \hypo_fonts_load_tech:
+  {
+    % CJK Main: Prefer Noto Sans CJK SC (Source Han Sans)
+    \IfFontExistsTF{Noto Sans CJK SC}
+      {
+        \setCJKmainfont[
+            BoldFont       = Noto Sans CJK SC Bold,
+            ItalicFont     = Noto Sans CJK SC,
+            ItalicFeatures = {FakeSlant=0.2},
+            BoldItalicFont = Noto Sans CJK SC Bold,
+            BoldItalicFeatures = {FakeSlant=0.2},
+            RawFeature     = {+palt}
+        ]{Noto Sans CJK SC}
+        \setCJKsansfont[BoldFont=Noto Sans CJK SC Bold]{Noto Sans CJK SC}
+      }
+      {
+        % Fallback: Do nothing and let ctex/xeCJK handle the default fontset (usually Fandol or installed system fonts)
+        % This prevents crashing if Fandol files are not found by fontspec names.
+        \typeout{Hypo-Fonts: Noto Sans CJK not found, checking Fandol...}
+        \IfFontExistsTF{FandolHei-Regular}
+         {
+            \setCJKmainfont[
+                BoldFont       = FandolHei-Bold,
+                ItalicFont     = FandolHei-Regular,
+                ItalicFeatures = {FakeSlant=0.2}
+            ]{FandolHei-Regular}
+            \setCJKsansfont{FandolHei-Regular}
+         }
+         {
+            \typeout{Hypo-Fonts: Fandol fonts not found by name. Relying on ctex default.}
+         }
+      }
+      
+    % CJK Mono: Noto Sans Mono CJK SC > FandolFang
+    \IfFontExistsTF{Noto Sans Mono CJK SC}
+      {\setCJKmonofont{Noto Sans Mono CJK SC}}
+      {\IfFontExistsTF{FandolFang-Regular}{\setCJKmonofont{FandolFang-Regular}}{}}
+  }
+
+% ------------------------------------------------------------------------------
+% Strategy: Lit (LXGW WenKai / Serif)
+% ------------------------------------------------------------------------------
+% Humanist, serif/kai style for reading comfort.
+\cs_new_protected:Npn \hypo_fonts_load_lit:
+  {
+    \IfFontExistsTF{LXGW WenKai}
+      {
+        \setCJKmainfont[
+            % Attempt to use WenKai Bold if installed, otherwise FakeBold
+            BoldFont       = LXGW WenKai Bold,
+            ItalicFont     = LXGW WenKai,
+            ItalicFeatures = {FakeSlant=0.2}
+        ]{LXGW WenKai}
+        \setCJKsansfont{LXGW WenKai}
+      }
+      {
+         \typeout{Hypo-Fonts: LXGW WenKai not found. Checking FandolSong...}
+         \IfFontExistsTF{FandolSong-Regular}
+         {
+            \setCJKmainfont[
+                BoldFont=FandolSong-Bold,
+                ItalicFont=FandolKai-Regular
+            ]{FandolSong-Regular}
+            \setCJKsansfont{FandolHei-Regular}
+         }
+         {
+            \typeout{Hypo-Fonts: Fandol fonts not found. Relying on ctex default.}
+         }
+      }
+      
+    \IfFontExistsTF{LXGW WenKai Mono}
+      {\setCJKmonofont{LXGW WenKai Mono}}
+      {\IfFontExistsTF{FandolFang-Regular}{\setCJKmonofont{FandolFang-Regular}}{}}
+  }
+
+% ------------------------------------------------------------------------------
+% Apply Selection
+% ------------------------------------------------------------------------------
+
+\str_case:VnF \g_hypo_fonts_fontset_tl
+  {
+    {tech} { \hypo_fonts_load_tech: }
+    {lit}  { \hypo_fonts_load_lit: }
+  }
+  {
+    % Default or unknown -> Tech strategy
+    \hypo_fonts_load_tech:
+  }
+  
+\ExplSyntaxOff

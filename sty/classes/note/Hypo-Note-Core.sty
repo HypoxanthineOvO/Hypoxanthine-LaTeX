@@ -1,66 +1,86 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{Hypo-Note-Core}[2026/01/17 v0.9.3 Hypoxanthine Note Entry Core]
+\ProvidesPackage{Hypo-Note-Core}[2026/01/25 v1.1.2 Hypoxanthine Note Entry Core]
 
-\RequirePackage{kvoptions}
+\RequirePackage{expl3}
+\RequirePackage{l3keys2e}
 
-\SetupKeyvalOptions{family=HypoNote, prefix=HypoNote@}
+\ExplSyntaxOn
+\bool_new:N \g_hypo_core_shorthand_bool
+\bool_new:N \g_hypo_core_indent_bool
+\bool_new:N \g_hypo_core_boxes_bool
+\bool_new:N \g_hypo_core_refs_bool
+\bool_new:N \g_hypo_core_algorithm_bool
+\bool_new:N \g_hypo_core_code_bool
+\bool_new:N \g_hypo_core_lists_bool
+\tl_new:N   \g_hypo_core_outputdir_tl
+\tl_new:N   \g_hypo_core_colorscheme_tl
+\tl_new:N   \g_hypo_core_fontset_tl
 
-% 对外接口：两入口保持一致
-\DeclareBoolOption[true]{shorthand}
-\DeclareBoolOption[true]{indent}
-\DeclareBoolOption[true]{boxes}
-\DeclareBoolOption[true]{refs}
-\DeclareBoolOption[true]{algorithm}
-\DeclareBoolOption[true]{code}
-\DeclareBoolOption[true]{lists}
-\DeclareStringOption[build]{outputdir}
-\DeclareStringOption[Base]{colorscheme}
-\ProcessKeyvalOptions*
+\keys_define:nn { hypo / core }
+  {
+    shorthand .bool_set:N = \g_hypo_core_shorthand_bool,
+    shorthand .initial:n = true,
+    indent    .bool_set:N = \g_hypo_core_indent_bool,
+    indent    .initial:n = true,
+    boxes     .bool_set:N = \g_hypo_core_boxes_bool,
+    boxes     .initial:n = true,
+    refs      .bool_set:N = \g_hypo_core_refs_bool,
+    refs      .initial:n = true,
+    algorithm .bool_set:N = \g_hypo_core_algorithm_bool,
+    algorithm .initial:n = true,
+    code      .bool_set:N = \g_hypo_core_code_bool,
+    code      .initial:n = true,
+    lists     .bool_set:N = \g_hypo_core_lists_bool,
+    lists     .initial:n = true,
+    outputdir .tl_set:N = \g_hypo_core_outputdir_tl,
+    outputdir .initial:n = build,
+    colorscheme .tl_set:N = \g_hypo_core_colorscheme_tl,
+    colorscheme .initial:n = Base,
+    fontset   .tl_set:N = \g_hypo_core_fontset_tl,
+    fontset   .initial:n = tech,
+  }
 
-% shorthand=false 时，用宏关闭 Hypo-Math 内置速写（不额外引入独立包）
-\ifHypoNote@shorthand
-\else
-    \def\HypoDisableShorthand{}
-\fi
+\ProcessKeysOptions { hypo / core }
 
-% indent=false 时，关闭段首缩进（不额外修改 parskip，保持最小行为）
-\ifHypoNote@indent
-\else
-    \setlength{\parindent}{0pt}
-\fi
+% Legacy interface bridging
+\cs_set:Npx \HypoNote@outputdir { \tl_use:N \g_hypo_core_outputdir_tl }
+
+\bool_if:NF \g_hypo_core_shorthand_bool
+  { \def\HypoDisableShorthand{} }
+
+\bool_if:NF \g_hypo_core_indent_bool
+  { \setlength{\parindent}{0pt} }
+
+\ExplSyntaxOff
 
 % Core 能力（无版式）
 \RequirePackage{Hypo-Fonts}
+\ExplSyntaxOn
+\HypoFontSetup{fontset=\g_hypo_core_fontset_tl}
+\ExplSyntaxOff
+
 % Allow choosing a color scheme before loading Hypo-Colors.
-\edef\HypoColorScheme{\HypoNote@colorscheme}
+\ExplSyntaxOn
+\edef\HypoColorScheme{\tl_use:N \g_hypo_core_colorscheme_tl}
+\ExplSyntaxOff
 \RequirePackage{Hypo-Colors}
 \RequirePackage[outputdir=\HypoNote@outputdir]{Hypo-Base}
 \RequirePackage{Hypo-Img}
 \RequirePackage{Hypo-Math}
 
-% Lists styling (enumitem-based). Can be disabled by lists=false.
-\ifHypoNote@lists
-\else
-    \def\HypoDisableLists{}
-\fi
+\ExplSyntaxOn
+
+\bool_if:NF \g_hypo_core_lists_bool { \def\HypoDisableLists{} }
 \RequirePackage{Hypo-Lists}
 
-\ifHypoNote@boxes
-    \RequirePackage{Hypo-Box}
-\fi
+\bool_if:NT \g_hypo_core_boxes_bool { \RequirePackage{Hypo-Box} }
+\bool_if:NT \g_hypo_core_algorithm_bool { \RequirePackage{Hypo-Algorithm} }
+\bool_if:NT \g_hypo_core_code_bool { \RequirePackage{Hypo-Code} }
+\bool_if:NT \g_hypo_core_refs_bool { \RequirePackage{Hypo-Refs} }
 
-\ifHypoNote@algorithm
-    \RequirePackage{Hypo-Algorithm}
-\fi
+\ExplSyntaxOff
 
-\ifHypoNote@code
-    \RequirePackage{Hypo-Code}
-\fi
-
-% Refs（hyperref/cleveref）应尽量后置加载
-\ifHypoNote@refs
-    \RequirePackage{Hypo-Refs}
-\fi
+\RequirePackage{Hypo-Icon}
 
 % -----------------------------------------------------------------------------
 % Optional: deeper sectioning levels and chapter support for note-style docs.
@@ -184,6 +204,29 @@
 
     \newcommand{\chapter}{\@ifstar{\Hypo@chapter@star}{\Hypo@chapter@nostar}}
 }{}
+
+% -----------------------------------------------------------------------------
+% TOC Customization (titletoc)
+% -----------------------------------------------------------------------------
+\RequirePackage{titletoc}
+
+\titlecontents{chapter}[0em]
+  {\addvspace{1pc}\bfseries}
+  {\thecontentslabel\quad}
+  {}
+  {\hfill\contentspage}
+
+\titlecontents{section}[2em]
+  {}
+  {\thecontentslabel\quad}
+  {}
+  {\titlerule*[0.5pc]{.}\contentspage}
+
+\titlecontents{subsection}[4em]
+  {}
+  {\thecontentslabel\quad}
+  {}
+  {\titlerule*[0.5pc]{.}\contentspage}
 
 % Back-compat aliases (older docs may use these).
 \newcommand{\NoteChapter}{\chapter}

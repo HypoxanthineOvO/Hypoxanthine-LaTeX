@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{Hypo-Icon}[2026/01/17 v0.8.0 Hypoxanthine Icon]
+\ProvidesPackage{Hypo-Icon}[2026/01/25 v1.1.2 Hypoxanthine Icon]
 
 \RequirePackage{expl3}
 \RequirePackage{xparse}
@@ -64,12 +64,186 @@
     \hypo_icon_declare:nn {email}    {\faIcon{envelope}}
     \hypo_icon_declare:nn {homepage} {\faIcon{link}}
     \hypo_icon_declare:nn {github}   {\faIcon{github}}
+    
+    % Social
+    \hypo_icon_declare:nn {twitter}  {\faIcon{twitter}}
+    \hypo_icon_declare:nn {linkedin} {\faIcon{linkedin}}
+    \hypo_icon_declare:nn {youtube}  {\faIcon{youtube}}
+    \hypo_icon_declare:nn {weixin}   {\faIcon{weixin}}
+    
+    % Technical
+    \hypo_icon_declare:nn {python}   {\faIcon{python}}
+    \hypo_icon_declare:nn {java}     {\faIcon{java}}
+    \hypo_icon_declare:nn {linux}    {\faIcon{linux}}
+    \hypo_icon_declare:nn {docker}   {\faIcon{docker}}
+    \hypo_icon_declare:nn {git}      {\faIcon{git-alt}}
+    
+    % Contact / Info
+    \hypo_icon_declare:nn {phone}    {\faIcon{phone}}
+    \hypo_icon_declare:nn {mobile}   {\faIcon{mobile-alt}}
+    \hypo_icon_declare:nn {address}  {\faIcon{map-marker-alt}}
+    \hypo_icon_declare:nn {location} {\faIcon{location-arrow}}
+    \hypo_icon_declare:nn {globe}    {\faIcon{globe}}
+    \hypo_icon_declare:nn {birthday} {\faIcon{birthday-cake}}
+    
+    % Academic / Work
+    \hypo_icon_declare:nn {school}   {\faIcon{university}}
+    \hypo_icon_declare:nn {degree}   {\faIcon{graduation-cap}}
+    \hypo_icon_declare:nn {article}  {\faIcon{newspaper}}
+    \hypo_icon_declare:nn {book}     {\faIcon{book}}
+    \hypo_icon_declare:nn {project}  {\faIcon{project-diagram}}
+    \hypo_icon_declare:nn {award}    {\faIcon{award}}
+    
+    % Tech / Dev
+    \hypo_icon_declare:nn {terminal} {\faIcon{terminal}}
+    \hypo_icon_declare:nn {server}   {\faIcon{server}}
+    \hypo_icon_declare:nn {database} {\faIcon{database}}
+    \hypo_icon_declare:nn {wifi}     {\faIcon{wifi}}
+    \hypo_icon_declare:nn {bug}      {\faIcon{bug}}
+    \hypo_icon_declare:nn {branch}   {\faIcon{code-branch}}
+    
+    % Socials Extended
+    \hypo_icon_declare:nn {telegram} {\faIcon{telegram}}
+    \hypo_icon_declare:nn {discord}  {\faIcon{discord}}
+    \hypo_icon_declare:nn {instagram}{\faIcon{instagram}}
+    \hypo_icon_declare:nn {facebook} {\faIcon{facebook}}
+    \hypo_icon_declare:nn {zhihu}    {\faIcon{zhihu}}
+    \hypo_icon_declare:nn {stackoverflow}{\faIcon{stack-overflow}}
+    
+    % UI / Actions
+    \hypo_icon_declare:nn {search}   {\faIcon{search}}
+    \hypo_icon_declare:nn {home}     {\faIcon{home}}
+    \hypo_icon_declare:nn {settings} {\faIcon{cog}}
+    \hypo_icon_declare:nn {check}    {\faIcon{check}}
+    \hypo_icon_declare:nn {times}    {\faIcon{times}}
+    \hypo_icon_declare:nn {info}     {\faIcon{info-circle}}
+    \hypo_icon_declare:nn {warn}     {\faIcon{exclamation-triangle}}
+    \hypo_icon_declare:nn {error}    {\faIcon{times-circle}}
+    \hypo_icon_declare:nn {heart}    {\faIcon{heart}}
+    \hypo_icon_declare:nn {thumbsup} {\faIcon{thumbs-up}}
+    
+    % UI/Misc (Previous)
+    \hypo_icon_declare:nn {user}     {\faIcon{user}}
+    \hypo_icon_declare:nn {calendar} {\faIcon{calendar-alt}}
+    \hypo_icon_declare:nn {file}     {\faIcon{file}}
+    \hypo_icon_declare:nn {code}     {\faIcon{code}}
+    \hypo_icon_declare:nn {star}     {\faIcon{star}}
+    \hypo_icon_declare:nn {lock}     {\faIcon{lock}}
+
+    % Dev Extended
+    \hypo_icon_declare:nn {cpp}      {C++}
+    \hypo_icon_declare:nn {js}       {\faIcon{js}}
+    \hypo_icon_declare:nn {node}     {\faIcon{node-js}}
+    \hypo_icon_declare:nn {react}    {\faIcon{react}}
+    \hypo_icon_declare:nn {vue}      {\faIcon{vuejs}}
+    \hypo_icon_declare:nn {php}      {\faIcon{php}}
+    \hypo_icon_declare:nn {apple}    {\faIcon{apple}}
+    \hypo_icon_declare:nn {android}  {\faIcon{android}}
+    \hypo_icon_declare:nn {ubuntu}   {\faIcon{ubuntu}}
+
+    % Files
+    \hypo_icon_declare:nn {pdf}      {\faIcon{file-pdf}}
+    \hypo_icon_declare:nn {word}     {\faIcon{file-word}}
+    \hypo_icon_declare:nn {excel}    {\faIcon{file-excel}}
+    \hypo_icon_declare:nn {ppt}      {\faIcon{file-powerpoint}}
+    \hypo_icon_declare:nn {zip}      {\faIcon{file-archive}}
+    \hypo_icon_declare:nn {image}    {\faIcon{file-image}}
+    \hypo_icon_declare:nn {video}    {\faIcon{file-video}}
+
+    % Actions
+    \hypo_icon_declare:nn {link}     {\faIcon{link}}
+    \hypo_icon_declare:nn {download} {\faIcon{download}}
+    \hypo_icon_declare:nn {upload}   {\faIcon{upload}}
+    \hypo_icon_declare:nn {cloud}    {\faIcon{cloud}}
+    \hypo_icon_declare:nn {comment}  {\faIcon{comment}}
+    \hypo_icon_declare:nn {bell}     {\faIcon{bell}}
   }
   {
     % Fallback (no dependency): keep readable markers.
     \hypo_icon_declare:nn {email}    {@}
     \hypo_icon_declare:nn {homepage} {\#}
-    \hypo_icon_declare:nn {github}   {git}
+    \hypo_icon_declare:nn {github}   {Github}
+    
+    % Contact
+    \hypo_icon_declare:nn {phone}    {Tel}
+    \hypo_icon_declare:nn {mobile}   {Mob}
+    \hypo_icon_declare:nn {address}  {Addr}
+    \hypo_icon_declare:nn {location} {Loc}
+    \hypo_icon_declare:nn {globe}    {Web}
+    \hypo_icon_declare:nn {birthday} {Birth}
+    
+    % Academic
+    \hypo_icon_declare:nn {school}   {Edu}
+    \hypo_icon_declare:nn {degree}   {Deg}
+    \hypo_icon_declare:nn {article}  {Art}
+    \hypo_icon_declare:nn {book}     {Book}
+    \hypo_icon_declare:nn {project}  {Proj}
+    \hypo_icon_declare:nn {award}    {Award}
+    
+    % Tech
+    \hypo_icon_declare:nn {terminal} {Term}
+    \hypo_icon_declare:nn {server}   {Srv}
+    \hypo_icon_declare:nn {database} {DB}
+    \hypo_icon_declare:nn {wifi}     {Wifi}
+    \hypo_icon_declare:nn {bug}      {Bug}
+    \hypo_icon_declare:nn {branch}   {Br}
+    
+    % Socials
+    \hypo_icon_declare:nn {telegram} {TG}
+    \hypo_icon_declare:nn {discord}  {Disc}
+    \hypo_icon_declare:nn {instagram}{Insta}
+    \hypo_icon_declare:nn {facebook} {FB}
+    \hypo_icon_declare:nn {zhihu}    {Zhihu}
+    \hypo_icon_declare:nn {bilibili} {Bili}
+    \hypo_icon_declare:nn {stackoverflow}{SO}
+    
+    % UI
+    \hypo_icon_declare:nn {search}   {Q}
+    \hypo_icon_declare:nn {home}     {Home}
+    \hypo_icon_declare:nn {settings} {Set}
+    \hypo_icon_declare:nn {check}    {OK}
+    \hypo_icon_declare:nn {times}    {NO}
+    \hypo_icon_declare:nn {info}     {i}
+    \hypo_icon_declare:nn {warn}     {!}
+    \hypo_icon_declare:nn {error}    {X}
+    \hypo_icon_declare:nn {heart}    {<3}
+    \hypo_icon_declare:nn {thumbsup} {(y)}
+    
+    % Previous
+    \hypo_icon_declare:nn {user}     {User}
+    \hypo_icon_declare:nn {calendar} {Cal}
+    \hypo_icon_declare:nn {file}     {File}
+    \hypo_icon_declare:nn {code}     {</>}
+    \hypo_icon_declare:nn {star}     {*}
+    \hypo_icon_declare:nn {lock}     {Lock}
+
+    % Dev Extended
+    \hypo_icon_declare:nn {cpp}      {C++}
+    \hypo_icon_declare:nn {js}       {JS}
+    \hypo_icon_declare:nn {node}     {Node}
+    \hypo_icon_declare:nn {react}    {React}
+    \hypo_icon_declare:nn {vue}      {Vue}
+    \hypo_icon_declare:nn {php}      {PHP}
+    \hypo_icon_declare:nn {apple}    {Apple}
+    \hypo_icon_declare:nn {android}  {Android}
+    \hypo_icon_declare:nn {ubuntu}   {Ubuntu}
+
+    % Files
+    \hypo_icon_declare:nn {pdf}      {PDF}
+    \hypo_icon_declare:nn {word}     {DOC}
+    \hypo_icon_declare:nn {excel}    {XLS}
+    \hypo_icon_declare:nn {ppt}      {PPT}
+    \hypo_icon_declare:nn {zip}      {ZIP}
+    \hypo_icon_declare:nn {image}    {IMG}
+    \hypo_icon_declare:nn {video}    {MOV}
+
+    % Actions
+    \hypo_icon_declare:nn {link}     {Link}
+    \hypo_icon_declare:nn {download} {Down}
+    \hypo_icon_declare:nn {upload}   {Up}
+    \hypo_icon_declare:nn {cloud}    {Cloud}
+    \hypo_icon_declare:nn {comment}  {Msg}
+    \hypo_icon_declare:nn {bell}     {Bell}
   }
 
 \ExplSyntaxOff

@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e
+
+# Resolve the directory of this script
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PYTHON_SCRIPT="$DIR/hypo.py"
+
+# Try to find python3 or python
+if command -v python3 &>/dev/null; then
+    PY=python3
+elif command -v python &>/dev/null; then
+    PY=python
+else
+    echo "Error: Python 3 not found."
+    exit 1
+fi
+
+exec "$PY" "$PYTHON_SCRIPT" "$@"

@@ -1,171 +1,68 @@
 # Hypoxanthine-LaTeX
 
-![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v1.1.0-brightgreen) ![Status](https://img.shields.io/badge/status-Stable-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v1.1.0-brightgreen) ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
 
-**Hypoxanthine-LaTeX** 是一个模块化、工程化维护的个人 LaTeX 生态：
-- 入口（Class）负责“场景与对外接口”（Hypo-Note / Hypo-LitNote / Hypo-CHSH）
-- Core 提供“原子能力”（Fonts/Colors/Base/Math）
-- Modules 提供“按需插件”（Box/Refs/Code ...）
+**Hypoxanthine-LaTeX** is a modular, engineering-oriented LaTeX framework for efficient document creation.
+**Hypoxanthine-LaTeX** 是一个模块化、工程化维护的个人 LaTeX 生态。
 
+> **For AI Agents:** Please read [FEATURES.md](FEATURES.md) for context and syntax rules.
 
 ## 🏗 Architecture / 架构
 
-本项目采用 **Core-Module-Class** 分层架构，告别臃肿的单一文件：
+本项目采用 **Core-Module-Class** 分层架构：
 
 - **Core (内核层)**: `sty/core/` - 提供数学符号、字体策略、品牌色等原子能力。
-- **Modules (组件层)**: `sty/modules/` - 按需加载的代码高亮、伪代码、绘图插件。
-- **Classes (场景层)**: `sty/classes/` - 针对不同场景的预设基底（如 `note`, `literature`, `cheatsheet`）。
-
-接口/能力以 [FEATURES.md](FEATURES.md) 为事实来源；版本更新见 [CHANGELOG.md](CHANGELOG.md)。
+- **Modules (组件层)**: `sty/modules/` - 按需加载的代码高亮、伪代码、绘图插件（Beamer Compatible）。
+- **Classes (场景层)**: `sty/classes/` - 针对不同场景的预设基底。
+  - **Hypo-Note**: 笔记 (based on `ctexbook`)
+  - **Hypo-CHSH**: 速查表 (based on `ctexart`)
+  - **Hypo-LitNote**: 文学内容 (based on `ctexbook`)
 
 ## 🚀 Quick Start / 快速上手
 
-### 1) 获取仓库（子目录 / submodule）
+### 1. Requirements
+- TeX Live (XeLaTeX recommended)
+- Python 3 (for scripts and plotting)
 
-推荐将本仓库作为子目录（或 git submodule）放在你的项目里，例如：
-
+### 2. Installation
+Add as a submodule:
 ```bash
-# 推荐：submodule
 git submodule add git@github.com:HypoxanthineOvO/Hypoxanthine-LaTeX.git Hypoxanthine-LaTeX
 git submodule update --init --recursive
-
-# 或：普通 clone
-# git clone git@github.com:HypoxanthineOvO/Hypoxanthine-LaTeX.git
-
 ```
 
-### 2) 使用脚本生成模板（推荐）
-
-仓库自带脚本：`scripts/hypo.py`。
+### 3. Create a Project
+Use the included script (Windows/Linux/macOS):
 
 ```bash
-# 依赖自检（可选）
-python3 Hypoxanthine-LaTeX/scripts/hypo.py doctor
+# Linux / macOS
+./Hypoxanthine-LaTeX/scripts/hypo template note --dest ./my-note
 
-# 生成 Hypo-Note 模板到 ./demo-note（同时安装 VS Code snippets）
-python3 Hypoxanthine-LaTeX/scripts/hypo.py template note \
-    --dest ./demo-note \
-    --hypo-path ./Hypoxanthine-LaTeX \
-    --with-snippets
+# Windows
+.\Hypoxanthine-LaTeX\scripts\hypo.bat template note --dest .\my-note
+```
 
-cd ./demo-note
+### 4. Build
+```bash
+cd my-note
 make
-
-# 可选：启用 minted（需要 -shell-escape + pygmentize）
+# Or enable minted highlighting:
 make SHELL_ESCAPE=1
 ```
 
-只安装 snippets（可选但推荐）：
+## 📚 Documentation / 文档
+- **User Manual**: [manual/Manual.pdf](manual/Manual.pdf) (Self-compiled demonstration)
+- **AI Context**: [FEATURES.md](FEATURES.md) (Syntax guide for AI)
+- **Development Plan**: [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md)
 
-```bash
-python3 Hypoxanthine-LaTeX/scripts/hypo.py snippets install
-```
+## 🧩 Key Features (Highlights)
 
-### 3) 最小示例（Hypo-Note 入口）
-
-新建 `main.tex`：
-
-```latex
-% v0.8.0 起推荐用 class 入口（v1.0.0 仍推荐）
-\documentclass[outputdir=build]{Hypo-Note}
-
-\begin{document}
-\section{Hello}
-This is a \TBF{Hypoxanthine} powered note.
-Math: $\MB{x} + \MC{F}(\BS{\theta})$ and $\Abs{-3}=3$.
-
-\begin{definition}{Group}{group}
-    A group is a set...
-\end{definition}
-See \cref{def:group}.
-\end{document}
-
-```
-
-> 内容层级说明：`Hypo-Note` 现在默认以 `ctexbook` 为基底（更贴近“原生 book”的章/节语义）。
-> - 默认会以更“笔记友好”的方式加载 book（例如默认 `oneside/openany`，避免无意义空白页；你仍可自行传入 `twoside/openright` 覆盖）。
-> - 章节编号风格可一键切换：`chapterstyle=en`（默认，“1.”）或 `chapterstyle=cn`（“第一章”）。
-
-### 3.5) 最小示例（Hypo-LitNote 入口）
-
-见 tests/LitNote.tex（涵盖 poem/quotepara/InlineQuote + lists + colorscheme 示例）。
-
-兼容旧用法（仍可用；适合你自己选 `article/ctexart` 等基底）：
-
-```latex
-\documentclass{article}
-\usepackage[outputdir=build]{Hypo-Note}
-\begin{document}
-Hello.
-\end{document}
-```
-
-### 4) 使用 Makefile 构建（不使用脚本时）
-
-复制模板 Makefile 到你的项目根目录（它会设置 `TEXINPUTS`，从而允许 `\usepackage{Hypo-Note}` 直接加载本仓库的 `sty/`）：
-
-```bash
-cp Hypoxanthine-LaTeX/templates/Makefile ./
-make
-```
-
-若你把仓库放在其他路径，请在 Makefile 里调整：
-
-- `HYPO_PATH = ./Hypoxanthine-LaTeX`
-
-也可以参考：
-- [manual/Makefile](manual/Makefile)
-- [tests/Makefile](tests/Makefile)
-
-## ✅ 当前能力（摘自 FEATURES）
-
-- 入口类：Hypo-Note / Hypo-LitNote / Hypo-CHSH
-- 兼容入口包：Hypo-Note（wrapper）/ Hypo-Sheet（package）
-- Core：Fonts / Colors / Base（`outputdir` + `\FinalOutputDir`）/ Math（含可关闭速写）
-- Box：definition / example / note（显式 label：`def:` / `ex:` / `note:` 前缀）
-- Refs：默认启用 hyperref + cleveref（可 `refs=false` 关闭），`\cref{...}` 输出形如 "Definition: 0.1"
-- Img：`\img` 插图快捷命令（支持引用、figure/figure*、宽度/placement 参数）
-- Algorithm：基于 `algorithm2e` 的算法环境配置（与 `\cref` 协作）
-- Code：`hypocode` 环境（优先 minted；不可用时 fallback listings，并给一次性 Warning）
-
-详细接口请直接看 [FEATURES.md](FEATURES.md)。
-
-## 🧩 Code Highlight / 代码高亮（Hypo-Code）
-
-推荐使用统一环境：
-
-```latex
-\begin{hypocode}{python}
-def add(a, b):
-    return a + b
-\end{hypocode}
-```
-
-常用可选参数（两种后端都不会报错）：
-
-```latex
-% 是否显示行号（默认 true）
-\begin{hypocode}[linenos=false]{python}
-print("no line numbers")
-\end{hypocode}
-
-% 主题（仅对 minted 生效；fallback 下会忽略）
-\begin{hypocode}[theme=monokai]{python}
-print("monokai")
-\end{hypocode}
-```
-
-启用 minted（推荐，需 `-shell-escape` + Pygments）：
-
-- 使用本仓库 Makefile 体系：`make SHELL_ESCAPE=1`
-- Pygments 依赖：需要可执行的 `pygmentize`（通常来自 `python3-pygments` 或 `pip install Pygments`）
-
-安全提示：`-shell-escape` 会允许 TeX 执行外部命令；如果编译不可信的文档，请保持关闭。
-
-## 🗺 路线图
-
-路线图以 [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) 为准（包含 v0.5+ 到 v1.1.0 的里程碑拆分）。
+- **Semantic Colors**: Built-in schemes (`Base`, `CN`, `Tech`) with easy switching.
+- **Robust Code**: `Hypo-Code` environment works in `beamer` frames.
+- **Auto-Layout Cheatsheets**: `Hypo-CHSH` handles multi-column layouts automatically.
+- **Integrated Plotting**: Write Python code in LaTeX to generate plots (`Hypo-Plot`).
 
 ## 🤝 Contribution
 
-这是一个个人维护项目，但也欢迎提交 Issue 或 PR 来改进公共模块。
+This is a personal project, but PRs are welcome.
+Please follow the [Conventional Commits](https://www.conventionalcommits.org/) specification.

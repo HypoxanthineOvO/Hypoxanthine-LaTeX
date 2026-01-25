@@ -47,6 +47,7 @@ def _check_command(cmd: str, version_args: list[str] | None = None) -> CheckResu
     return CheckResult(True, f"ok: {cmd} ({path}) {suffix}")
 
 
+
 def cmd_doctor(_args: argparse.Namespace) -> int:
     print("Hypoxanthine doctor")
     print(f"- repo: {REPO_ROOT}")
@@ -65,11 +66,25 @@ def cmd_doctor(_args: argparse.Namespace) -> int:
     else:
         checks.append(CheckResult(True, "info: minted.sty not found (minted will not be used; Hypo-Code falls back to listings)"))
 
+    # Font Checks using fc-list (Linux/macOS) or just skipping on Windows for now (complex)
+    if shutil.which("fc-list"):
+        fonts_to_check = ["LXGW WenKai", "FandolSong", "DejaVu Sans"]
+        for font in fonts_to_check:
+            res = _run(["fc-list", f":family={font}"])
+            if res.returncode == 0 and res.stdout.strip():
+                checks.append(CheckResult(True, f"ok: Font '{font}' found"))
+            else:
+                checks.append(CheckResult(True, f"warn: Font '{font}' not found (latex might substitute/fail)"))
+
     ok = True
     for c in checks:
-        mark = "OK" if c.ok else "FAIL"
-        print(f"[{mark}] {c.message}")
-        ok = ok and c.ok
+        if c.ok and c.message.startswith("warn:"):
+            print(f"[WARN] {c.message}")
+        elif c.ok:
+            print(f"[OK]   {c.message}")
+        else:
+            print(f"[FAIL] {c.message}")
+            ok = False
 
     if ok:
         print("\nAll required tools look OK.")
@@ -78,10 +93,10 @@ def cmd_doctor(_args: argparse.Namespace) -> int:
 
     print("\nSome required tools are missing.")
     print("Install hints (pick the one matching your distro):")
-    print("- Debian/Ubuntu: sudo apt-get install texlive-xetex texlive-latex-extra latexmk")
+    print("- Debian/Ubuntu: sudo apt-get install texlive-xetex texlive-latex-extra latexmk python3-pygments fonts-noto-cjk")
     print("- Fedora: sudo dnf install texlive-scheme-full latexmk")
     print("- Arch: sudo pacman -S texlive-most texlive-langchinese latexmk")
-    print("- Pygments (for minted): pip install Pygments  (or: sudo apt-get install python3-pygments)")
+    print("- Fonts: Install LXGW WenKai for best experience.")
     return 1
 
 
@@ -195,12 +210,33 @@ def cmd_template(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_clean(args: argparse.Namespace) -> int:
+    # Basic clean: remove 'build' directory in current path
+    # or specified targets.
+    target_dir = Path("build").resolve()
+    if not target_dir.exists():
+        print("Nothing to clean (build directory not found).")
+        return 0
+    
+    print(f"Removing {target_dir}...")
+    try:
+        shutil.rmtree(target_dir)
+        print("Done.")
+    except Exception as e:
+        print(f"Error cleaning: {e}")
+        return 1
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="hypo", description="Hypoxanthine helper commands")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     p_doctor = sub.add_parser("doctor", help="Check toolchain availability")
     p_doctor.set_defaults(func=cmd_doctor)
+    
+    p_clean = sub.add_parser("clean", help="Clean build directory")
+    p_clean.set_defaults(func=cmd_clean)
 
     p_tpl = sub.add_parser("template", help="Generate a starter project")
     p_tpl.add_argument("kind", choices=["note", "litnote", "chsh"], help="Template kind")
@@ -235,3 +271,4 @@ def main(argv: list[str]) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))
+

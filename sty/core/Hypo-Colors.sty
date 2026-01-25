@@ -1,21 +1,115 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{Hypo-Colors}[2026/01/17 Hypoxanthine Colors]
+\ProvidesPackage{Hypo-Colors}[2026/01/25 Hypoxanthine Colors]
 
 \RequirePackage[dvipsnames, svgnames, x11names]{xcolor}
-
 \RequirePackage{expl3}
 \RequirePackage{xparse}
+
 \ExplSyntaxOn
 
+% ==============================================================================
+% 1. Core Palette Definitions (Primitive Colors)
+% ==============================================================================
+
 % -----------------------------------------------------------------------------
-% Color Scheme Switch (semantic aliases)
+% Palette: Base (Tailwind/Material inspired)
 % -----------------------------------------------------------------------------
-% Usage patterns:
-% 1) Entry sets macro before loading this package:
-%      \def\HypoColorScheme{Tech}
-% 2) User calls after loading:
-%      \HypoColorSchemeSetup{scheme=CN}
-%
+% Purpose: General purpose, vibrant, accessible.
+\definecolor{HypoBlueLight}{HTML}{DBEAFE}
+\definecolor{HypoBlue}{HTML}{2563EB}
+\definecolor{HypoBlueDark}{HTML}{1E40AF}
+
+\definecolor{HypoGreenLight}{HTML}{D1FAE5}
+\definecolor{HypoGreen}{HTML}{16A34A}
+\definecolor{HypoGreenDark}{HTML}{065F46}
+
+\definecolor{HypoAmberLight}{HTML}{FEF3C7}
+\definecolor{HypoAmber}{HTML}{F59E0B}
+\definecolor{HypoAmberDark}{HTML}{B45309}
+
+\definecolor{HypoRedLight}{HTML}{FEE2E2}
+\definecolor{HypoRed}{HTML}{DC2626}
+\definecolor{HypoRedDark}{HTML}{7F1D1D}
+
+\definecolor{HypoCyanLight}{HTML}{CFFAFE}
+\definecolor{HypoCyan}{HTML}{0891B2}
+\definecolor{HypoCyanDark}{HTML}{155E75}
+
+\definecolor{HypoGreyLight}{HTML}{F3F4F6}
+\definecolor{HypoGrey}{HTML}{6B7280}
+\definecolor{HypoGreyDark}{HTML}{111827}
+
+\definecolor{HypoOrangeLight}{HTML}{FFEDD5}
+\definecolor{HypoOrange}{HTML}{EA580C}
+\definecolor{HypoOrangeDark}{HTML}{9A3412}
+
+\definecolor{HypoPurpleLight}{HTML}{EDE9FE}
+\definecolor{HypoPurple}{HTML}{7C3AED}
+\definecolor{HypoPurpleDark}{HTML}{4C1D95}
+
+\definecolor{HypoPinkLight}{HTML}{FCE7F3}
+\definecolor{HypoPink}{HTML}{DB2777}
+\definecolor{HypoPinkDark}{HTML}{9D174D}
+
+% Legacy Compat
+\colorlet{HypoSkyBlue}{HypoBlueLight}
+\colorlet{HypoDarkBlue}{HypoBlueDark}
+\colorlet{HypoLightGreen}{HypoGreenLight}
+\colorlet{HypoYellow}{HypoAmber}
+\colorlet{HypoBrown}{HypoAmberDark}
+\colorlet{HypoDarkRed}{HypoRedDark}
+\colorlet{HypoDarkGrey}{HypoGreyDark}
+
+% -----------------------------------------------------------------------------
+% Palette: CN (Chinese Traditional / Morandi)
+% -----------------------------------------------------------------------------
+% Palette ID: CN01 (MoonWhite / DaiBlue)
+\definecolor{HypoCN01MoonWhite}{HTML}{E6F2FF}
+\definecolor{HypoCN01DaiBlue}{HTML}{2A3A5F}
+\definecolor{HypoCN01SongYanInk}{HTML}{3C3C3C}
+\definecolor{HypoCN01QingGrey}{HTML}{7B8B8F}
+\definecolor{HypoCN01ZheStone}{HTML}{A0522D}
+\definecolor{HypoCN01JiangPurple}{HTML}{8A2BE2}
+
+% Palette ID: CN Base
+\definecolor{HypoCNBaseWhite}{HTML}{FFFEF2}
+
+% Singles
+\definecolor{HypoCNYanZhi}{HTML}{9D2933}
+\definecolor{HypoCNZhuQing}{HTML}{789262}
+\definecolor{HypoCNQiuXiang}{HTML}{D9B44A}
+\definecolor{HypoCNIndigo}{HTML}{1661AB}
+\definecolor{HypoCNTan}{HTML}{B36D61}
+\definecolor{HypoCNYaQing}{HTML}{424C50}
+
+% -----------------------------------------------------------------------------
+% Palette: Tech (Dark Mode / Digital)
+% -----------------------------------------------------------------------------
+% Palette ID: Tech01 (DeepSpace / DigitalBlue)
+\definecolor{HypoTech01DeepSpace}{HTML}{0F1525}
+\definecolor{HypoTech01DigitalBlue}{HTML}{2A6BFF}
+\definecolor{HypoTech01SystemCyan}{HTML}{00D4FF}
+\definecolor{HypoTech01UIGray}{HTML}{A0AEC0}
+\definecolor{HypoTech01SignalGreen}{HTML}{00FF9D}
+\definecolor{HypoTech01AlertRed}{HTML}{FF4757}
+\definecolor{HypoTech01ColdWhite}{HTML}{F8FAFC}
+\definecolor{HypoTech01Panel}{HTML}{2A2A3C}
+
+% -----------------------------------------------------------------------------
+% Palette: Simple (Grey Scale / Minimalist)
+% -----------------------------------------------------------------------------
+% Palette ID: Simple02
+\definecolor{HypoSimple02GreyWhite}{HTML}{F5F5F5}
+\definecolor{HypoSimple02LightGrey}{HTML}{E0E0E0}
+\definecolor{HypoSimple02MidGrey}{HTML}{9E9E9E}
+\definecolor{HypoSimple02DeepGrey}{HTML}{424242}
+\definecolor{HypoSimple02OnlyBlue}{HTML}{2196F3}
+
+
+% ==============================================================================
+% 2. Semantic Logic & Scheme Switching
+% ==============================================================================
+
 \tl_new:N \g_hypo_colors_scheme_tl
 \tl_new:N \g_hypo_colors_scheme_requested_tl
 
@@ -49,157 +143,23 @@
 \NewDocumentCommand{\HypoColorSchemeName}{}
 	{ \tl_use:N \g_hypo_colors_scheme_tl }
 
-\ExplSyntaxOff
 
-% v0.3.3：专业配色（浅 / 中 / 深）
-% 目标：更克制的饱和度、更统一的明度梯度，适配浅底 + 细边框的 box 风格。
+% -----------------------------------------------------------------------------
+% Scheme Definitions (Mapping Primitives to Semantics)
+% -----------------------------------------------------------------------------
 
-% Blue
-\definecolor{HypoBlueLight}{HTML}{DBEAFE}
-\definecolor{HypoBlue}{HTML}{2563EB}
-\definecolor{HypoBlueDark}{HTML}{1E40AF}
-
-% Green
-\definecolor{HypoGreenLight}{HTML}{D1FAE5}
-\definecolor{HypoGreen}{HTML}{16A34A}
-\definecolor{HypoGreenDark}{HTML}{065F46}
-
-% Amber (Yellow)
-\definecolor{HypoAmberLight}{HTML}{FEF3C7}
-\definecolor{HypoAmber}{HTML}{F59E0B}
-\definecolor{HypoAmberDark}{HTML}{B45309}
-
-% Red
-\definecolor{HypoRedLight}{HTML}{FEE2E2}
-\definecolor{HypoRed}{HTML}{DC2626}
-\definecolor{HypoRedDark}{HTML}{7F1D1D}
-
-% Cyan
-\definecolor{HypoCyanLight}{HTML}{CFFAFE}
-\definecolor{HypoCyan}{HTML}{0891B2}
-\definecolor{HypoCyanDark}{HTML}{155E75}
-
-% Neutral (Grey)
-\definecolor{HypoGreyLight}{HTML}{F3F4F6}
-\definecolor{HypoGrey}{HTML}{6B7280}
-\definecolor{HypoGreyDark}{HTML}{111827}
-
-% Orange
-\definecolor{HypoOrangeLight}{HTML}{FFEDD5}
-\definecolor{HypoOrange}{HTML}{EA580C}
-\definecolor{HypoOrangeDark}{HTML}{9A3412}
-
-% Purple
-\definecolor{HypoPurpleLight}{HTML}{EDE9FE}
-\definecolor{HypoPurple}{HTML}{7C3AED}
-\definecolor{HypoPurpleDark}{HTML}{4C1D95}
-
-% Pink
-\definecolor{HypoPinkLight}{HTML}{FCE7F3}
-\definecolor{HypoPink}{HTML}{DB2777}
-\definecolor{HypoPinkDark}{HTML}{9D174D}
-
-% 兼容旧名称（尽量保持语义一致）
-\colorlet{HypoSkyBlue}{HypoBlueLight}
-\colorlet{HypoDarkBlue}{HypoBlueDark}
-\colorlet{HypoLightGreen}{HypoGreenLight}
-\colorlet{HypoYellow}{HypoAmber}
-\colorlet{HypoBrown}{HypoAmberDark}
-\colorlet{HypoDarkRed}{HypoRedDark}
-\colorlet{HypoDarkGrey}{HypoGreyDark}
-
-% ==============================================================================
-% 2) Additional Palettes
-% ==============================================================================
-
-% --- CN01: 月白·黛蓝 · 书斋雅韵 ---
-\definecolor{HypoCN01MoonWhite}{HTML}{E6F2FF}
-\definecolor{HypoCN01DaiBlue}{HTML}{2A3A5F}
-\definecolor{HypoCN01SongYanInk}{HTML}{3C3C3C}
-\definecolor{HypoCN01QingGrey}{HTML}{7B8B8F}
-\definecolor{HypoCN01ZheStone}{HTML}{A0522D}
-\definecolor{HypoCN01JiangPurple}{HTML}{8A2BE2}
-
-% CN base neutral paper (picked from the earlier CN02 "YaWhite", but kept in the CN group)
-\definecolor{HypoCNBaseWhite}{HTML}{FFFEF2}
-
-% --- CN singles (optional building blocks) ---
-\definecolor{HypoCNYanZhi}{HTML}{9D2933}
-\definecolor{HypoCNZhuQing}{HTML}{789262}
-\definecolor{HypoCNQiuXiang}{HTML}{D9B44A}
-\definecolor{HypoCNIndigo}{HTML}{1661AB}
-\definecolor{HypoCNTan}{HTML}{B36D61}
-\definecolor{HypoCNYaQing}{HTML}{424C50}
-
-% --- Tech01: 深空数字 · 专业界面 ---
-\definecolor{HypoTech01DeepSpace}{HTML}{0F1525}
-\definecolor{HypoTech01DigitalBlue}{HTML}{2A6BFF}
-\definecolor{HypoTech01SystemCyan}{HTML}{00D4FF}
-\definecolor{HypoTech01UIGray}{HTML}{A0AEC0}
-\definecolor{HypoTech01SignalGreen}{HTML}{00FF9D}
-\definecolor{HypoTech01AlertRed}{HTML}{FF4757}
-\definecolor{HypoTech01ColdWhite}{HTML}{F8FAFC}
-
-% Tech panel neutral (picked from the earlier Tech02 "DeepGrey", but kept in the Tech group)
-\definecolor{HypoTech01Panel}{HTML}{2A2A3C}
-
-% --- Simple02: 空气灰阶 · 中性克制 ---
-\definecolor{HypoSimple02GreyWhite}{HTML}{F5F5F5}
-\definecolor{HypoSimple02LightGrey}{HTML}{E0E0E0}
-\definecolor{HypoSimple02MidGrey}{HTML}{9E9E9E}
-\definecolor{HypoSimple02DeepGrey}{HTML}{424242}
-\definecolor{HypoSimple02OnlyBlue}{HTML}{2196F3}
-
-% ==============================================================================
-% 3) Semantic Colors (switchable)
-% ==============================================================================
-% Stable semantic names (recommended for new modules/classes).
-\colorlet{HypoText}{black}
-\colorlet{HypoTextMuted}{HypoGrey}
-\colorlet{HypoBackground}{white}
-\colorlet{HypoSurface}{HypoGreyLight}
-% A second surface layer (slightly different from HypoSurface), useful for nested
-% UI like quotes/inline highlights. This is computed per scheme.
-\colorlet{HypoSurfaceAlt}{HypoGreyLight}
-\colorlet{HypoBorder}{HypoGrey}
-\colorlet{HypoBorderStrong}{HypoGreyDark}
-% Title bar semantics (used by modules like LitBox).
-% Keep: light background + dark ink, but allow schemes to control the tint.
-\colorlet{HypoTitleBackground}{HypoSurface}
-\colorlet{HypoTitleText}{HypoGreyDark}
-\colorlet{HypoPrimary}{HypoBlue}
-\colorlet{HypoSecondary}{HypoCyan}
-\colorlet{HypoAccent}{HypoPurple}
-\colorlet{HypoSuccess}{HypoGreen}
-\colorlet{HypoWarning}{HypoAmber}
-\colorlet{HypoDanger}{HypoRed}
-
-% Soft background tints derived from semantic accents.
-% These are computed per scheme after HypoPrimary/... are assigned.
-\colorlet{HypoPrimarySoft}{HypoGreyLight}
-\colorlet{HypoSuccessSoft}{HypoGreyLight}
-\colorlet{HypoWarningSoft}{HypoGreyLight}
-\colorlet{HypoDangerSoft}{HypoGreyLight}
-
-% Note-facing aliases (stable names for users).
-\colorlet{HypoNoteText}{HypoText}
-\colorlet{HypoNoteBackground}{HypoBackground}
-\colorlet{HypoNoteBorder}{HypoBorder}
-\colorlet{HypoNotePrimary}{HypoPrimary}
-\colorlet{HypoNoteAccent}{HypoAccent}
-
-\ExplSyntaxOn
-% Scheme handlers (avoid \str_case to prevent stack blowups on some engines).
+% --- Scheme: Base ---
 \cs_new_protected:cpn { hypo_colors_scheme_Base: }
 	{
 		\colorlet{HypoText}{HypoGreyDark}
 		\colorlet{HypoTextMuted}{HypoGrey}
-		\colorlet{HypoBackground}{white}
-		\colorlet{HypoSurface}{HypoGreyLight}
-		\colorlet{HypoBorder}{HypoGrey}
-		\colorlet{HypoBorderStrong}{HypoGreyDark}
-		\colorlet{HypoTitleBackground}{HypoGreyLight}
-		\colorlet{HypoTitleText}{HypoGreyDark}
+		\colorlet{HypoBackground}{HypoBlueLight!8!white} % Subtle cool tint
+		\colorlet{HypoSurface}{HypoBlueLight!20!white}   % Slightly deeper tint
+		\colorlet{HypoBorder}{HypoGreyLight!80!HypoBlueLight}  % Tinted border
+		\colorlet{HypoBorderStrong}{HypoBlue!40!HypoGrey}
+		\colorlet{HypoTitleBackground}{HypoSurface}
+		\colorlet{HypoTitleText}{HypoBlueDark}
+		
 		\colorlet{HypoPrimary}{HypoBlue}
 		\colorlet{HypoSecondary}{HypoCyan}
 		\colorlet{HypoAccent}{HypoPurple}
@@ -208,12 +168,9 @@
 		\colorlet{HypoDanger}{HypoRed}
 	}
 
-% Canonical schemes (v0.9.0): keep the system simple.
-% Accepted scheme names are: Base, CN, Tech, Simple.
-% Older names like CN01/CN02/Tech01/Simple02 are treated as aliases.
+% --- Scheme: CN ---
 \cs_new_protected:cpn { hypo_colors_scheme_CN: }
 	{
-		% Canonical CN: neutral paper + restrained ink.
 		\colorlet{HypoText}{HypoCN01SongYanInk}
 		\colorlet{HypoTextMuted}{HypoCN01QingGrey}
 		\colorlet{HypoBackground}{HypoCNBaseWhite}
@@ -222,6 +179,7 @@
 		\colorlet{HypoBorderStrong}{HypoCN01DaiBlue}
 		\colorlet{HypoTitleBackground}{HypoCN01MoonWhite}
 		\colorlet{HypoTitleText}{HypoCN01SongYanInk}
+		
 		\colorlet{HypoPrimary}{HypoCN01DaiBlue}
 		\colorlet{HypoSecondary}{HypoCN01QingGrey}
 		\colorlet{HypoAccent}{HypoCN01ZheStone}
@@ -230,18 +188,18 @@
 		\colorlet{HypoDanger}{HypoCNYanZhi}
 	}
 
+% --- Scheme: Tech ---
 \cs_new_protected:cpn { hypo_colors_scheme_Tech: }
 	{
-		% Canonical Tech: dark UI.
 		\colorlet{HypoText}{HypoTech01ColdWhite}
 		\colorlet{HypoTextMuted}{HypoTech01UIGray}
 		\colorlet{HypoBackground}{HypoTech01DeepSpace}
 		\colorlet{HypoSurface}{HypoTech01Panel}
 		\colorlet{HypoBorder}{HypoTech01Panel}
 		\colorlet{HypoBorderStrong}{HypoTech01UIGray}
-		% For LitBox titles, still keep a light bar with dark ink.
 		\colorlet{HypoTitleBackground}{HypoTech01ColdWhite}
 		\colorlet{HypoTitleText}{HypoTech01DeepSpace}
+		
 		\colorlet{HypoPrimary}{HypoTech01DigitalBlue}
 		\colorlet{HypoSecondary}{HypoTech01SystemCyan}
 		\colorlet{HypoAccent}{HypoTech01SystemCyan}
@@ -250,9 +208,9 @@
 		\colorlet{HypoDanger}{HypoTech01AlertRed}
 	}
 
+% --- Scheme: Simple ---
 \cs_new_protected:cpn { hypo_colors_scheme_Simple: }
 	{
-		% Canonical Simple: white paper + subtle greys.
 		\colorlet{HypoText}{HypoSimple02DeepGrey}
 		\colorlet{HypoTextMuted}{HypoSimple02MidGrey}
 		\colorlet{HypoBackground}{white}
@@ -261,6 +219,7 @@
 		\colorlet{HypoBorderStrong}{HypoSimple02DeepGrey}
 		\colorlet{HypoTitleBackground}{HypoSimple02GreyWhite}
 		\colorlet{HypoTitleText}{HypoSimple02DeepGrey}
+		
 		\colorlet{HypoPrimary}{HypoSimple02OnlyBlue}
 		\colorlet{HypoSecondary}{HypoSimple02MidGrey}
 		\colorlet{HypoAccent}{HypoSimple02OnlyBlue}
@@ -276,9 +235,10 @@
 			{ \tl_set:Nn \l_tmpa_tl { Base } }
 			{ }
 
-		% Normalize to canonical scheme names.
+		% Normalize scheme name (case insensitive matching)
 		\tl_set:Nx \l_tmpb_tl { \tl_upper_case:n { \l_tmpa_tl } }
 		\tl_set:Nn \l_tmpc_tl { Base }
+		
 		\str_case:nnF { \l_tmpb_tl }
 			{
 				{BASE}{ \tl_set:Nn \l_tmpc_tl { Base } }
@@ -287,7 +247,7 @@
 				{SIMPLE}{ \tl_set:Nn \l_tmpc_tl { Simple } }
 			}
 			{
-				% Aliases: CN01..CN99 -> CN; TECH01.. -> Tech; SIMPLE01.. -> Simple.
+				% Flexible alias matching (CN01 -> CN, etc.)
 				\regex_match:nnTF { \A CN \d+ \Z } { \l_tmpb_tl }
 					{ \tl_set:Nn \l_tmpc_tl { CN } }
 					{
@@ -301,23 +261,29 @@
 					}
 			}
 
-		% Record canonical name for user query.
+		% Store canonical name
 		\tl_set:NV \g_hypo_colors_scheme_tl \l_tmpc_tl
 
-		% Apply canonical handler (Base/CN/Tech/Simple).
+		% Dispatch scheme handler
 		\cs_if_exist:cTF { hypo_colors_scheme_ \l_tmpc_tl : }
 			{ \use:c { hypo_colors_scheme_ \l_tmpc_tl : } }
 			{ \use:c { hypo_colors_scheme_Base: } }
 
-		% Derived semantic layers (scheme-aware).
-		% Keep SurfaceAlt slightly closer to text-muted to create a gentle separation.
+		% -------------------------------------------------------------------------
+		% Derived Colors (Calculated from Basic Semantics)
+		% -------------------------------------------------------------------------
+		
+		% SurfaceAlt: A subtle variation of surface for nested UI
 		\colorlet{HypoSurfaceAlt}{HypoSurface!88!HypoTextMuted}
-		% Soft tints for colored callouts/boxes, derived from accents on the surface.
+		
+		% Soft Tints: Used for box backgrounds, derived from accent colors
+		% Mixed with 90% Surface to ensure readability and harmony
 		\colorlet{HypoPrimarySoft}{HypoPrimary!10!HypoSurface}
 		\colorlet{HypoSuccessSoft}{HypoSuccess!10!HypoSurface}
 		\colorlet{HypoWarningSoft}{HypoWarning!10!HypoSurface}
 		\colorlet{HypoDangerSoft}{HypoDanger!10!HypoSurface}
 
+		% Public "HypoNote*" aliases for consistent external API
 		\colorlet{HypoNoteText}{HypoText}
 		\colorlet{HypoNoteBackground}{HypoBackground}
 		\colorlet{HypoNoteBorder}{HypoBorder}
@@ -327,6 +293,7 @@
 
 \hypo_colors_init_requested_scheme:
 \hypo_colors_apply_requested_scheme:
+
 \ExplSyntaxOff
 
 \endinput

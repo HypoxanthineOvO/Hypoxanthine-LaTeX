@@ -1,0 +1,5 @@
+\begin{tikzpicture}
+  \node[circle,draw] (A) at (0,0) {A};
+  \node[circle,draw] (B) at (2,0) {B};
+  \draw[->] (A) -- (B);
+\end{tikzpicture}

@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{Hypo-Box}[2026/01/12 v0.3.4 Hypoxanthine Boxes]
+\ProvidesPackage{Hypo-Box}[2026/01/25 v1.1.2 Hypoxanthine Boxes]
 
 % ==============================================================================
 % 1. 依赖加载
@@ -61,29 +61,43 @@
   hypo box/.style={
     enhanced,
     breakable,
-    boxrule=0.4pt,
-    colframe=HypoBorderStrong,
-    colback=HypoSurface,
+    boxrule=0.6pt,
+    fonttitle=\bfseries\sffamily,
+    coltitle=black,          % 标题文字黑色
+    colback=white,           % 内容背景白色
     coltext=HypoText,
-    colbacktitle=HypoTitleBackground,
-    coltitle=HypoTitleText,
-    left=1.0mm, right=1.0mm, top=0.8mm, bottom=0.8mm,
-    arc=1mm,
-    fonttitle=\bfseries,
-    before skip=6pt,
-    after skip=6pt,
-    % 标题和编号的分隔符
-    separator sign={:},
-    % 引用时的格式 (Label 引用时显示的文字)
-    label separator={:},
+    before skip=12pt,
+    after skip=12pt,
+    left=2mm, right=2mm, top=1mm, bottom=1mm,
+    middle=1mm,
+    arc=1.2mm,
+    separator sign={},       % 不使用默认冒号
   }
 }
 
 % 具体的颜色样式
 \tcbset{
-  hypo definition box/.style={hypo box, colframe=HypoPrimary, colback=HypoPrimarySoft},
-  hypo example box/.style={hypo box, colframe=HypoSuccess, colback=HypoSuccessSoft},
-  hypo note box/.style={hypo box, colframe=HypoWarning, colback=HypoWarningSoft}
+  % Definition: Primary Color
+  hypo definition box/.style={
+    hypo box,
+    colframe=HypoPrimary,
+    colbacktitle=HypoPrimary!15!white,
+    title style={left color=HypoPrimary!20!white, right color=white},
+  },
+  % Example: Success Color
+  hypo example box/.style={
+    hypo box,
+    colframe=HypoSuccess,
+    colbacktitle=HypoSuccess!15!white,
+    title style={left color=HypoSuccess!20!white, right color=white},
+  },
+  % Note: Warning Color
+  hypo note box/.style={
+    hypo box,
+    colframe=HypoWarning,
+    colbacktitle=HypoWarning!15!white,
+    title style={left color=HypoWarning!20!white, right color=white},
+  }
 }
 
 % ==============================================================================
@@ -94,8 +108,21 @@
 
 \makeatletter
 \expandafter\newtcbtheorem\expandafter[\HypoBox@TheoremOptions]{definition}{Definition}{hypo definition box}{def}
+
+% Math Logic (Share counter with definition if possible, but tcolorbox newtcbtheorem makes its own counter easily.
+% For simplicity in this version, let's keep them independent or just standard.)
+% To share counters: use counter from=definition
+\expandafter\newtcbtheorem\expandafter[\HypoBox@TheoremOptions, use counter from=definition]{theorem}{Theorem}{hypo definition box}{thm}
+\expandafter\newtcbtheorem\expandafter[\HypoBox@TheoremOptions, use counter from=definition]{lemma}{Lemma}{hypo definition box}{lem}
+\expandafter\newtcbtheorem\expandafter[\HypoBox@TheoremOptions, use counter from=definition]{corollary}{Corollary}{hypo definition box}{cor}
+\expandafter\newtcbtheorem\expandafter[\HypoBox@TheoremOptions, use counter from=definition]{proposition}{Proposition}{hypo definition box}{prop}
+
 \expandafter\newtcbtheorem\expandafter[\HypoBox@TheoremOptions]{example}{Example}{hypo example box}{ex}
+\expandafter\newtcbtheorem\expandafter[\HypoBox@TheoremOptions]{tip}{Tip}{hypo example box}{tip}
+
 \expandafter\newtcbtheorem\expandafter[\HypoBox@TheoremOptions]{note}{Note}{hypo note box}{note}
+\expandafter\newtcbtheorem\expandafter[\HypoBox@TheoremOptions]{important}{Important}{hypo note box}{imp}
+\expandafter\newtcbtheorem\expandafter[\HypoBox@TheoremOptions]{warning}{Warning}{hypo note box}{warn}
 \makeatother
 
 \endinput

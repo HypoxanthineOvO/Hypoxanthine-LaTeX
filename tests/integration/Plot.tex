@@ -7,7 +7,7 @@
 
 \usepackage[outputdir=build]{Hypo-Note}
 \usepackage{Hypo-Plot}
-\HypoSetPythonBin{/home/heyx/miniconda3/bin/python}
+% \HypoSetPythonBin{python3} % Default is python3 - relies on system PATH
 \begin{document}
 
 \section*{Hypo-Plot Test}
@@ -26,6 +26,6 @@ plt.title('Theme colors from LaTeX')
 \end{HypoPyPlot}
 
 \subsection*{TikZ Pipeline}
-\HypoTikZFile[width={0.55\linewidth}]{my_network}{my_network.tikz}
+\HypoTikZFile[width={0.55\linewidth}]{my_network}{integration/my_network.tikz}
 
 \end{document}

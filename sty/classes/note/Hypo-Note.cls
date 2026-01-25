@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{Hypo-Note}[2026/01/17 v0.9.3 Hypoxanthine Note Class]
+\ProvidesClass{Hypo-Note}[2026/01/25 v1.1.2 Hypoxanthine Note Class]
 
 % Route options: pass Hypo-Note specific options to Hypo-Note-Core,
 % and pass everything else to the base class (ctexbook).
@@ -107,6 +107,9 @@
     colorscheme .tl_set:N = \g_hypo_note_opt_colorscheme_tl,
     colorscheme .initial:n = Base,
 
+    fontset .tl_set:N = \g_hypo_note_opt_fontset_tl,
+    fontset .initial:n = tech,
+
     unknown .code:n = { \hypo_note_collect_unknown_to_base:n {#1} },
   }
 
@@ -211,14 +214,15 @@
         code=\bool_if:NTF \g_hypo_note_opt_code_bool {true}{false},
         lists=\bool_if:NTF \g_hypo_note_opt_lists_bool {true}{false},
         outputdir=\tl_use:N \g_hypo_note_opt_outputdir_tl,
-        colorscheme=\tl_use:N \g_hypo_note_opt_colorscheme_tl
+        colorscheme=\tl_use:N \g_hypo_note_opt_colorscheme_tl,
+        fontset=\tl_use:N \g_hypo_note_opt_fontset_tl
       }
   }
 \hypo_note_core_opts_build:
 \RequirePackage[\l_hypo_note_core_opts_tl]{Hypo-Note-Core}
 \ExplSyntaxOff
 
-\RequirePackage{Hypo-Icon}
+% (Hypo-Icon is now loaded by Hypo-Note-Core)
 
 % ------------------------------------------------------------------------------
 % Metadata + cover

@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{Hypo-Plot}[2026/01/20 v1.0.2 Plotting Module]
+\ProvidesPackage{Hypo-Plot}[2026/01/25 v1.1.2 Plotting Module]
 
 \RequirePackage{expl3}
 \RequirePackage{xparse}
@@ -26,7 +26,9 @@
 % -----------------------------------------------------------------------------
 % 定义一个全局变量存储 Python 路径，默认值为 python3
 \tl_new:N \g_hypo_plot_python_bin_tl
-\tl_gset:Nn \g_hypo_plot_python_bin_tl { python3 }
+\cs_if_exist:NTF \HypoPythonBin
+  { \tl_gset:Nn \g_hypo_plot_python_bin_tl { \HypoPythonBin } }
+  { \tl_gset:Nn \g_hypo_plot_python_bin_tl { python3 } }
 
 % 提供接口让用户修改路径
 \NewDocumentCommand \HypoSetPythonBin { m }
@@ -456,19 +458,22 @@
     \hypo_plot_set_include_opts:
     \tl_set_eq:NN \l_hypo_plot_tikz_include_opts_tl \g_hypo_plot_include_opts_tl
 
+    % For TeX writing (\iow_open), use path relative to output dir (implied by -outdir)
     \tl_set:Nn \l_hypo_plot_tikz_wrapper_tex_tl { scripts/\l_hypo_plot_tikz_name_tl.tex }
     \tl_set:Nn \l_hypo_plot_tikz_wrapper_tmp_tex_tl { scripts/\l_hypo_plot_tikz_name_tl.tmp.tex }
-    % For \includegraphics, use a filesystem-visible path.
-    \tl_set:Nx \l_hypo_plot_tikz_pdf_tex_tl
-      { \tl_use:N \g_hypo_plot_fig_dir_tl/\l_hypo_plot_tikz_name_tl.pdf }
+    
+    % For Shell commands (cp, latexmk), use full path including output dir
     \tl_set:Nx \l_hypo_plot_tikz_wrapper_tl { \tl_use:N \g_hypo_plot_script_dir_tl/\l_hypo_plot_tikz_name_tl.tex }
     \tl_set:Nx \l_hypo_plot_tikz_wrapper_tmp_tl { \tl_use:N \g_hypo_plot_script_dir_tl/\l_hypo_plot_tikz_name_tl.tmp.tex }
+    
+    % For \includegraphics, use full path (graphics path search is separate from -outdir writing)
+    \tl_set:Nx \l_hypo_plot_tikz_pdf_tex_tl { \tl_use:N \g_hypo_plot_fig_dir_tl/\l_hypo_plot_tikz_name_tl.pdf }
     \tl_set:Nx \l_hypo_plot_tikz_pdf_tl { \tl_use:N \g_hypo_plot_fig_dir_tl/\l_hypo_plot_tikz_name_tl.pdf }
 
     % Also copy the raw TikZ source into the scripts dir (same folder as wrapper)
-    % so the external compilation never depends on assets/ path resolution.
     \tl_set:Nn \l_hypo_plot_tikz_src_copy_tex_tl { scripts/\l_hypo_plot_tikz_name_tl.tikz }
     \tl_set:Nn \l_hypo_plot_tikz_src_copy_tmp_tex_tl { scripts/\l_hypo_plot_tikz_name_tl.tmp.tikz }
+    % Shell paths for cp
     \tl_set:Nx \l_hypo_plot_tikz_src_copy_tl { \tl_use:N \g_hypo_plot_script_dir_tl/\l_hypo_plot_tikz_name_tl.tikz }
     \tl_set:Nx \l_hypo_plot_tikz_src_copy_tmp_tl { \tl_use:N \g_hypo_plot_script_dir_tl/\l_hypo_plot_tikz_name_tl.tmp.tikz }
 

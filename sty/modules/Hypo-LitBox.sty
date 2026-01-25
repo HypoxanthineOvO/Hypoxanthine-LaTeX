@@ -51,16 +51,16 @@
 \tcbset{
   hypo lit poem/.style={
     hypo lit box,
-    % Poem block: cleaner background, lighter frame.
-    colframe=HypoBorder,
-    colback=HypoBackground,
+    % Poem: Very subtle tint (Background), soft border
+    colframe=HypoBorder!60!HypoSurface,
+    colback=HypoBackground!50!HypoSurface, % Blend for a soft paper-like feel
     fontupper=\HypoLitBoxPoemFont,
   },
   hypo lit quotepara/.style={
     hypo lit box,
+    % Quote: Stronger contrast, distinct surface
     colframe=HypoBorderStrong,
-    colback=HypoSurface,
-    % Quote title a bit more muted + italic, but still dark on light bg.
+    colback=HypoSurfaceAlt,
     fonttitle=\bfseries\itshape,
     fontupper=\HypoLitBoxQuoteFont,
   },

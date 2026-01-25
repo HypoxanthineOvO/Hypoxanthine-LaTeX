@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{Hypo-Code}[2026/01/16 v0.7.0 Hypoxanthine Code]
+\ProvidesPackage{Hypo-Code}[2026/01/25 v1.1.2 Hypoxanthine Code]
 
 \RequirePackage{expl3}
 \RequirePackage{xparse}
@@ -64,7 +64,6 @@
 
 % ==============================================================================
 % 1) minted path (preferred)
-% 2) listings fallback
 % ==============================================================================
 \bool_if:NTF \l_hypo_code_use_minted_bool
     {
@@ -77,25 +76,38 @@
                 breaklines
         }
 
-        % Use the command form (\minted[opts]{lang}{code}) to avoid nesting
-        % verbatim-like environments.
-        \NewDocumentEnvironment{hypocode}{ O{} m +v }
+        % Re-implementation: DO NOT use +v argument.
+        % Instead, use \VerbatimEnvironment and manually construct the minted environment.
+        % This is much safer for Beamer and other fragile contexts.
+        \NewDocumentEnvironment{hypocode}{ O{} m }
             {
                 \hypo_code_options_set:n {#1}
+                \VerbatimEnvironment % Magic for fancyvrb/minted to find the end
+                
+                % Build options list
                 \tl_clear:N \l_tmpa_tl
                 \bool_if:NTF \l_hypo_code_linenos_bool
                     { \tl_put_right:Nn \l_tmpa_tl { linenos } }
                     { \tl_put_right:Nn \l_tmpa_tl { linenos=false } }
+                
                 \tl_if_blank:VTF \l_hypo_code_theme_tl
                     { }
                     { \tl_put_right:Nn \l_tmpa_tl { ,style=\l_hypo_code_theme_tl } }
+                
                 \tl_if_blank:VTF \l_hypo_code_minted_extra_tl
                     { }
                     { \tl_put_right:Nn \l_tmpa_tl { ,\l_hypo_code_minted_extra_tl } }
-                \minted[\l_tmpa_tl]{#2}{#3}
+
+                % Start the minted environment with expanded options
+                \begin{minted}[\l_tmpa_tl]{#2}
             }
-            {}
+            {
+                \end{minted}
+            }
     }
+% ==============================================================================
+% 2) listings fallback
+% ==============================================================================
     {
         \RequirePackage{listings}
         \RequirePackage{xcolor}
@@ -126,31 +138,25 @@
                     {#1}
             }
 
-        % Define a real listings environment so that \end{hypocode} is recognized
-        % by listings' verbatim scanner.
+        % Keep lstnewenvironment for listings support.
+        % It handles verbatim body reading correctly.
         \lstnewenvironment{hypocode}[2][]
             {
                 \hypo_code_warn_fallback_once:
                 \hypo_code_options_set:n {#1}
-                \bool_if:NTF \l_hypo_code_linenos_bool
+                % Calculate options
+                 \bool_if:NTF \l_hypo_code_linenos_bool
                     {
-                        \tl_if_blank:VTF \l_hypo_code_listings_extra_tl
-                            {
-                                \lstset{style=hypo-code,language=\hypo_code_listings_lang:n{#2},numbers=left}
-                            }
-                            {
-                                \lstset{style=hypo-code,language=\hypo_code_listings_lang:n{#2},numbers=left,\l_hypo_code_listings_extra_tl}
-                            }
+                         \tl_set:Nn \l_tmpa_tl { style=hypo-code, numbers=left, language=\hypo_code_listings_lang:n{#2} }
                     }
                     {
-                        \tl_if_blank:VTF \l_hypo_code_listings_extra_tl
-                            {
-                                \lstset{style=hypo-code,language=\hypo_code_listings_lang:n{#2},numbers=none}
-                            }
-                            {
-                                \lstset{style=hypo-code,language=\hypo_code_listings_lang:n{#2},numbers=none,\l_hypo_code_listings_extra_tl}
-                            }
+                         \tl_set:Nn \l_tmpa_tl { style=hypo-code, numbers=none, language=\hypo_code_listings_lang:n{#2} }
                     }
+                
+                \tl_if_blank:VF \l_hypo_code_listings_extra_tl
+                    { \tl_put_right:Nn \l_tmpa_tl { , \l_hypo_code_listings_extra_tl } }
+                
+                \exp_args:NV \lstset \l_tmpa_tl
             }
             {}
     }

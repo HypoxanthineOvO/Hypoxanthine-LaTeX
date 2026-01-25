@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{Hypo-LitNote}[2026/01/17 v0.9.3 Hypoxanthine Literature Note Class]
+\ProvidesClass{Hypo-LitNote}[2026/01/25 v1.1.2 Hypoxanthine Literature Note Class]
 
 % Options:
 % - Pass Hypoxanthine entry options to Hypo-Note-Core and local modules.
@@ -231,7 +231,8 @@
         algorithm=\bool_if:NTF \g_hypo_litnote_opt_algorithm_bool {true}{false},
         code=\bool_if:NTF \g_hypo_litnote_opt_code_bool {true}{false},
         outputdir=\tl_use:N \g_hypo_litnote_opt_outputdir_tl,
-        colorscheme=\tl_use:N \g_hypo_litnote_opt_colorscheme_tl
+        colorscheme=\tl_use:N \g_hypo_litnote_opt_colorscheme_tl,
+        fontset=lit % Force Literature font strategy for Hypo-LitNote
       }
   }
 \hypo_litnote_core_opts_build:

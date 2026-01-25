@@ -15,6 +15,12 @@ ifeq ($(SHELL_ESCAPE),1)
 FLAGS += -latexoption=-shell-escape
 endif
 
+# 支持通过 make PYTHON_BIN=/path/to/python 注入 Python 路径
+PYTHON_BIN ?= python3
+ifneq ($(PYTHON_BIN),python3)
+    FLAGS += -usepretex="\def\HypoPythonBin{$(PYTHON_BIN)}"
+endif
+
 # 让 TeX 能通过包名找到 sty/ 下的本地包（例如 \usepackage{Hypo-Note}）
 # 末尾的冒号用于保留 TeX 默认搜索路径。
 HYPO_PATH ?= .

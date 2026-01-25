@@ -1,7 +1,7 @@
 # Hypoxanthine-LaTeX Architecture & Development Plan
 
-**Version**: `v1.1.0` (Feature Release)
-**Date**: 2026-01-19
+**Version**: `v1.1.2` (Feature/Fix Release)
+**Date**: 2026-01-25
 **Status**: Released
 
 ---
@@ -228,25 +228,25 @@ Hypoxanthine-LaTeX/
 
 ### v1.1.0 (Released, 2026-01-19)
 
-#### v1.0.1 (Maintenance Patch, in v1.1.0 train)
+#### v1.1.2 (Fixes & Improvements, 2026-01-25)
 
-* [x] **Math/physics 固化**：Hypo-Math 在检测到 `physics.sty` 时加载 physics，并固定默认 options（`trig,uprightdiff,bolddel`）。
-* [x] **可配置钩子**：提供 `\HypoPhysicsOptions` 覆盖 physics options（需在加载 Hypo-Math 前定义）。
-* [x] **文档补齐**：Manual 增加 physics 速查小节，并保证缺包时仍可编译。
-
-* [x] **Plot 绘图模块**：新增 `Hypo-Plot`（`HypoPyPlot` 环境），支持在 TeX 中内嵌 Python/Matplotlib 代码，生成图片并插入文档；产物按 `outputdir` 落盘到 `build/scripts/` 与 `build/figures/`。
+* [x] **Hypo-Plot**: Fix `HypoTikZFile` paths in `-output-directory` mode.
+* [x] **Hypo-Plot**: Flexible Python binary selection via `\HypoPythonBin` or Makefile `PYTHON_BIN`.
+* [x] **Hypo-Icon**: Extensive expansion of available icons.
+* [x] **Docs**: Manual icon table refactor and FEATURES localization.
 
 ### v1.2.0 (Planned)
 
-* [ ] **Label 增强**：支持 ASCII 标题自动转 Label（例如 `\section{Introduction}` -> `sec:introduction`）。
-* [ ] **封面图支持**：在 `\makecover` 中增加 Hero Image / Logo / Background 的标准接口。
-* [ ] **新入口 Hypo-LitPaper**：针对更严格的文学论文排版需求，提供独立的 Class（基于 `ctexart` 或 `ctexbook` 的严格子集）。
-* [ ] **Plot 后续整理**：补齐更多示例/边缘用例与错误提示（例如 Python 缺包、shell-escape 关闭、Windows 路径）。
+* [ ] **Label Auto-Generation**: Support ASCII title to label conversion (e.g., `\section{Introduction}` -> `sec:introduction`).
+* [ ] **Cover Image Support**: Add Hero Image / Logo / Background interfaces to `\makecover`.
+* [ ] **New Entry: Hypo-LitPaper**: Strict literature paper class.
+* [ ] **Plot Improvements**: Better error handling and Windows support (Partial fixes in v1.1.2).
+* [ ] **Beamer Support**: Official Beamer theme or simplified usage guide with `Hypo-Code` / `Hypo-Box`.
 
 ### v1.x (Long Term)
 
-* [ ] **Web Support**：探索基于 `tex4ht` 或 `pandoc` 的 HTML 导出适配。
-* [ ] **LSP Integration**：为 TexLab 提供专属的补全配置。
+* [ ] **Web Support**: Explore `tex4ht` or `pandoc` HTML export.
+* [ ] **LSP Integration**: Custom config for TexLab.
 
 ---
 

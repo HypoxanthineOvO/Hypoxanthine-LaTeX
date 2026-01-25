@@ -2,8 +2,32 @@
 
 本文件记录版本更新内容（面向使用者）。
 
-## Unreleased
+## v1.1.2 (2026-01-25)
 
+### Major Updates / 重大更新
+- **Manual Rewrite**: 全面重写用户手册（Chapter 3-7），新增详细的盒子系统、代码高亮、数学速写表、绘图工作流及文学模式指南。
+- **Hypo-Note Class**: 新增 `fontset` 接口，防止自定义字体选项意外透传给底层 `ctexbook` 导致编译错误。
+- **Hypo-Fonts**: 增强了字体加载的鲁棒性 (Safe Fallback)，缺失字体时自动降级使用 `ctex` 默认配置。
+- **Core Refactoring**: `Hypo-Note-Core` 选项解析迁移至 `l3keys2e` (expl3)。
+
+### Fixes & Improvements
+- **Hypo-Plot**: 修复了 `HypoTikZFile` 在 `-output-directory` 模式下的路径错误，现在 TikZ 外部编译流程已完全打通。
+- **Hypo-Plot**: 改进了 Python 环境检测机制。支持通过 Makefile 变量 `PYTHON_BIN` (`make PYTHON_BIN=...`) 或 LaTeX 宏 `\HypoPythonBin` 灵活指定解释器路径，不再硬编码为 `python3`。
+- **Hypo-Icon**: 大幅扩充图标库（30+ 新图标），涵盖 Dev (React, Vue...), Office (PDF, Word...), Actions (Cloud, Download...) 等分类。
+- **Hypo-Box**: 重构了盒子视觉样式：采用彩色标题栏（随环境类型变化）+ 黑色标题字 + 白色内容的现代设计；补齐了 `theorem`, `lemma`, `corollary`, `proposition`, `tip`, `important`, `warning` 等全量环境定义。
+- **Docs**: `Manual` 完成全模块深度改写并同步渲染示例（含诗歌与引用段落）；`FEATURES.md` 全面汉化并转换为 AI Context 格式。
+
+## v1.1.1 (2026-01-24)
+
+### Refactoring & Optimization / 重构与优化
+- **Architecture/架构**: `Hypo-Note.cls` 实现了与 `Hypo-Note-Core.sty` 的职责分离，增强了 `sty` 文件在标准类（如 `article`）下的鲁棒性。
+- **Hypo-Code**: 移除了脆弱的 `+v` 参数类型；显式使用 `\VerbatimEnvironment` 以提升与 `beamer` 幻灯片的兼容性。
+- **Hypo-Colors**: 重构为更清晰的“色板 (Palette) / 语义层 (Semantic Layer)”结构。
+- **Tests**: 测试集重新组织为 `unit`（单元测试）与 `integration`（集成测试）文件夹。
+- **Scripts**: Added `hypo clean` command and improved `hypo doctor` with font detection. Added `scripts/hypo` (.sh) and `scripts/hypo.bat` wrappers.
+- **Docs**: `FEATURES.md` is now a dedicated "AI Context" document. `README.md` updated for clarity. Manual expanded significantly.
+- **Icons**: Added 30+ new icons (Dev, Office, Actions) to `Hypo-Icon.sty`.
+- **Manual**: Completely rewrote Chapters 3 (Box), 4 (Code), 5 (Math), 6 (Plot) to address feedback.
 
 ## v1.1.0 (2026-01-19)
 

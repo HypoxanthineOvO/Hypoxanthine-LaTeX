@@ -12,7 +12,8 @@
     outputdir=build,
     colorscheme=Tech,
     shorthand=true,
-    code=true
+    code=true,
+    fontset=lit
 ]{Hypo-Note}
 
 % 2. 配置文档元数据 (Hypo-Note Native Interface)
@@ -29,6 +30,7 @@
 % 额外加载：本文档需要演示 Hypo-LitBox 的效果
 % 注意：Hypo-LitBox 默认由 Hypo-LitNote 加载；在 Hypo-Note 下需手动引入
 \usepackage{Hypo-LitBox}
+\usepackage{booktabs} % Fix toprule/midrule/bottomrule undefined errors
 
 % 3. 文档正文
 \begin{document}
@@ -43,108 +45,82 @@
 % --- 正文开始 ---
 \mainmatter
 
-\chapter{概览 (Overview)}
+\chapter{介绍 (Introduction)}
 
-\HypoBF{Hypoxanthine} 是一套模块化的 \LaTeX{} 架构，旨在通过分层设计解决“笔记”、“作弊纸 (Cheatsheet)”和“文学排版”等多场景需求。
+\section{设计哲学}
 
-本文档全面记录了截至当前版本已实现的功能接口。本文档本身即使用 \HypoCls{Hypo-Note} 编写，是架构能力的直接演示。
+Hypoxanthine-LaTeX 是一套\HypoBF{工程化}的 LaTeX 解决方案。传统的 LaTeX 模板往往将所有逻辑堆砌在一个 `.sty` 文件中，不仅维护困难，而且难以在不同类型的文档（如技术笔记和文学随笔）之间复用核心样式。
 
-\begin{note}{关于本文档}{about}
-    本文档仅记录“真值”——即代码中已经跑通并可用的逻辑。不包含任何未实现的规划或愿景。
-\end{note}
-
-\chapter{快速上手 (Quick Start)}
-
-本节给出一个\HypoBF{最推荐}的工作流：把本仓库作为子目录（或 git submodule）放入你的项目，然后用本仓库提供的 Makefile 体系构建。
-
-\section{以子模块/子目录方式引入}
-
-\subsection{git submodule（推荐）}
-\begin{hypocode}[linenos=false]{bash}
-git submodule add git@github.com:HypoxanthineOvO/Hypoxanthine-LaTeX.git Hypoxanthine-LaTeX
-git submodule update --init --recursive
-\end{hypocode}
-
-\subsection{普通 clone（也可）}
-\begin{hypocode}[linenos=false]{bash}
-git clone git@github.com:HypoxanthineOvO/Hypoxanthine-LaTeX.git
-\end{hypocode}
-
-\section{用脚本生成模板（推荐）}
-
-脚本位于 \HypoCode{scripts/hypo.py}，用于\HypoBF{自检}、\HypoBF{生成模板}、\HypoBF{安装 VS Code snippets}。
-
-\subsection{依赖自检}
-\begin{hypocode}[linenos=false]{bash}
-python3 Hypoxanthine-LaTeX/scripts/hypo.py doctor
-\end{hypocode}
-
-\subsection{生成模板项目}
-\begin{hypocode}[linenos=false]{bash}
-# 生成 Hypo-Note 模板（输出到 ./demo-note）
-python3 Hypoxanthine-LaTeX/scripts/hypo.py template note \
-    --dest ./demo-note \
-    --hypo-path ./Hypoxanthine-LaTeX \
-    --with-snippets
-
-cd ./demo-note
-make
-\end{hypocode}
-
-\subsection{安装 workspace snippets（可选但强烈推荐）}
-\begin{hypocode}[linenos=false]{bash}
-# 安装到当前项目：./.vscode/hypoxanthine-latex.code-snippets
-python3 Hypoxanthine-LaTeX/scripts/hypo.py snippets install
-\end{hypocode}
-
-\section{启用 minted（可选）}
-\HypoPkg{Hypo-Code} 会优先使用 \HypoPkg{minted}；若编译时未开启 \HypoTT{-shell-escape} 或缺少 Pygments，会自动回退到 \HypoPkg{listings} 并给出 Warning。
-
-\begin{hypocode}[linenos=false]{bash}
-# Makefile 体系下开启 shell-escape（允许 minted 调用 pygmentize）
-make SHELL_ESCAPE=1
-\end{hypocode}
-
-\chapter{入口类 (Entry Classes)}
-
-Hypoxanthine 通过不同的文档类（Class）暴露给终端用户。
-
-\section{Hypo-Note: 标准笔记}
-
-这是最常用的入口，基于 \HypoCls{ctexbook} 构建，保留了原生 Book 的语义。
-
-\subsection{推荐用法}
-\begin{hypocode}[linenos=false]{tex}
-\documentclass[outputdir=build]{Hypo-Note}
-\end{hypocode}
-
-\subsection{核心特性}
+本架构的设计核心在于\HypoBF{关注点分离}：
 \begin{itemize}
-    \item \HypoBF{基类}: \HypoCls{ctexbook}（支持 \HypoCS{chapter}, \HypoCS{part}）。
-    \item \HypoBF{默认行为}: 若用户未指定，默认启用 \HypoTT{oneside} 和 \HypoTT{openany}。
-    \item \HypoBF{自动加载}: 核心能力包 \HypoPkg{Hypo-Note-Core} 及图标包 \HypoPkg{Hypo-Icon}。
+    \item \HypoBF{Classes (业务层)}: \HypoTT{Hypo-Note}, \HypoTT{Hypo-LitNote}, \HypoTT{Hypo-CHSH}。它们只负责“文档是干什么的”（页面布局、标题格式）。
+    \item \HypoBF{Core (能力层)}: \HypoTT{Hypo-Fonts}, \HypoTT{Hypo-Colors}。它们负责“文档长什么样”（字体、配色），且对所有 Class 通用。
+    \item \HypoBF{Modules (组件层)}: \HypoTT{Hypo-Box}, \HypoTT{Hypo-Code}, \HypoTT{Hypo-Plot}。它们是按需加载的功能插件。
 \end{itemize}
 
-\subsection{类选项 (Class Options)}
-以下选项可在 \HypoCS{documentclass} 中设置：
+这种设计使得你可以在撰写《算法导论笔记》和《唐诗三百首》时，底层共享同一套字体配置和颜色变量，而上层表现出完全不同的排版气质。
 
-\begin{description}
-    \item[\HypoTT{base=book}] 兼容性占位（若设为 \HypoTT{article} 会报错）。
-    \item[\HypoTT{chapterstyle=en|cn}] 章节标题风格。默认 \HypoTT{en}。
-    \item[\HypoTT{colorscheme=...}] 配色方案，支持 \HypoTT{Base}, \HypoTT{CN}, \HypoTT{Tech}, \HypoTT{Simple}。默认 \HypoTT{Base}。
-    \item[\HypoTT{outputdir=<dir>}] 构建目录，默认为 \HypoTT{build}。
-    \item[\HypoTT{shorthand=true|false}] 是否启用数学速写（如 \HypoCS{R}, \HypoCS{Set}）。默认 \HypoTT{true}。
-    \item[\HypoTT{code=true|false}] 是否加载代码高亮模块。默认 \HypoTT{true}。
-    \item[\HypoTT{boxes=true|false}] 是否加载定理盒子模块。默认 \HypoTT{true}。
-\end{description}
+\section{适用场景}
 
-\section{Hypo-CHSH: 速查小抄 (Cheatsheet)}
+\begin{itemize}
+    \item \HypoBF{Hypo-Note}: 适用于计算机科学、数学、物理等理工科技术文档。预置了代码高亮、算法环境和严谨的定理盒子。
+    \item \HypoBF{Hypo-LitNote}: 适用于人文社科、随笔、诗歌整理。预置了优美的引用块、诗歌环境，并采用更人文的字体配置。
+    \item \HypoBF{Hypo-CHSH}: 适用于“作弊纸”(Cheatsheet)。采用高密度的多栏布局，尽可能在 A4 纸上容纳更多信息。
+\end{itemize}
 
-专为紧凑型打印内容设计的文档类，基于 \HypoCls{ctexart} 并魔改了多栏布局。
+\chapter{配置与使用 (Configuration)}
 
-\subsection{推荐用法}
+\section{基础工作流}
+
+推荐将本仓库作为 Git Submodule 引入你的项目，而非直接复制文件。这样可以随时通过 \HypoTT{git pull} 获取功能更新。
+
+\begin{hypocode}[linenos=false]{bash}
+# 1. 引入子模块
+git submodule add git@github.com:HypoxanthineOvO/Hypoxanthine-LaTeX.git Hypoxanthine-LaTeX
+
+# 2. 从模板初始化 (使用脚本)
+python3 Hypoxanthine-LaTeX/scripts/hypo.py template note --dest ./my-notes
+\end{hypocode}
+
+\section{文档类选项 (Class Options)}
+
+所有 Hypoxanthine 文档类都通过 Key-Value 方式配置。以下是通用选项详解：
+
+\begin{center}
+\begin{tabular}{l p{0.6\linewidth}}
+\toprule
+\HypoBF{选项 Key} & \HypoBF{说明} \\
+\midrule
+\HypoTT{fontset} & \HypoTT{tech} (默认): 使用思源黑体作为粗体，强调对比度；\newline \HypoTT{lit}: 使用霞鹜文楷/宋体，强调阅读舒适感。\\
+\midrule
+\HypoTT{colorscheme} & 设定全局配色主题。\newline 支持 \HypoTT{Base} (现代淡彩), \HypoTT{CN} (中国传统色), \HypoTT{Tech} (深色模式), \HypoTT{Simple} (极简灰)。 \\
+\midrule
+\HypoTT{shorthand} & 是否开启数学速写命令（如 \HypoCS{R}, \HypoCS{Set}）。默认 \HypoTT{true}。若与已有宏包冲突可关闭。 \\
+\midrule
+\HypoTT{code} & 是否加载代码高亮模块 (\HypoPkg{minted}/\HypoPkg{listings})。默认 \HypoTT{true}。 \\
+\midrule
+\HypoTT{boxes} & 是否加载定理盒子模块 (\HypoPkg{Hypo-Box})。默认 \HypoTT{true}。 \\
+\midrule
+\HypoTT{outputdir} & 指定编译产出目录（用于配合 Minted 宏包寻找缓存）。默认为 \HypoTT{build}。 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{元数据设置}
+
+使用 \HypoCS{HypoNoteSetup} 统一管理文档元数据。这些信息将用于生成封面 (\HypoCS{makecover}) 和 PDF 属性。
+
 \begin{hypocode}[linenos=false]{tex}
-\documentclass{Hypo-CHSH}
+\HypoNoteSetup{
+    title  = {文档主标题},
+    subtitle = {副标题（可选）},
+    author = {作者名称},
+    date   = {\today},
+    % 以下信息会在封面底部显示
+    email  = {your@email.com},
+    homepage = {https://github.com/...},
+    affiliation = {Your Institute}
+}
 \end{hypocode}
 
 \subsection{核心特性}
@@ -173,319 +149,363 @@ Hypoxanthine 通过不同的文档类（Class）暴露给终端用户。
     \item 默认 \HypoTT{sectionstyle=outline}，隐藏小节编号，避免出现“1.1”这种理科感强的序号。
 \end{itemize}
 
-\chapter{核心能力 (Core)}
+\chapter{盒子系统 (The Box System)}
 
-所有 Class 底层均依赖于 \HypoPkg{Hypo-Note-Core} 及其原子能力包。
+盒子是 Hypoxanthine 的核心视觉组件。通过 \HypoPkg{Hypo-Box} 模块提供，基于强大的 \HypoPkg{tcolorbox}。
 
-\section{基础能力 (Base)}
+\section{设计意图 (Design Philosophy)}
 
-\HypoPkg{Hypo-Base} 提供了文档编写的基础设施。
+在技术文档中，建立清晰的 \HypoBF{视觉层级 (Visual Hierarchy)} 至关重要。你需要让读者一眼区分出哪些是核心结论（定理），哪些是辅助理解（例子），哪些是避坑指南（注意）。
 
-\subsection{路径与导出}
-通过选项 \HypoTT{outputdir} 传入的目录会被保存至宏 \HypoCS{FinalOutputDir}，供 \HypoPkg{minted} 等宏包调用。
-
-\subsection{排版辅助命令}
-专门用于编写 Manual 或 README 的语义化命令：
+Hypoxanthine 摒弃了传统 LaTeX \HypoCode{\textbackslash newtheorem} 枯燥的斜体样式，采用了基于色彩心理学的 \HypoBF{全彩盒子} 设计：
 
 \begin{itemize}
-    \item \HypoCS{HypoCS\{foo\}} $\rightarrow$ \HypoCS{foo} （排版控制序列）
-    \item \HypoCS{HypoEnv\{name\}} $\rightarrow$ \HypoEnv{name} （排版环境名）
-    \item \HypoCS{HypoPkg\{name\}} $\rightarrow$ \HypoPkg{name} （排版包名）
-    \item \HypoCS{HypoCode\{...\}} $\rightarrow$ 等宽显示代码片段
+    \item \HypoBF{Primary (蓝紫系)}: 代表理性与严谨。用于 \HypoEnv{definition}, \HypoEnv{theorem}, \HypoEnv{lemma}, \HypoEnv{proposition}, \HypoEnv{corollary}。
+    \item \HypoBF{Success (青绿系)}: 代表验证与实践。用于 \HypoEnv{example}。
+    \item \HypoBF{Warning (橙黄系)}: 代表警示与强调。用于 \HypoEnv{note}, \HypoEnv{tip}, \HypoEnv{important}, \HypoEnv{warning}。
 \end{itemize}
 
-\section{字体与颜色 (Fonts \& Colors)}
+这种设计让读者在快速浏览时，能够迅速建立对内容的认知模型。这体现了 \HypoBF{关注点分离} 的原则：作者只需声明“这是一个定理”，而不用操心“定理应该用什么字体和边框”。
 
-\subsection{字体策略}
-依赖 \HypoPkg{xeCJK} 和 \HypoPkg{fontspec}。
-\begin{itemize}
-    \item \HypoBF{中文}: 优先 \HypoTT{LXGW WenKai}，降级至 Noto 或 Fandol。
-    \item \HypoBF{英文}: 优先 \HypoTT{DejaVu} 系列。
-\end{itemize}
+\section{环境概览 (Environments)}
 
-\subsection{配色方案}
-通过 \HypoCS{HypoColorSchemeSetup} 或 Class 选项注入。当前支持：
-\begin{itemize}
-    \item \HypoTT{Base}: 默认风格。
-    \item \HypoTT{CN}: 中国传统色风格。
-    \item \HypoTT{Tech}: 科技蓝/冷色调风格（当前文档使用）。
-    \item \HypoTT{Simple}: 极简黑白/灰阶风格。
-\end{itemize}
+所有盒子环境共享统一的参数签名：
+\HypoCode{\textbackslash begin\{env\_name\}\{标题\}\{标签\} ... \textbackslash end\{env\_name\}}
 
-\section{数学支持 (Math)}
+\subsection{数学与逻辑 (Math \& Logic)}
 
-\HypoPkg{Hypo-Math} 预定义了常用符号。若选项 \HypoTT{shorthand=true}，则启用以下速写：
+这些环境共享计数器，且通常使用主色调（不同配色方案下具体色值不同）。
 
-\begin{itemize}
-    \item 集合: \HypoCS{R} ($\R$), \HypoCS{N} ($\N$), \HypoCS{Z} ($\Z$)
-    \item 定界符: \HypoCS{Set\{x\}} $\rightarrow$ $\Set{x}$, \HypoCS{Paren\{x\}} $\rightarrow$ $\Paren{x}$
-    \item 样式: \HypoCS{MB\{x\}} ($\MB{x}$), \HypoCS{MC\{x\}} ($\MC{x}$)
-\end{itemize}
-
-\subsection{physics 速查（可选）}
-\HypoPkg{Hypo-Math} 会在检测到 \HypoPkg{physics} 存在时自动加载，并固定一组选项以保证风格稳定：
-\HypoTT{trig,uprightdiff,bolddel}。
-如需覆盖，可在加载入口 Class 或 \HypoPkg{Hypo-Math} \HypoBF{之前}定义：
-\HypoCS{\textbackslash HypoPhysicsOptions}。
-
-\newif\ifHypoManualPhysicsAvailable
-\IfFileExists{physics.sty}{\HypoManualPhysicsAvailabletrue}{\HypoManualPhysicsAvailablefalse}
-
-\ifHypoManualPhysicsAvailable
-\subsubsection{微分与导数}
-\begin{verbatim}
-\[
-    \dd x,\quad \dd{\vb{x}},\quad \dv{f}{x},\quad \pdv{f}{x},\quad \pdv[2]{f}{x}
-\]
-\end{verbatim}
-效果：
-\[
-    \dd x,\quad \dd{\vb{x}},\quad \dv{f}{x},\quad \pdv{f}{x},\quad \pdv[2]{f}{x}
-\]
-
-\subsubsection{自动定界符与范数}
-\begin{verbatim}
-\[
-        \qty(\frac{a}{b}),\quad \abs{\frac{a}{b}},\quad \norm{\vb{v}},\quad \eval{f(x)}_{x=0}^{x=1}
-\]
-\end{verbatim}
-效果：
-\[
-    \qty(\frac{a}{b}),\quad \abs{\frac{a}{b}},\quad \norm{\vb{v}},\quad \eval{f(x)}_{x=0}^{x=1}
-\]
-
-\subsubsection{矢量算符与 Dirac 记号}
-\begin{verbatim}
-\[
-        \vnabla f,\quad \grad f,\quad \div \vb{A},\quad \curl \vb{A},\quad \laplacian f,
-        \qquad \ket{\psi},\ \bra{\phi},\ \braket{\phi}{\psi}
-\]
-\end{verbatim}
-效果：
-\[
-    \vnabla f,\quad \grad f,\quad \div \vb{A},\quad \curl \vb{A},\quad \laplacian f,
-    \qquad \ket{\psi},\ \bra{\phi},\ \braket{\phi}{\psi}
-\]
-\else
-\HypoBF{提示}: 当前环境未安装 \HypoPkg{physics}（找不到 \HypoTT{physics.sty}）。
-\HypoPkg{Hypo-Math} 会继续编译，但 physics 提供的命令（如 \HypoCS{dd}/\HypoCS{dv}/\HypoCS{ket} 等）不可用。
-\fi
-
-\chapter{功能模块 (Modules)}
-
-模块按需加载，通常由 Class 选项控制。
-
-\section{定理盒子 (Box)}
-由 \HypoPkg{Hypo-Box} 提供，基于 \HypoPkg{tcolorbox}。
-
-\subsection{环境签名与 label 规则}
-\HypoPkg{Hypo-Box} 的盒子环境（如 \HypoEnv{definition}/\HypoEnv{example}/\HypoEnv{note}）统一采用两个\HypoBF{必选参数}：
-\HypoTT{\{title\}\{label\}}。
-
-\begin{hypocode}[linenos=false]{tex}
-\begin{definition}{Title}{label}
-    ...
-\end{definition}
-\end{hypocode}
-
-label 会自动加前缀：
-\begin{itemize}
-    \item \HypoEnv{definition}：\HypoTT{def:}
-    \item \HypoEnv{example}：\HypoTT{ex:}
-    \item \HypoEnv{note}：\HypoTT{note:}
-\end{itemize}
-若你不需要引用，可以将第二个参数留空 \HypoTT{\{\}}。
-
-\begin{definition}{定义示例}{demo_def}
-    这是一个标准的定义环境。
-    \begin{equation}
-        E = mc^2
-    \end{equation}
+\begin{definition}{定义 (Definition)}{def:demo}
+    用于引入新的概念、术语或符号标记。
 \end{definition}
 
-\begin{note}{注意事项}{label-note}
-    Label 会自动添加前缀。例如上面的定义 label 为 \HypoTT{demo\_def}，引用时应使用 \HypoTT{def:demo\_def}。
+\begin{theorem}{定理 (Theorem)}{thm:demo}
+    用于陈述主要数学结论或核心命题。
+\end{theorem}
+
+\begin{lemma}{引理 (Lemma)}{lem:demo}
+    用于辅助证明定理的小结论。
+\end{lemma}
+
+\begin{corollary}{推论 (Corollary)}{cor:demo}
+    由定理直接推导出的结果。
+\end{corollary}
+
+\begin{proposition}{命题 (Proposition)}{prop:demo}
+    待验证或较小的结论。
+\end{proposition}
+
+\subsection{示例与演示 (Examples)}
+
+\begin{example}{示例 (Example)}{ex:demo}
+    用于具体的演算步骤、代码演示或应用场景。使用 \HypoEnv{example} 是展示“如何做”的最佳方式。
+\end{example}
+
+\subsection{提示与警告 (Alerts)}
+
+\begin{note}{备注 (Note)}{note:demo}
+    一般的补充说明，或旁注。
 \end{note}
 
-支持的环境包括：\HypoEnv{definition}, \HypoEnv{example}, \HypoEnv{note}。
+\begin{tip}{技巧 (Tip)}{tip:demo}
+    实用的建议、捷径或最佳实践。
+\end{tip}
 
-\section{引用 (Refs)}
-由 \HypoPkg{Hypo-Refs} 提供，默认集成 \HypoPkg{hyperref} + \HypoPkg{cleveref}。
+\begin{important}{重要 (Important)}{imp:demo}
+    关键信息，不可忽略的内容。
+\end{important}
 
-\subsection{基础用法：\HypoCS{cref}}
-\begin{verbatim}
-See \cref{def:demo_def}.
-\end{verbatim}
+\begin{warning}{警告 (Warning)}{warn:demo}
+    潜在的风险、错误用法或破坏性操作。
+\end{warning}
 
-效果：See \cref{def:demo_def}.
-
-\section{代码高亮 (Code)}
-由 \HypoPkg{Hypo-Code} 提供。
-
-\subsection{环境签名}
-推荐统一使用环境 \HypoEnv{hypocode}：
-\begin{itemize}
-    \item 必选参数：\HypoTT{\{language\}}，例如 \HypoTT{python}/\HypoTT{tex}/\HypoTT{bash}。
-    \item 可选参数：\HypoTT{[key=value,...]}。
-\end{itemize}
-
-\begin{verbatim}
-\begin{hypocode}[linenos=false]{python}
-def hello():
-    print("Hello Hypoxanthine")
-\end{hypocode}
-\end{verbatim}
-
-效果：
-\begin{hypocode}[linenos=false]{python}
-def hello():
-    print("Hello Hypoxanthine")
-\end{hypocode}
-
-\subsection{后端与回退策略}
-\begin{itemize}
-    \item \HypoBF{minted 优先}: 需要编译开启 \HypoTT{-shell-escape} 且本机存在 \HypoPkg{minted} 与 Pygments（\HypoTT{pygmentize}）。
-    \item \HypoBF{listings 回退}: 不满足 minted 条件时自动回退；尽量保持对外接口稳定。
-\end{itemize}
-
-\subsection{稳定选项（两种后端都可写）}
-\begin{description}
-    \item[\HypoTT{linenos=true|false}] 是否显示行号（默认通常为 true；在小抄类场景可能会默认关闭）。
-    \item[\HypoTT{theme=<name>}] minted 主题（仅 minted 生效；listings 下会忽略）。
-    \item[\HypoTT{minted=\{...\}}] 透传 minted 原生选项（仅 minted 生效）。
-    \item[\HypoTT{listings=\{...\}}] 透传 listings 原生选项（仅 listings 生效）。
-\end{description}
-
-示例：
-\begin{verbatim}
-% 1) 关闭行号
-\begin{hypocode}[linenos=false]{python}
-print("no line numbers")
-\end{hypocode}
-
-% 2) minted 主题（listings 下会忽略）
-\begin{hypocode}[theme=monokai]{python}
-print("monokai")
-\end{hypocode}
-
-% 3) 透传后端原生参数
-\begin{hypocode}[minted={tabsize=2}]{python}
-print("minted tabsize")
-\end{hypocode}
-
-\begin{hypocode}[listings={tabsize=2}]{python}
-print("listings tabsize")
-\end{hypocode}
-\end{verbatim}
-
-\section{绘图 (Plot)}
-由 \HypoPkg{Hypo-Plot} 提供。
-
-\subsection{定位}
-\HypoPkg{Hypo-Plot} 允许你在文档里直接写 Python/Matplotlib 代码，编译时自动生成图片并插入正文。
-它适合：\HypoBF{论文/笔记里的快速画图}、\HypoBF{与主题色对齐的可复现图}、\HypoBF{把绘图脚本随文档一并版本化}。
-
-\subsection{依赖与构建要求}
-\begin{itemize}
-    \item 需要启用 \HypoTT{-shell-escape}（Makefile 体系：\HypoCode{make SHELL_ESCAPE=1}）。
-    \item 需要可用的 Python（默认 \HypoTT{python3}；可用 \HypoCS{HypoSetPythonBin} 指定）。
-    \item Python 环境需要 Matplotlib（以及你在脚本中 import 的其他库，例如 numpy）。
-\end{itemize}
-
-\subsection{环境：\HypoEnv{HypoPyPlot}}
-环境通过 Key-Value 参数控制输出文件名、图像尺寸与插图宽度。
-其中 \HypoTT{name} 为\HypoBF{必填}：
+\section{用法示例}
 
 \begin{hypocode}[linenos=false]{tex}
-\begin{HypoPyPlot}[
-  name=demo_sine,
-  width=0.75\linewidth,
-  figwidth=4.8,
-  figheight=2.6,
-  dpi=160,
-  format=png
-]
-x = np.linspace(0, 2*np.pi, 256)
-y = np.sin(x)
-plt.plot(x, y, color=HYPO_BLUE, linewidth=2.0)
-plt.grid(True, alpha=0.3)
-\end{HypoPyPlot}
+\begin{definition}{牛顿第二定律}{newton2}
+    物体的加速度 $a$ 与所受合外力 $F$ 成正比，与质量 $m$ 成反比：
+    \[ F = ma \]
+\end{definition}
+
+参见 \cref{def:newton2}。
 \end{hypocode}
 
-说明：
+\begin{definition}{牛顿第二定律}{newton2}
+    物体的加速度 $a$ 与所受合外力 $F$ 成正比，与质量 $m$ 成反比：
+    \[ F = ma \]
+\end{definition}
+
+\section{标签系统 (Labeling)}
+
+当你传入 label 参数 `newton2` 时，系统会自动加上前缀 `def:`，变成 `def:newton2`。
+同理：
 \begin{itemize}
-    \item \HypoTT{width/height} 传给 \HypoCS{includegraphics}，支持 \HypoCode{0.75\linewidth} 这类长度表达式。
-    \item \HypoTT{centering=true|false} 控制插图是否自动居中（默认 \HypoTT{true}）。
-    \item \HypoTT{figwidth/figheight} 对应 Matplotlib 的 \HypoTT{figsize}（单位 inch）。
-    \item 会按 \HypoCS{FinalOutputDir} 落盘：脚本在 \HypoTT{build/scripts/}，图片在 \HypoTT{build/figures/}。
-    \item 会注入主题色（如 \HypoTT{HYPO\_BLUE/HYPO\_ORANGE/...}）方便绘图配色与文档一致。
+    \item \HypoEnv{example} $\rightarrow$ `ex:label`
+    \item \HypoEnv{note} $\rightarrow$ `note:label`
 \end{itemize}
 
-\section{算法与伪代码 (Algorithm)}
-由 \HypoPkg{Hypo-Algorithm} 提供，封装了 \HypoPkg{algorithm2e}。
+这种强制前缀机制防止了命名空间污染，并配合 \HypoPkg{cleveref} (\HypoCS{cref}) 实现智能引用（即自动显示 "Definition 1.1" 而非单纯的数字）。
+
+\chapter{代码与算法 (Code \& Algorithms)}
+
+\section{设计意图 (Motivation)}
+
+代码是现代技术文档的一等公民。烂大街的 LaTeX 默认代码样式（黑白、无衬线字体、无边框）不仅难以阅读，更破坏了文档的整体美感。
+
+Hypoxanthine 的代码模块 (\HypoPkg{Hypo-Code}) 致力于提供 \HypoBF{IDE 级别} 的阅读体验：
+\begin{enumerate}
+    \item \HypoBF{美感驱动}: 默认采用柔和的背景色和圆角设计，减轻阅读疲劳。
+    \item \HypoBF{语义高亮}: 区分关键字、字符串、注释，帮助读者快速解析代码逻辑。
+    \item \HypoBF{鲁棒性}: 在宽窄栏切换、跨页断行、特殊字符（如 Unicode 字符）处理上做了大量适配。
+\end{enumerate}
+
+\section{核心特性 (Features)}
+
+\subsection{后端对比 (Backend Comparison)}
+
+我们强烈建议使用 \HypoPkg{minted} 作为后端，它基于 Python 的 Pygments 库，支持超过 300 种语言的高亮。
+
+\begin{center}
+\begin{tabular}{l p{0.35\linewidth} p{0.35\linewidth}}
+\toprule
+\HypoBF{特性} & \HypoBF{Minted (默认/推荐)} & \HypoBF{Listings (后备)} \\
+\midrule
+\HypoBF{高亮引擎} & Pygments (Python) & TeX 宏 \\
+\HypoBF{语言支持} & 300+ (含 Rust, Go, TS) & 有限 (C/C++/Java/Python) \\
+\HypoBF{渲染效果} & 极其丰富，支持 Style 样式表 & 基础颜色高亮 \\
+\HypoBF{依赖} & Python, pip install pygments & 无 (纯 TeX) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{自动降级机制 (Auto Fallback)}
+
+如果编译环境没有安装 Python 或未开启 \HypoTT{-shell-escape}，\HypoPkg{Hypo-Code} 会自动降级使用 \HypoPkg{listings} 宏包。
+系统会在日志中输出 \HypoTT{Warning: Minted not available...}。这意味着你的文档可以在完全未配置环境的机器上编译通过（例如 Github Actions），这对于 CI/CD 环境非常友好。
+
+\section{使用方法 (Usage)}
+
+\subsection{基本环境}
+使用 \HypoEnv{hypocode} 环境插入代码。注意这是一个 \HypoEnv{verbatim} 环境，\HypoBF{不能}在另外的宏参数中使用。
+
+\begin{verbatim}
+\begin{hypocode}[linenos=true]{python}
+def hello():
+    print("Optimization is key")
+\end{hypocode}
+\end{verbatim}
+
+\section{算法环境 (Hypo-Algorithm)}
+封装了标准包 \HypoPkg{algorithm2e}。
+
+\subsection{配置}
+默认启用了以下选项：
 \begin{itemize}
-    \item 默认风格: \HypoTT{ruled}, \HypoTT{linesnumbered}, \HypoTT{vlined}。
-    \item 集成 \HypoPkg{cleveref}: 可使用 \HypoCS{cref} 引用，名称显示为“Algorithm”。
+    \item \HypoTT{ruled}: 顶部和底部有横线，标题在顶部。
+    \item \HypoTT{vlined}: 控制流块使用竖线连接，节省水平空间。
+    \item \HypoTT{linesnumbered}: 显示行号。
 \end{itemize}
 
 \subsection{示例}
-\begin{verbatim}
-\begin{algorithm}[htbp]
-    \caption{Demo algorithm}
-    \label{alg:demo}
-    \KwIn{Input $x$}
-    \KwOut{Output $y$}
-    $y \leftarrow x$
-\end{algorithm}
-
-See \cref{alg:demo}.
-\end{verbatim}
-
-效果：
-\begin{algorithm}[htbp]
-    \caption{Demo algorithm}
-    \label{alg:demo}
-    \KwIn{Input $x$}
-    \KwOut{Output $y$}
-    $y \leftarrow x$
-\end{algorithm}
-
-See \cref{alg:demo}.
-
-\chapter{特殊功能详情}
-
-\section{LitBox (文学盒子)}
-\HypoPkg{Hypo-LitBox} 默认由 \HypoCls{Hypo-LitNote} 加载；其他入口类可手动 \HypoCS{usepackage\{Hypo-LitBox\}}。
-
-\subsection{行内引用：\HypoCS{InlineQuote}}
 \begin{hypocode}[linenos=false]{tex}
-\InlineQuote{行内浅底强调效果}
+\begin{algorithm}[H]
+    \caption{求和算法}
+    \KwIn{数组 $A$}
+    \KwOut{总和 $S$}
+    $S \leftarrow 0$\;
+    \ForEach{$x \in A$}{
+        $S \leftarrow S + x$\;
+    }
+    \Return{$S$}
+\end{algorithm}
+\end{hypocode}
+
+\chapter{数学支持 (Mathematics)}
+
+使用 \HypoPkg{Hypo-Math} 模块，集成了 \HypoPkg{amsmath}, \HypoPkg{amssymb} 和 \HypoPkg{mathtools}，并可选支持 \HypoPkg{physics}。
+
+\section{速写命令 (Shorthands)}
+
+为了提高数学公式的录入速度，\HypoPkg{Hypo-Math} 在 \HypoTT{shorthand=true}（默认）时，定义了一系列简短的命令。
+
+\subsection{集合 (Sets)}
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\HypoBF{命令} & \HypoBF{效果} & \HypoBF{语义} \\
+\midrule
+\HypoCS{R} & $\R$ & 实数集 \\
+\HypoCS{Z} & $\Z$ & 整数集 \\
+\HypoCS{N} & $\N$ & 自然数集 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{定界符 (Delimiters)}
+这些命令会自动调整定界符大小（相当于 \HypoCS{left} ... \HypoCS{right}）。
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\HypoBF{命令} & \HypoBF{效果} \\
+\midrule
+\HypoCS{Set\{x\}} & $\Set{x}$ \\
+\HypoCS{Abs\{x\}} & $\Abs{x}$ \\
+\HypoCS{Paren\{x\}} & $\Paren{x}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{字体样式 (Styles)}
+映射了常用的数学字体样式，命令更加简短。
+
+\begin{center}
+\begin{tabular}{llp{0.3\linewidth}}
+\toprule
+\HypoBF{命令} & \HypoBF{效果} & \HypoBF{原生命令} \\
+\midrule
+\HypoCS{MB\{x\}} & $\MB{x}$ & \HypoCS{mathbf} \\
+\HypoCS{MC\{x\}} & $\MC{x}$ & \HypoCS{mathcal} \\
+\HypoCS{BS\{x\}} & $\BS{x}$ & \HypoCS{boldsymbol} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Physics 宏包集成}
+
+\HypoPkg{Hypo-Math} 会自动检测环境中是否存在 \HypoPkg{physics} 宏包。如果存在，会自动加载并应用推荐配置（\HypoTT{trig,uprightdiff,bolddel}）。
+这意味着你可以直接使用 \HypoCS{dd}, \HypoCS{dv}, \HypoCS{Re}, \HypoCS{Im} 以及 Dirac 符号。
+
+
+
+\section{公式排版最佳实践 (Best Practices)}
+
+\subsection{对齐与编号}
+
+请优先使用 \HypoPkg{amsmath} 提供的环境：
+\begin{itemize}
+    \item \HypoEnv{align}: 多行对齐（自动编号）。
+    \item \HypoEnv{align*}: 多行对齐（无编号）。
+    \item \HypoEnv{gather}: 多行居中（不强求对齐）。
+\end{itemize}
+
+\begin{hypocode}[linenos=false]{tex}
+\begin{align}
+    f(x) &= (x+1)^2 \\
+         &= x^2 + 2x + 1
+\end{align}
+\end{hypocode}
+
+\subsection{分段函数}
+\HypoPkg{Hypo-Math} 预加载了 \HypoPkg{mathtools}，因此你可以使用增强的 \HypoEnv{cases*} 环境（第二列自动为文本模式）：
+
+\begin{hypocode}[linenos=false]{tex}
+f(n) = \begin{cases*}
+    n/2 & if $n$ is even \\
+    3n+1 & if $n$ is odd
+\end{cases*}
+\end{hypocode}
+
+\chapter{绘图与可视化 (Plotting)}
+
+\section{核心优势 (Why Hypo-Plot?)}
+
+在科研写作中，绘图通常是最令人头秃的环节。传统的 "Python 绘图 $\to$ 保存 PNG $\to$ 插入 LaTeX" 流程存在三大痛点：
+\begin{enumerate}
+    \item \HypoBF{风格割裂}: 图片中的字体（Arial/Helvetica）与正文（Computer Modern/Times）格格不入，字号大小也难以统一。
+    \item \HypoBF{维护地狱}: 一旦需要修改数据或配色，必须重新运行脚本、导出、覆盖文件。
+    \item \HypoBF{矢量缺失}: 导出 PNG 会模糊，导出 PDF 又经常遇到裁剪白边的问题。
+\end{enumerate}
+
+\HypoPkg{Hypo-Plot} 通过 \HypoEnv{HypoPyPlot} 环境彻底解决了这些问题。它允许你 \HypoBF{在 LaTeX 源码中直接编写 Python 绘图代码}。
+
+\begin{itemize}
+    \item \HypoBF{自动配色}: 绘图脚本会自动读取当前文档的主题色（如 \HypoTT{HYPO\_BLUE}），确保图表颜色与文档配色方案（Tech/Lit/Base）完美融合。
+    \item \HypoBF{自动字体}: 图片中的文字直接使用 LaTeX 渲染，保证与正文字体完全一致。
+    \item \HypoBF{构建缓存}: 只有当代码变更时才会重新运行 Python 脚本，编译速度飞快。
+\end{itemize}
+
+\section{工作流详解 (Workflow)}
+
+当你在文档中使用 \HypoEnv{HypoPyPlot} 环境时，发生的幕后工作流如下：
+
+\begin{enumerate}
+    \item LaTeX 编译时，将环境内的 Python 代码提取并写入文件：\HypoTT{build/scripts/name.py}。
+    \item 注入模板代码：在你的代码前，会自动注入 \HypoTT{import matplotlib.pyplot as plt} 以及当前文档的配色变量（如 \HypoTT{HYPO\_BLUE}）。
+    \item 调用 Python 解释器执行脚本。
+    \item 脚本将图片保存为：\HypoTT{build/figures/name.png} (或 pdf)。
+    \item LaTeX 使用 \HypoCS{includegraphics} 插入该图片。
+\end{enumerate}
+
+\section{TikZ 外部化 (Externalization)}
+
+\HypoPkg{Hypo-Plot} 同时提供了对 TikZ 外部化的简化封装：\HypoCS{HypoTikZFile}。
+
+\begin{hypocode}[linenos=false]{tex}
+\HypoTikZFile[width=0.8\linewidth]{my_network}{assets/network.tikz}
+\end{hypocode}
+
+它会自动对比 \HypoTT{.tikz} 源文件的 MD5 指纹，仅在源文件变更时重新调用 \HypoTT{pdflatex} 编译该图。这对于包含大量 TikZ 图的大型文档能显著提升编译速度。
+
+\chapter{文学模式 (Literature Mode)}
+
+\section{设计意图}
+
+\HypoCls{Hypo-LitNote} 专为非技术文档设计。无论是为了整理诗词、撰写随笔还是排版人文社科类文章，我们都希望页面更加“透气”，字体更加具有人文关怀。
+
+\section{与 Hypo-Note 的区别}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\HypoBF{特性} & \HypoBF{Hypo-Note} & \HypoBF{Hypo-LitNote} \\
+\midrule
+\HypoBF{默认字体 (\HypoTT{fontset})} & \HypoTT{tech} (黑体粗体) & \HypoTT{lit} (楷体/宋体) \\
+\HypoBF{章节编号} & 1.1, 1.1.1 & （一）, 1 \\
+\HypoBF{盒子风格} & 强边框，高对比 & 柔和边框，纸张质感 \\
+\HypoBF{默认开启} & 算法, 绘图 & LitBox (诗歌环境) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{文学组件 (Hypo-LitBox)}
+
+\subsection{诗歌环境 (poem)}
+背景极淡，适合摘录诗词。
+
+\begin{hypocode}[linenos=false]{tex}
+\begin{poem}[title=静夜思]
+    床前明月光，\\
+    疑是地上霜。
+\end{poem}
+\end{hypocode}
+
+\begin{poem}[title=静夜思]
+    床前明月光，\\
+    疑是地上霜。
+\end{poem}
+
+\subsection{引用段落 (quotepara)}
+适合摘录长段落，带有明显的左侧装饰。
+
+\begin{hypocode}[linenos=false]{tex}
+\begin{quotepara}[title=瓦尔登湖]
+    我步入丛林，因为我希望活得有意义...
+\end{quotepara}
+\end{hypocode}
+
+\begin{quotepara}[title=瓦尔登湖]
+    我步入丛林，因为我希望活得有意义，我希望活得深刻，吸取生命中所有的精华，把非生命的一切都击溃，以免在我临终时，发现自己未曾活过。
+\end{quotepara}
+
+\subsection{行内微凸显 (InlineQuote)}
+\begin{hypocode}[linenos=false]{tex}
+就像 \InlineQuote{这样} 在行内轻轻强调。
 \end{hypocode}
 效果：\InlineQuote{行内浅底强调效果}。
 
-\subsection{诗歌环境：\HypoEnv{poem}}
-\begin{hypocode}[linenos=false]{tex}
-\begin{poem}
-春眠不觉晓，\\
-处处闻啼鸟。
-\end{poem}
-\end{hypocode}
-效果：
-\begin{poem}
-春眠不觉晓，\\
-处处闻啼鸟。
-\end{poem}
 
-\subsection{引用段落：\HypoEnv{quotepara}}
-\begin{hypocode}[linenos=false]{tex}
-\begin{quotepara}
-这里是一段引用。
-\end{quotepara}
-\end{hypocode}
-效果：
-\begin{quotepara}
-这里是一段引用。
-\end{quotepara}
 
 \section{图像命令 (Img)}
 \HypoPkg{Hypo-Img} 提供了简化的插图命令：
@@ -504,11 +524,64 @@ See \cref{fig:myfig}.
 \chapter{附录}
 
 \section{图标映射 (Icon)}
-\HypoPkg{Hypo-Icon} 提供了图标抽象层。
-
 \begin{itemize}
     \item \HypoCS{HypoIcon\{github\}}: 获取 GitHub 图标。
     \item 机制: 优先使用 \HypoPkg{fontawesome5}，缺失时回退为文本标记。
 \end{itemize}
+
+\subsection{可用图标列表}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{ll|ll|ll}
+\hline
+\textbf{Key} & \textbf{Icon} & \textbf{Key} & \textbf{Icon} & \textbf{Key} & \textbf{Icon} \\
+\hline
+\multicolumn{6}{c}{\textbf{General / Contact}} \\
+\hline
+email & \HypoIcon{email} & homepage & \HypoIcon{homepage} & globe & \HypoIcon{globe} \\
+phone & \HypoIcon{phone} & mobile & \HypoIcon{mobile} & address & \HypoIcon{address} \\
+location & \HypoIcon{location} & birthday & \HypoIcon{birthday} & & \\
+\hline
+\multicolumn{6}{c}{\textbf{Academic / Work}} \\
+\hline
+school & \HypoIcon{school} & degree & \HypoIcon{degree} & project & \HypoIcon{project} \\
+article & \HypoIcon{article} & book & \HypoIcon{book} & award & \HypoIcon{award} \\
+\hline
+\multicolumn{6}{c}{\textbf{Tech / Dev}} \\
+\hline
+python & \HypoIcon{python} & java & \HypoIcon{java} & linux & \HypoIcon{linux} \\
+docker & \HypoIcon{docker} & git & \HypoIcon{git} & terminal & \HypoIcon{terminal} \\
+server & \HypoIcon{server} & database & \HypoIcon{database} & wifi & \HypoIcon{wifi} \\
+bug & \HypoIcon{bug} & branch & \HypoIcon{branch} & code & \HypoIcon{code} \\
+cpp & \HypoIcon{cpp} & js & \HypoIcon{js} & node & \HypoIcon{node} \\
+react & \HypoIcon{react} & vue & \HypoIcon{vue} & php & \HypoIcon{php} \\
+apple & \HypoIcon{apple} & android & \HypoIcon{android} & ubuntu & \HypoIcon{ubuntu} \\
+\hline
+\multicolumn{6}{c}{\textbf{Socials}} \\
+\hline
+github & \HypoIcon{github} & twitter & \HypoIcon{twitter} & linkedin & \HypoIcon{linkedin} \\
+youtube & \HypoIcon{youtube} & weixin & \HypoIcon{weixin} & zhihu & \HypoIcon{zhihu} \\
+telegram & \HypoIcon{telegram} & discord & \HypoIcon{discord} &  &  \\
+stackoverflow & \HypoIcon{stackoverflow} & facebook & \HypoIcon{facebook} & instagram & \HypoIcon{instagram} \\
+\hline
+\multicolumn{6}{c}{\textbf{Office / Files}} \\
+\hline
+file & \HypoIcon{file} & image & \HypoIcon{image} & video & \HypoIcon{video} \\
+pdf & \HypoIcon{pdf} & word & \HypoIcon{word} & excel & \HypoIcon{excel} \\
+ppt & \HypoIcon{ppt} & zip & \HypoIcon{zip} & & \\
+\hline
+\multicolumn{6}{c}{\textbf{Actions / UI}} \\
+\hline
+link & \HypoIcon{link} & download & \HypoIcon{download} & upload & \HypoIcon{upload} \\
+cloud & \HypoIcon{cloud} & comment & \HypoIcon{comment} & bell & \HypoIcon{bell} \\
+user & \HypoIcon{user} & calendar & \HypoIcon{calendar} & search & \HypoIcon{search} \\
+home & \HypoIcon{home} & settings & \HypoIcon{settings} & check & \HypoIcon{check} \\
+times & \HypoIcon{times} & info & \HypoIcon{info} & warn & \HypoIcon{warn} \\
+error & \HypoIcon{error} & star & \HypoIcon{star} & lock & \HypoIcon{lock} \\
+heart & \HypoIcon{heart} & thumbsup & \HypoIcon{thumbsup} & & \\
+\hline
+\end{tabular}
+\end{center}
 
 \end{document}
