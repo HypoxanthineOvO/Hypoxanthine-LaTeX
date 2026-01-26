@@ -520,6 +520,52 @@ f(n) = \begin{cases*}
 \img[width=0.8\linewidth, label=myfig]{example-image}{测试图片}
 See \cref{fig:myfig}.
 
+\chapter{幻灯片 (Hypo-Slide)}
+
+Hypoxanthine 提供了基于 \HypoPkg{ctexbeamer} 的幻灯片类 \HypoCls{Hypo-Slide}，旨在为学术汇报、课程教学和商业演示提供高颜值的开箱即用体验。
+
+\section{基本用法}
+
+\begin{hypocode}{tex}
+\documentclass[theme=school, aspectratio=169]{Hypo-Slide}
+
+\HypoSlideSetup{
+  title={演示文档标题},
+  subtitle={副标题},
+  author={作者名},
+  institute={所属机构},
+  date={\today},
+  logo={assets/logo.png},     % 校徽/Logo（可选）
+  cover={assets/cover.jpg}    % 封面背景图（可选）
+}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{页面标题}
+  内容...
+\end{frame}
+
+\end{document}
+\end{hypocode}
+
+\section{主题图鉴 (Themes)}
+
+\begin{description}
+    \item[school] \textbf{高校通用 (默认)}：严谨正式，白底红/蓝配色 (默认 ShanghaiTech Red)，强调校徽展示。适合答辩、学术报告。
+    \item[lab] \textbf{实验室 (Lab)}：深色模式 (Dark Mode)，科技蓝配色，代码高亮优化。适合组会、技术分享。
+    \item[lit] \textbf{文学人文 (Lit)}：衬线字体，纸张质感背景。拥有优化的诗歌与引用排版。适合文史哲汇报。
+    \item[tutorial] \textbf{教程 (Tutorial)}：清晰的步骤引导，支持多作者 (\texttt{authors=\{A, B, C\}}) 展示。适合 Workshop 或联合授课。
+    \item[business] \textbf{商业路演 (Business)}：极简、高冲击力 (High Impact)，大字大图。适合 Pitch Deck 或产品发布。
+\end{description}
+
+\section{注意事项}
+\begin{itemize}
+    \item \textbf{代码高亮}：在幻灯片中使用 \HypoEnv{hypocode} 时，必须为 \HypoEnv{frame} 添加 \texttt{[fragile]} 选项。
+    \item \textbf{比例调节}：默认比例为 16:9。如需传统比例，请使用 \texttt{aspectratio=43}。
+\end{itemize}
+
 \appendix
 \chapter{附录}
 

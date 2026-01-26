@@ -1,0 +1,37 @@
+\documentclass[theme=school, aspectratio=169]{Hypo-Slide}
+
+% Configuration
+\HypoSlideSetup{
+  title={Presentation Title},
+  subtitle={Subtitle Here},
+  author={Your Name},
+  institute={Your Institute},
+  date={\today},
+  % logo={assets/logo.png},     % Uncommon the line if you have logo
+  % cover={assets/cover.jpg}    % Cover image for supported themes
+}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Introduction}
+  \begin{definition}{Concept}{def:concept}
+    Hypoxanthine-LaTeX makes slides beautiful.
+  \end{definition}
+
+  \begin{itemize}
+    \item Easy to use
+    \item 5 built-in themes
+    \item Semantic colors
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Code Example}
+  \begin{hypocode}{python}
+    def hello():
+        print("Hello Slide")
+  \end{hypocode}
+\end{frame}
+
+\end{document}

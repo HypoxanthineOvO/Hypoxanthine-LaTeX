@@ -14,9 +14,9 @@ ASSET_PDF := $(ASSET_DIR)/example-image.pdf
 
 
 
-.PHONY: all main class class-en litnote chsh plot edge clean watch help
+.PHONY: all main class class-en litnote chsh plot edge slides clean watch help
 
-all: main class class-en litnote chsh
+all: main class class-en litnote chsh plot slides
 
 main: $(ASSET_PDF)
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Main MAIN_FILE=integration/Main.tex OUT_DIR=$(OUT_DIR) all
@@ -35,6 +35,13 @@ chsh: $(ASSET_PDF)
 
 plot: $(ASSET_PDF)
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Plot MAIN_FILE=integration/Plot.tex OUT_DIR=$(OUT_DIR) SHELL_ESCAPE=1 all
+
+slides: $(ASSET_PDF)
+	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Slide_School MAIN_FILE=integration/Slide_School.tex OUT_DIR=$(OUT_DIR) SHELL_ESCAPE=1 all
+	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Slide_Lab MAIN_FILE=integration/Slide_Lab.tex OUT_DIR=$(OUT_DIR) SHELL_ESCAPE=1 all
+	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Slide_Lit MAIN_FILE=integration/Slide_Lit.tex OUT_DIR=$(OUT_DIR) SHELL_ESCAPE=1 all
+	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Slide_Tutorial MAIN_FILE=integration/Slide_Tutorial.tex OUT_DIR=$(OUT_DIR) SHELL_ESCAPE=1 all
+	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Slide_Business MAIN_FILE=integration/Slide_Business.tex OUT_DIR=$(OUT_DIR) SHELL_ESCAPE=1 all
 
 $(ASSET_PDF): $(ASSET_TEX)
 	latexmk -xelatex -interaction=nonstopmode -halt-on-error -outdir=$(ASSET_DIR) $(ASSET_TEX)
@@ -56,6 +63,7 @@ help:
 	@echo "  make class - Build class test PDF"
 	@echo "  make chsh  - Build CHSH test PDF"
 	@echo "  make plot  - Build Hypo-Plot test PDF (needs python3 + tikz)"
+	@echo "  make slides- Build all Slide themes"
 	@echo "  make edge  - Build edge-case test PDFs"
 	@echo "  make watch - Watch & rebuild mainline PDF"
 	@echo "  make clean - Remove build directory"

@@ -1,6 +1,6 @@
 # Hypoxanthine-LaTeX
 
-![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v1.1.0-brightgreen) ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v1.2.0-brightgreen) ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
 
 **Hypoxanthine-LaTeX** is a modular, engineering-oriented LaTeX framework for efficient document creation.
 **Hypoxanthine-LaTeX** 是一个模块化、工程化维护的个人 LaTeX 生态。
@@ -17,6 +17,7 @@
   - **Hypo-Note**: 笔记 (based on `ctexbook`)
   - **Hypo-CHSH**: 速查表 (based on `ctexart`)
   - **Hypo-LitNote**: 文学内容 (based on `ctexbook`)
+  - **Hypo-Slide**: 幻灯片 (based on `ctexbeamer`)
 
 ## 🚀 Quick Start / 快速上手
 
@@ -36,15 +37,15 @@ Use the included script (Windows/Linux/macOS):
 
 ```bash
 # Linux / macOS
-./Hypoxanthine-LaTeX/scripts/hypo template note --dest ./my-note
+./Hypoxanthine-LaTeX/scripts/hypo template slide --dest ./my-deck
 
 # Windows
-.\Hypoxanthine-LaTeX\scripts\hypo.bat template note --dest .\my-note
+.\Hypoxanthine-LaTeX\scripts\hypo.bat template slide --dest .\my-deck
 ```
 
 ### 4. Build
 ```bash
-cd my-note
+cd my-deck
 make
 # Or enable minted highlighting:
 make SHELL_ESCAPE=1
@@ -58,6 +59,7 @@ make SHELL_ESCAPE=1
 ## 🧩 Key Features (Highlights)
 
 - **Semantic Colors**: Built-in schemes (`Base`, `CN`, `Tech`) with easy switching.
+- **5 Slide Themes**: Professional Beamer themes (School, Lab, Lit, Business, + Instructor Module).
 - **Robust Code**: `Hypo-Code` environment works in `beamer` frames.
 - **Auto-Layout Cheatsheets**: `Hypo-CHSH` handles multi-column layouts automatically.
 - **Integrated Plotting**: Write Python code in LaTeX to generate plots (`Hypo-Plot`).

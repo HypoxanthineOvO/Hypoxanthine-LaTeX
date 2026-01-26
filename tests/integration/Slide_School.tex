@@ -1,0 +1,30 @@
+\documentclass[theme=school, aspectratio=169, linecolor=black]{Hypo-Slide}
+\HypoSlideSetup{
+  logo={../assets/logo_school.png},
+  cover={example-image},
+  institute={ShanghaiTech University},
+  author={Hypoxanthine},
+  title={School Theme Demo},
+  subtitle={ShanghaiTech Red style},
+  date={\today}
+}
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}{Box Test}
+  \begin{definition}{Newton's Law}{newton}
+    $F=ma$
+  \end{definition}
+  \begin{example}{Code}{ex1}
+    See below.
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]{Code Test (Fragile)}
+  \begin{hypocode}{python}
+    def hello():
+        print("Hello World")
+  \end{hypocode}
+\end{frame}
+
+\end{document}

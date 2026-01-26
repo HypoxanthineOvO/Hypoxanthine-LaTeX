@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{Hypo-CHSH}[2026/01/25 v1.1.2 Hypoxanthine CheatSheet Class]
+\ProvidesClass{Hypo-CHSH}[2026/01/26 v1.2.0 Hypoxanthine CheatSheet Class]
 
 % CHSH is an independent entry.
 % - Base class: ctexart

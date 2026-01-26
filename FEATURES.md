@@ -43,8 +43,43 @@ Hypoxanthine 是一个模块化的 LaTeX 框架，设计用于：
 \begin{document}
 \section{速查节标题}
 ...
+\begin{document}
+\section{速查节标题}
+...
 \end{document}
 ```
+
+### 幻灯片 (`Hypo-Slide`)
+用于演示文稿。
+```latex
+\documentclass[theme=school, aspectratio=169]{Hypo-Slide}
+\HypoSlideSetup{title={标题}, author={名字}, logo={assets/logo.png}}
+\begin{document}
+\frame{\titlepage}
+\begin{frame}{页标题} ... \end{frame}
+\end{document}
+```
+**可用主题**: `school` (默认), `lab` (极客), `lit` (人文), `business` (商业).
+
+### 讲师介绍 (`Hypo-Slide-Instructor`)
+用于 Workshop 或 Tutorial 场景的讲师/演讲者展示。
+- **封面自适应**: 在 `\titlepage` 前使用 `\InstructorCover`，封面将自动调整布局（标题上移，讲师居中）。
+- **详细介绍**: 使用 `\InstructorBlock` 环境。
+
+```latex
+% 1. 封面展示
+\HypoSlideSetup{title={Workshop}}
+\InstructorCover[avatar.png]{Name}{Role}{Desc}
+\begin{document}
+\frame{\titlepage}
+
+% 2. 详细页面
+\begin{InstructorList}
+  \InstructorBlock[avatar.png]{Name}{Role}{Detailed Bio...}
+\end{InstructorList}
+\end{document}
+```
+
 
 ## 3. 核心模块与语法
 

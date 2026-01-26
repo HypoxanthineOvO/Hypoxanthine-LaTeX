@@ -1,0 +1,44 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{sty/modules/Hypo-Box-Beamer}[2026/01/26 v1.2.0 Hypoxanthine Box Adapter for Beamer]
+
+% ==============================================================================
+% 1. Conflict Resolution (Beamer vs Hypo-Box)
+% ==============================================================================
+% Beamer defines theorem-like environments. We want to replace them with
+% Hypo-Box's tcolorbox versions.
+\let\definition\relax \let\enddefinition\relax
+\let\theorem\relax    \let\endtheorem\relax
+\let\lemma\relax      \let\endlemma\relax
+\let\corollary\relax  \let\endcorollary\relax
+\let\example\relax    \let\endexample\relax
+\let\note\relax       % Beamer has \note command. We overwrite it.
+
+% Note conflict: Beamer has \note{...} for speaker notes.
+% Hypo-Box defines 'note' environment.
+% We prioritize the visual box. If user needs speaker notes, they might need
+% to use aliased command (we don't provide one yet, or they use \beamer@note if accessible).
+% To avoid catastrophic failure if \note is expanded, we check if we can save it?
+% Saving it is tricky as \newtcbtheorem will overwrite \note.
+% For this version, we overwrite it.
+
+% ==============================================================================
+% 2. Load Hypo-Box
+% ==============================================================================
+\RequirePackage{Hypo-Box}
+
+% ==============================================================================
+% 3. Beamer Optimizations
+% ==============================================================================
+% Disable breakable (allowframebreaks is special in Beamer, standard breakable doesn't work well)
+\tcbset{
+  hypo box/.append style={
+    breakable=false,
+    enhanced jigsaw, % Better rendering in lists/overlays
+  }
+}
+
+% Ensure tcolorbox's Beamer support is active (skin behavior)
+% tcolorbox detects beamer class automatically, usually nothing to do for basic overlays.
+% \begin{definition}<2-> works out of the box with tcolorbox.
+
+\endinput

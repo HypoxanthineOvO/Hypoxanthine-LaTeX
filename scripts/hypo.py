@@ -147,6 +147,7 @@ def _template_tex_path(kind: str) -> Path:
         "note": TEMPLATES_DIR / "Note.tex",
         "litnote": TEMPLATES_DIR / "LitNote.tex",
         "chsh": TEMPLATES_DIR / "CHSH.tex",
+        "slide": TEMPLATES_DIR / "Slide.tex",
     }
     try:
         return mapping[kind]
@@ -239,7 +240,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_clean.set_defaults(func=cmd_clean)
 
     p_tpl = sub.add_parser("template", help="Generate a starter project")
-    p_tpl.add_argument("kind", choices=["note", "litnote", "chsh"], help="Template kind")
+    p_tpl.add_argument("kind", choices=["note", "litnote", "chsh", "slide"], help="Template kind")
     p_tpl.add_argument("--dest", default=".", help="Output directory (default: .)")
     p_tpl.add_argument("--name", default="Main", help="PDF name (Makefile NAME)")
     p_tpl.add_argument("--main", default="main.tex", help="Main TeX file name")

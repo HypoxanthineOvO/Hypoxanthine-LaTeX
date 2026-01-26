@@ -1,0 +1,114 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{sty/classes/slide/themes/hypo-slide-theme-lit}[2026/01/26 v1.2.0 Literature Theme]
+
+% ==============================================================================
+% 1. Visual Identity (Serif & Warm)
+% ==============================================================================
+\usefonttheme{serif}
+\linespread{1.4} % More airy for literature
+\AtBeginDocument{\xeCJKsetup{PunctStyle=kaiming}} % Better punctuation if xeCJK available
+
+% Colors: Warm Paper
+% HypoCN01MoonWhite: #E6F2FF (This is cool white/blueish)
+% Let's define a warm paper color: #FAFAFA or slightly yellow #FFFDF5
+\definecolor{HypoLitPaper}{HTML}{FFFDF5}
+\definecolor{HypoLitInk}{HTML}{333333}
+\definecolor{HypoLitAccent}{HTML}{8E44AD} % Purple-ish
+
+\setbeamercolor{background canvas}{bg=HypoLitPaper}
+\setbeamercolor{normal text}{fg=HypoLitInk}
+\setbeamercolor{structure}{fg=HypoLitAccent}
+\setbeamercolor{title}{fg=HypoLitInk}
+\setbeamercolor{frametitle}{fg=HypoLitInk}
+
+% ==============================================================================
+% 2. Layout (Book-like)
+% ==============================================================================
+\setbeamertemplate{navigation symbols}{}
+
+% Header: Subtle metadata (Title | Section)
+\setbeamertemplate{headline}{%
+  \leavevmode%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=3ex,dp=1.125ex,leftskip=1em,rightskip=1em]{normal text}%
+    {\tiny\color{gray!40}\itshape\insertshorttitle} \hfill {\tiny\color{gray!40}\itshape\insertsection}
+  \end{beamercolorbox}%
+}
+
+% Frame Title: Centered Serif
+\setbeamertemplate{frametitle}{%
+  \begin{center}
+    \vspace*{-0.5em}
+    {\usebeamerfont{frametitle}\huge\itshape\insertframetitle}
+    \par
+    {\color{HypoLitAccent}\hrule width 5cm height 0.4pt}
+  \end{center}
+}
+
+% Footer: Minimal page number
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=\paperwidth,ht=3ex,dp=1.125ex,right]{date in head/foot}%
+       {\tiny\color{gray!30}\insertframenumber \hspace*{2em}}
+    \end{beamercolorbox}%
+  }%
+}
+
+% ==============================================================================
+% 3. Title Page (Vertical Layout)
+% ==============================================================================
+\setbeamertemplate{title page}{
+  \vbox{}
+  \vfill
+  \begingroup
+    \centering
+    {\usebeamerfont{title}\Huge\itshape \inserttitle}\par
+    \vspace{1em}
+    {\usebeamerfont{subtitle}\color{gray}\insertsubtitle}\par
+    
+    \vspace{2cm}
+    
+    % Minimal Divider
+    {\color{gray!20}\hrule width 0.3\paperwidth height 0.5pt}
+    \vspace{1.5cm}
+    
+    {\usebeamerfont{author}\insertauthor}\par
+    {\usebeamerfont{date}\color{gray}\footnotesize\insertdate}\par
+  \endgroup
+  \vfill
+}
+
+% ==============================================================================
+% 4. Helpers (Center environments)
+% ==============================================================================
+% Load LitBox for poem/quotepara support
+\RequirePackage{Hypo-LitBox}
+
+% Force some environments to be centered
+% Save original poem environment from Hypo-LitBox
+\let\oldpoem\poem
+\let\endoldpoem\endpoem
+
+% Redefine poem to be centered
+% Just use center environment directly on the inner content, or use varwidth
+% Redefine poem to be centered
+% Just use center environment directly on the inner content, or use varwidth
+\renewenvironment{poem}[1][]{
+  \begin{center}
+  \begin{varwidth}{0.8\linewidth}
+  \centering % Center text inside the block
+  \begin{oldpoem}[#1]
+}{
+  \end{oldpoem}
+  \end{varwidth}
+  \end{center}
+}
+
+% Fix for varwidth
+\RequirePackage{varwidth}
+\endinput
+% Note: Hypo-LitBox might not be loaded, check first.
+% But Hypo-Slide.cls doesn't load Hypo-LitBox by default unless we add it. 
+% For now, trust the user to use standard beamer blocks or we can enhance Hypo-Box.
+
+\endinput

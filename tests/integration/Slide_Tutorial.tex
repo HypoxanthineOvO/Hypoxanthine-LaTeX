@@ -1,0 +1,40 @@
+\documentclass[theme=school, aspectratio=169]{Hypo-Slide}
+\HypoSlideSetup{
+  title={Instructor Demo},
+  subtitle={Using School Theme},
+  date={\today}
+}
+
+% Cover Instructors
+\InstructorCover[../assets/avatar.png]{Hypoxanthine}{Lead Dev}{Expert in LaTeX \& AI}
+\InstructorCover{Assistant}{Support}{Handles Q\&A}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{InstructorList}
+    % Full Block Variants
+    \InstructorBlock[../assets/avatar.png]{Hypoxanthine}{Lead Developer}{
+        Hypoxanthine is the creator of this template.
+        He loves LaTeX and clean design.
+    }
+    \InstructorBlock{Assistant}{Support Team}{
+        Helps with answering student questions.
+    }
+\end{InstructorList}
+
+\begin{frame}{Agenda}
+  \begin{enumerate}
+    \item Setup Environment
+    \item Basics of Tensor
+    \item Training Loop
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Step 1: Install}
+  \begin{hypocode}{bash}
+    pip install torch
+  \end{hypocode}
+\end{frame}
+
+\end{document}

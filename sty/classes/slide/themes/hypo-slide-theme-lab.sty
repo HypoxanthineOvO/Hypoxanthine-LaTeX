@@ -1,0 +1,143 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{sty/classes/slide/themes/hypo-slide-theme-lab}[2026/01/26 v1.2.0 Lab Theme]
+
+% ==============================================================================
+% 1. Visual Identity (Dark Mode)
+% ==============================================================================
+% Use Tech Scheme Colors if available (Hypo-Colors loaded by base class)
+% HypoTech01DeepSpace: #0F1525
+% HypoTech01DigitalBlue: #2A6BFF
+% HypoTech01SystemCyan: #00D4FF
+
+% HypoTech01DeepSpace: #0F1525 (Too dark)
+% New Slate Dark: #1E293B (Tailwind Slate 800)
+\definecolor{HypoDeepBg}{HTML}{1E293B}
+
+% Lighter Background for Boxes: Slate 600 (#475569) - Much lighter for contrast
+% Lighter Background for Boxes: Slate 500 (#64748B) - Lighter for code contrast
+\definecolor{HypoDeepBoxBg}{HTML}{64748B}
+
+% Text: #F1F5F9 (Slate 100)
+\definecolor{HypoDeepText}{HTML}{F1F5F9}
+
+% Accent: #38BDF8 (Sky 400)
+\definecolor{HypoDeepAccent}{HTML}{38BDF8}
+
+% Force Dark Mode visual
+\setbeamercolor{background canvas}{bg=HypoDeepBg}
+\setbeamercolor{normal text}{fg=HypoDeepText}
+\setbeamercolor{structure}{fg=HypoDeepAccent}
+
+\setbeamercolor{title}{fg=HypoDeepAccent}
+\setbeamercolor{frametitle}{fg=HypoDeepText, bg=HypoDeepBg}
+\setbeamercolor{subtitle}{fg=gray!40}
+
+% ==============================================================================
+% 2. Box Optimization (Dark Mode)
+% ==============================================================================
+% Override Hypo-Box & Code styles for high contrast
+\tcbset{
+  hypo box/.style={
+    enhanced,
+    breakable,
+    boxrule=0.8pt,
+    % Lighter background for visibility
+    colback=HypoDeepBoxBg,
+    coltext=white, % Bright white text
+    % Bright border
+    colframe=HypoDeepAccent,
+    % Title bar: Bright Accent BG + Dark Text
+    colbacktitle=HypoDeepAccent,
+    coltitle=HypoDeepBg,
+    fonttitle=\bfseries,
+    attach boxed title to top left={yshift=-2mm, xshift=2mm},
+    boxed title style={boxrule=0pt, sharp corners},
+    sharp corners, % Tech feel
+    drop shadow=black!50!HypoDeepBg, % Subtle shadow
+  }
+}
+
+% ==============================================================================
+% 2. Layout (Minimal Tech)
+% ==============================================================================
+% Remove navigation symbols and headline to avoid logo occlusion
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+
+% Frame Title: Boxed
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=5ex,dp=1.5ex,leftskip=0.5cm,rightskip=0.5cm]{frametitle}
+    \begin{tcolorbox}[
+        enhanced,
+        colback=HypoDeepBg,
+        colframe=HypoDeepAccent,
+        boxrule=1pt,
+        sharp corners,
+        left=2mm, right=2mm, top=0mm, bottom=0mm,
+        height=4ex,
+        valign=center,
+        nobeforeafter,
+        width=\dimexpr\paperwidth-1cm\relax, % Explicit width to prevent overflow
+        colupper=white % Force text white
+    ]
+      {\usebeamerfont{frametitle}\color{white}\insertframetitle}
+    \end{tcolorbox}
+  \end{beamercolorbox}%
+}
+
+% Footer: Simple progress (Bottom Right)
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex,right]{date in head/foot}%
+       {\color{HypoDeepText}\insertframenumber{} / \inserttotalframenumber \hspace*{2em}}
+    \end{beamercolorbox}%
+  }%
+}
+
+% ==============================================================================
+% 3. Title Page (Terminal Style)
+% ==============================================================================
+\setbeamertemplate{title page}{
+  \vbox{}
+  \vfill
+  \begingroup
+    \centering
+    
+    % Wireframe Title Box
+    \begin{tcolorbox}[
+      enhanced,
+      colback=HypoDeepBg,
+      colframe=HypoDeepAccent,
+      boxrule=1.5pt,
+      arc=0pt, outer arc=0pt,
+      halign=center,
+      valign=center,
+      width=0.9\textwidth,
+      nobeforeafter
+    ]
+      {\usebeamerfont{title}\Huge\color{white}\textbf{\inserttitle}}\par
+      \vspace{0.5em}
+      \ifx\insertsubtitle\@empty\else
+        {\usebeamerfont{subtitle}\color{HypoDeepAccent}\insertsubtitle}\par
+      \fi
+    \end{tcolorbox}
+    
+    \vspace{2cm}
+    
+    % Info Block
+    {\color{HypoDeepText}
+    \textbf{\insertauthor} \\
+    \footnotesize\color{gray}\insertinstitute \ $\cdot$ \ \insertdate
+    }
+    
+    % Decor line at bottom
+    \vspace{1cm}
+    {\color{HypoDeepAccent}\hrule height 2pt width 0.3\paperwidth}
+    
+  \endgroup
+  \vfill
+}
+
+\endinput

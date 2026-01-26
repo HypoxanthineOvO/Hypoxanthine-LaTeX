@@ -1,0 +1,84 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{sty/classes/slide/themes/hypo-slide-theme-business}[2026/01/26 v1.2.0 Business Theme]
+
+% ==============================================================================
+% 1. Visual Identity (Liquid Glass)
+% ==============================================================================
+% Deep Purple/Blue Gradient Logic (Simulated via TikZ in background)
+\definecolor{HypoBizDark}{HTML}{050510} % Almost black
+\definecolor{HypoBizPurple}{HTML}{4B0082} % Indigo
+\definecolor{HypoBizBlue}{HTML}{0000FF} % Blue
+
+\setbeamercolor{background canvas}{bg=HypoBizDark}
+\setbeamercolor{normal text}{fg=white}
+\setbeamercolor{structure}{fg=white}
+\setbeamercolor{frametitle}{fg=white}
+
+% Glass Box Style
+\tcbset{
+  glass box/.style={
+    enhanced,
+    frame hidden,
+    colback=white,
+    opacityback=0.1, % Semi-transparent
+    coltext=white,
+    borderline={0.5pt}{0pt}{white!50}, % Subtle white border
+    drop shadow=black!80,
+    sharp corners=south,
+    rounded corners=north,
+    arc=5pt
+  }
+}
+
+% ==============================================================================
+% 2. Background (Liquid Fluid)
+% ==============================================================================
+\RequirePackage{tikz}
+\setbeamertemplate{background}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    % Dark Base
+    \fill[HypoBizDark] (current page.south west) rectangle (current page.north east);
+    % Fluid Blobs (Gradients)
+    \shade[inner color=HypoBizPurple!60, outer color=HypoBizDark, opacity=0.6] 
+          (current page.north east) circle (5cm);
+    \shade[inner color=HypoBizBlue!60, outer color=HypoBizDark, opacity=0.6] 
+          (current page.south west) circle (6cm);
+  \end{tikzpicture}
+}
+
+% ==============================================================================
+% 3. Layout (Minimalist)
+% ==============================================================================
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{} 
+\setbeamertemplate{footline}{} % No footer for immersive exp
+
+% Huge Helvetica Titles
+\setbeamertemplate{frametitle}{%
+  \vspace{1cm}
+  \begin{beamercolorbox}[wd=\paperwidth,leftskip=1cm]{frametitle}
+    \usebeamerfont{frametitle}\Huge\textbf{\insertframetitle}
+  \end{beamercolorbox}
+}
+
+% ==============================================================================
+% 4. Title Page (Apple Style)
+% ==============================================================================
+\setbeamertemplate{title page}{
+  \vbox{}
+  \vfill
+  \begingroup
+    \centering
+    \vspace{1cm}
+    {\usebeamerfont{title}\fontsize{40}{48}\selectfont\textbf{\inserttitle}}\par
+    \vspace{0.5em}
+    {\Large\color{gray!70}\insertsubtitle}\par
+    
+    \vspace{3cm}
+    
+    {\small\color{gray!50}\insertdate}
+  \endgroup
+  \vfill
+}
+
+\endinput

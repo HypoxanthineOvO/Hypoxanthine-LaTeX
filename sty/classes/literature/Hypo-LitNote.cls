@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{Hypo-LitNote}[2026/01/25 v1.1.2 Hypoxanthine Literature Note Class]
+\ProvidesClass{Hypo-LitNote}[2026/01/26 v1.2.0 Hypoxanthine Literature Note Class]
 
 % Options:
 % - Pass Hypoxanthine entry options to Hypo-Note-Core and local modules.

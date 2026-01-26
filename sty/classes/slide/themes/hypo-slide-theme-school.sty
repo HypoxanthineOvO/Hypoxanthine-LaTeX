@@ -1,0 +1,151 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{sty/classes/slide/themes/hypo-slide-theme-school}[2026/01/26 v1.2.0 School Theme]
+
+% ==============================================================================
+% 1. Visual Identity (Colors & Fonts)
+% ==============================================================================
+% Default Primary: ShanghaiTech Red
+\definecolor{HypoPrimary}{HTML}{9D0004}
+\definecolor{HypoPrimaryDark}{HTML}{700000}
+\definecolor{HypoSecondary}{HTML}{555555}
+
+% Apply Colors
+\setbeamercolor{structure}{fg=HypoPrimary}
+\setbeamercolor{palette primary}{bg=HypoPrimary, fg=white}
+\setbeamercolor{palette secondary}{bg=white, fg=HypoPrimary}
+\setbeamercolor{title}{fg=white, bg=HypoPrimary}
+\setbeamercolor{frametitle}{fg=HypoPrimary}
+\setbeamercolor{author}{fg=HypoSecondary}
+\setbeamercolor{institute}{fg=HypoSecondary}
+\setbeamercolor{date}{fg=HypoSecondary}
+
+% Separator Line Color Logic
+\ExplSyntaxOn
+\str_if_eq:VnTF \g_hypo_slide_linecolor_tl { black }
+  { \colorlet{HypoSeparator}{black} }
+  { \colorlet{HypoSeparator}{HypoPrimary} }
+\ExplSyntaxOff
+
+% ==============================================================================
+% 2. Outer Layout (Header / Footer)
+% ==============================================================================
+% 3-Color Footer with Wireframes (tcolorbox implementation)
+\definecolor{HypoDarkGrey}{HTML}{1A1A1A}
+
+\tcbset{
+  school footer/.style={
+    enhanced,
+    nobeforeafter,
+    boxrule=0.5pt,
+    colframe=black,
+    sharp corners,
+    halign=center,
+    valign=center,
+    height=2.5ex,
+    top=0pt, bottom=0pt, left=1pt, right=1pt,
+    width=#1
+  }
+}
+
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    % Left: Author (Dark Gray) 20%
+    \begin{tcolorbox}[school footer=0.2\paperwidth, colback=HypoDarkGrey, coltext=white]
+      \usebeamerfont{author in head/foot}\insertshortauthor
+    \end{tcolorbox}%
+    % Middle: Title (White, red text) 50%
+    \begin{tcolorbox}[school footer=0.5\paperwidth, colback=white, coltext=HypoPrimary]
+      \usebeamerfont{title in head/foot}\insertshorttitle
+    \end{tcolorbox}%
+    % Right: Info (Red) 30% - Increased space for date
+    \begin{tcolorbox}[school footer=0.3\paperwidth, colback=HypoPrimary, coltext=white]
+      \insertshortdate{} \hspace*{0.5em} \insertframenumber{}
+    \end{tcolorbox}%
+  }%
+}
+
+% Header Box
+% Header: Remove Headline to let Logo float naturally or be placed manually
+\setbeamertemplate{headline}{}
+
+% Ensure assets are found
+\graphicspath{{../assets/}{assets/}}
+
+% Helper for logo
+\ExplSyntaxOn
+\cs_new_protected:Npn \hypo_slide_print_logo
+  {
+    \tl_if_empty:NF \g_hypo_slide_logo_tl
+      {
+        \includegraphics[height=0.8cm]{\g_hypo_slide_logo_tl}
+        \hspace{0.5cm}
+      }
+  }
+\cs_new_eq:NN \HypoSlidePrintLogo \hypo_slide_print_logo
+\ExplSyntaxOff
+
+% ==============================================================================
+% 3. Title Page
+% ==============================================================================
+% --- Title Page Layouts ---
+\newcommand{\HypoTitlePageWithInstructors}{
+    % --- Layout with Instructors ---
+    \vspace*{-2cm} % Move Title Up
+    \begin{beamercolorbox}[sep=8pt,center,colsep=-4bp,rounded=false,shadow=false]{palette primary}
+      \usebeamerfont{title}\inserttitle\par%
+      \ifx\insertsubtitle\@empty\else\vskip0.5em{\usebeamerfont{subtitle}\insertsubtitle\par}\fi%     
+    \end{beamercolorbox}%
+    {\color{black}\hrule height 2pt}
+    
+    % Instructor Grid
+    \HypoPrintInstructorCover
+    
+    \vfill
+    {\usebeamerfont{date}\insertdate}
+}
+
+\newcommand{\HypoTitlePageStandard}{
+    % --- Standard Layout ---
+    \vspace*{-1cm}
+    % Big Red Title Block
+    \begin{beamercolorbox}[sep=12pt,center,colsep=-4bp,rounded=false,shadow=false]{palette primary}
+      \usebeamerfont{title}\inserttitle\par%
+      \ifx\insertsubtitle\@empty\else\vskip0.5em{\usebeamerfont{subtitle}\insertsubtitle\par}\fi%     
+    \end{beamercolorbox}%
+    
+    % Black bottom border for title block
+    {\color{black}\hrule height 2pt}
+    \par\vspace{1cm}
+    
+    % Author & Institute
+    \begin{beamercolorbox}[sep=8pt,center]{author}
+      \usebeamerfont{author}\insertauthor
+    \end{beamercolorbox}
+    \begin{beamercolorbox}[sep=8pt,center]{institute}
+      \usebeamerfont{institute}\insertinstitute
+    \end{beamercolorbox}
+    \begin{beamercolorbox}[sep=8pt,center]{date}
+      \usebeamerfont{date}\insertdate
+    \end{beamercolorbox}
+}
+
+\setbeamertemplate{title page}{
+  \vbox{}
+  \vfill
+  \begingroup
+    \centering
+    % Logo at Top Right (Manual Placement)
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=north east, yshift=-1cm, xshift=-1cm] at (current page.north east) {\HypoSlidePrintLogo};
+    \end{tikzpicture}
+    
+    % Adaptive Layout
+    \IfInstructorsExist
+    {\HypoTitlePageWithInstructors}
+    {\HypoTitlePageStandard}
+  \endgroup
+  \vfill
+}
+
+\endinput

@@ -1,0 +1,100 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{sty/modules/Hypo-Slide-Instructor}[2026/01/26 v1.2.0 Instructor Module for Hypo-Slide]
+
+\RequirePackage{expl3}
+\RequirePackage{xparse}
+\RequirePackage{tcolorbox}
+
+% Global container for cover instructors
+\ExplSyntaxOn
+\clist_new:N \g_hypo_instructor_clist
+
+% --- Variant 1: Cover Instructors (Compact) ---
+\NewDocumentCommand{\InstructorCover}{ O{} m m m }{
+    \clist_gput_right:Nn \g_hypo_instructor_clist {
+        \begin{minipage}{0.45\linewidth}
+            \begin{columns}[onlytextwidth,T]
+                \column{0.25\linewidth}
+                    \ifx&#1&%
+                        \includegraphics[width=\linewidth,height=\linewidth,keepaspectratio]{example-image-1x1}%
+                    \else%
+                        \includegraphics[width=\linewidth,height=\linewidth,keepaspectratio]{#1}%
+                    \fi%
+                \column{0.70\linewidth}
+                    {\small\textbf{#2}} \\
+                    {\tiny\color{gray}#3} \\
+                    {\tiny\color{gray}\itshape #4}
+            \end{columns}
+        \end{minipage}
+    }
+}
+
+% Helper to check if instructors exist
+\cs_new_protected:Npn \hypo_if_instructors_exist:TF #1 #2
+  {
+    \clist_if_empty:NTF \g_hypo_instructor_clist { #2 } { #1 }
+  }
+
+\NewDocumentCommand{\IfInstructorsExist}{ m m }{
+    \hypo_if_instructors_exist:TF { #1 } { #2 }
+}
+
+% Printer for Title Page
+\NewDocumentCommand{\HypoPrintInstructorCover}{ }{
+    \hypo_if_instructors_exist:TF
+      {
+        \vspace{1.5cm}
+        \centering
+        \clist_use:Nn \g_hypo_instructor_clist { \hspace{0.5cm} }
+      }
+      {}
+}
+\ExplSyntaxOff
+
+% --- Variant 2: Full Instructor Block (Detailed) ---
+\definecolor{HypoInstructorFrame}{HTML}{9D0004} % Default Red, can be overridden by theme
+
+% Define style first
+\tcbset{
+  hypo instructor box/.style={
+    enhanced,
+    frame hidden,
+    colback=white,
+    borderline west={2pt}{0pt}{HypoInstructorFrame},
+    sharp corners,
+    left=0pt, right=0pt, top=0pt, bottom=0pt
+  }
+}
+
+\NewDocumentEnvironment{instructorbox}{ O{} }{
+  \begin{tcolorbox}[hypo instructor box, #1]
+}{
+  \end{tcolorbox}
+}
+
+\NewDocumentCommand{\InstructorBlock}{ O{} m m m }{
+    \begin{instructorbox}
+        \begin{columns}[onlytextwidth]
+            \column{0.15\textwidth}
+                \ifx&#1&%
+                    \includegraphics[width=\linewidth,height=\linewidth,keepaspectratio]{example-image-1x1}%
+                \else%
+                    \includegraphics[width=\linewidth,height=\linewidth,keepaspectratio]{#1}%
+                \fi%
+            \column{0.82\textwidth}
+                {\large\textbf{#2}} \hfill {\small\color{gray}#3} \par
+                \vspace{0.3em}
+                {\footnotesize #4}
+        \end{columns}
+    \end{instructorbox}
+    \vspace{0.5em}
+}
+
+% Environment for multi-page list
+\newenvironment{InstructorList}{%
+    \begin{frame}[allowframebreaks]{Instructors}%
+}{%
+    \end{frame}%
+}
+
+\endinput

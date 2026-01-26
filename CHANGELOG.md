@@ -1,6 +1,29 @@
 # Changelog
 
 本文件记录版本更新内容（面向使用者）。
+## v1.2.0 (2026-01-26)
+
+### Major Updates / 重大更新
+- **Hypo-Slide**: 全新的幻灯片类 (based on `ctexbeamer`)。
+    - 开箱即用的 5 套主题：School, Lab, Lit, Tutorial, Business。
+    - 深度集成 Hypo-Box (Overlay 支持) 与 Hypo-Code (Fragile 支持)。
+    - 统一的 `\HypoSlideSetup` 配置接口。
+
+- **Modules**:
+    - **Hypo-Slide-Instructor**: 新增讲师介绍模块 (Tutorial Theme 功能下沉)。
+        - 支持 `\InstructorCover` (自适应列布局，用于封面)。
+        - 支持 `\InstructorBlock` 和 `InstructorList` (用于单独页面或介绍页)。
+
+### Theme Details
+- **School**: 默认上海科技大学红 (#9D0004)，正式答辩风。底栏采用三段式显式边框设计。优化了 Logo 遮挡问题。
+- **Lab**: 极客深色模式，采用 "Wireframe" 线框封面。代码块背景调浅 (Slate 500) 以增强对比度。页码移至右下角。
+- **Lit**: 衬线字体与纸张白，适合人文汇报。支持居中诗歌 (`poem` 内部文字居中) 与雅致页眉。
+- **Business**: 极简科技风，采用 "Liquid Glass" (毛玻璃+流体背景) 设计。
+- **Note**: 删除了 `Tutorial` 主题，其能力已通用化为 Instructor 模块。
+
+### Improvements
+- **Template**: 新增 `hypo template slide` 命令。
+- **Hypo-Box**: 增加了针对 Beamer 的适配层，解决了 `note` 环境冲突。
 
 ## v1.1.2 (2026-01-25)
 
