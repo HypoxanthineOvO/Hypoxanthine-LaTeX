@@ -88,7 +88,7 @@
                 \tl_clear:N \l_tmpa_tl
                 \bool_if:NTF \l_hypo_code_linenos_bool
                     { \tl_put_right:Nn \l_tmpa_tl { linenos } }
-                    { \tl_put_right:Nn \l_tmpa_tl { linenos=false } }
+                    { }
                 
                 \tl_if_blank:VTF \l_hypo_code_theme_tl
                     { }

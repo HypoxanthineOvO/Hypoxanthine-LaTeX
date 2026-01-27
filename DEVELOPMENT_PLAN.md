@@ -235,7 +235,16 @@ Hypoxanthine-LaTeX/
 * [x] **Hypo-Icon**: Extensive expansion of available icons.
 * [x] **Docs**: Manual icon table refactor and FEATURES localization.
 
-### v1.2.0 (Planned)
+### v1.2.0 (Released, 2026-01-26)
+
+#### v1.2.2 (Fonts & Build, 2026-01-27)
+
+* [x] **Fonts**: Migrate to Noto/Source Han & LXGW WenKai as default fontset.
+* [x] **Build**: Enable SHELL_ESCAPE by default in Makefile.
+* [x] **Fix**: Resolve `linenos=false` keyval error in Hypo-Code.
+* [x] **Fix**: Robust `\kaishu` definition avoiding ctex conflicts.
+
+### v1.3.0 (Planned)
 
 * [ ] **Label Auto-Generation**: Support ASCII title to label conversion (e.g., `\section{Introduction}` -> `sec:introduction`).
 * [ ] **Cover Image Support**: Add Hero Image / Logo / Background interfaces to `\makecover`.
@@ -269,11 +278,11 @@ endif
 
 **使用方法**：
 ```bash
-# 标准构建（无 minted 高亮）
+# 默认启用 minted（支持高亮与绘图）
 make
 
-# 启用 minted（需要 Python + Pygments）
-make SHELL_ESCAPE=1
+# 强制关闭 shell-escape (仅受信任模式)
+make SHELL_ESCAPE=0
 
 # 清理中间文件
 make clean

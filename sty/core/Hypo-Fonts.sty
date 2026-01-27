@@ -31,29 +31,27 @@
 \ProcessKeysOptions{ hypo / fonts }
 
 % ------------------------------------------------------------------------------
-% Strategy: Tech (Noto Sans CJK / FandolHei)
+% Strategy: Tech (Noto Sans CJK / Mono)
 % ------------------------------------------------------------------------------
 % Clean, modern sans-serif look for technical documentation.
-% Bold weights are strictly from the same family.
 \cs_new_protected:Npn \hypo_fonts_load_tech:
   {
-    % CJK Main: Prefer Noto Sans CJK SC (Source Han Sans)
-    \IfFontExistsTF{Noto Sans CJK SC}
+    % CJK Main: Noto Sans CJK SC (Source Han Sans)
+    \IfFontExistsTF{Noto~Sans~CJK~SC}
       {
         \setCJKmainfont[
-            BoldFont       = Noto Sans CJK SC Bold,
-            ItalicFont     = Noto Sans CJK SC,
+            BoldFont       = Noto~Sans~CJK~SC~Bold,
+            ItalicFont     = Noto~Sans~CJK~SC,
             ItalicFeatures = {FakeSlant=0.2},
-            BoldItalicFont = Noto Sans CJK SC Bold,
+            BoldItalicFont = Noto~Sans~CJK~SC~Bold,
             BoldItalicFeatures = {FakeSlant=0.2},
             RawFeature     = {+palt}
-        ]{Noto Sans CJK SC}
-        \setCJKsansfont[BoldFont=Noto Sans CJK SC Bold]{Noto Sans CJK SC}
+        ]{Noto~Sans~CJK~SC}
+        \setCJKsansfont[BoldFont=Noto~Sans~CJK~SC~Bold]{Noto~Sans~CJK~SC}
       }
       {
-        % Fallback: Do nothing and let ctex/xeCJK handle the default fontset (usually Fandol or installed system fonts)
-        % This prevents crashing if Fandol files are not found by fontspec names.
-        \typeout{Hypo-Fonts: Noto Sans CJK not found, checking Fandol...}
+        % Fallback: Fandol
+        \typeout{Hypo-Fonts:~Noto~Sans~CJK~not~found,~checking~Fandol...}
         \IfFontExistsTF{FandolHei-Regular}
          {
             \setCJKmainfont[
@@ -63,15 +61,30 @@
             ]{FandolHei-Regular}
             \setCJKsansfont{FandolHei-Regular}
          }
-         {
-            \typeout{Hypo-Fonts: Fandol fonts not found by name. Relying on ctex default.}
-         }
+         { \typeout{Hypo-Fonts:~Fandol~fonts~not~found~by~name.~Relying~on~ctex~default.} }
       }
       
     % CJK Mono: Noto Sans Mono CJK SC > FandolFang
-    \IfFontExistsTF{Noto Sans Mono CJK SC}
-      {\setCJKmonofont{Noto Sans Mono CJK SC}}
+    \IfFontExistsTF{Noto~Sans~Mono~CJK~SC}
+      {
+        \setCJKmonofont[
+            BoldFont       = Noto~Sans~Mono~CJK~SC~Bold,
+            ItalicFont     = Noto~Sans~Mono~CJK~SC,
+            ItalicFeatures = {FakeSlant=0.2},
+            BoldItalicFont = Noto~Sans~Mono~CJK~SC~Bold,
+            BoldItalicFeatures = {FakeSlant=0.2}
+        ]{Noto~Sans~Mono~CJK~SC}
+      }
       {\IfFontExistsTF{FandolFang-Regular}{\setCJKmonofont{FandolFang-Regular}}{}}
+
+    % Define \kaishu and \CJKfamily{kai} for consistency if needed, though tech mode uses Sans mostly.
+    \IfFontExistsTF{LXGW~WenKai}
+      {
+        \setCJKfamilyfont{kai}{LXGW~WenKai}
+        \ProvideDocumentCommand{\kaishu}{}{}
+        \RenewDocumentCommand{\kaishu}{}{\CJKfamily{kai}}
+      }
+      {}
   }
 
 % ------------------------------------------------------------------------------
@@ -80,34 +93,61 @@
 % Humanist, serif/kai style for reading comfort.
 \cs_new_protected:Npn \hypo_fonts_load_lit:
   {
-    \IfFontExistsTF{LXGW WenKai}
+    % 1. Serif Font Selection (Noto / Source Han)
+    \IfFontExistsTF{Noto~Serif~CJK~SC}
+      { \let\selected_serif_font\relax \def\selected_serif_font{Noto~Serif~CJK~SC} }
       {
+        \IfFontExistsTF{Source~Han~Serif~SC}
+          { \let\selected_serif_font\relax \def\selected_serif_font{Source~Han~Serif~SC} }
+          { \let\selected_serif_font\relax }
+      }
+
+    % 2. Kaishu/Italic Font Selection (LXGW WenKai)
+    \let\selected_kai_font\relax
+    \IfFontExistsTF{LXGW~WenKai}
+      { \def\selected_kai_font{LXGW~WenKai} }
+      { \IfFontExistsTF{FandolKai-Regular} { \def\selected_kai_font{FandolKai-Regular} } {} }
+
+    \ifx\selected_serif_font\relax
+        % --- Fallback: Lit mode without Source Han ---
+        \typeout{Hypo-Fonts:~Source~Han~Serif~not~found.~Using~Fallback.}
+        \ifx\selected_kai_font\relax
+           % Worst case: Use ctex default
+        \else
+           \setCJKmainfont[BoldFont=\selected_kai_font\space Bold, ItalicFont=\selected_kai_font]{\selected_kai_font}
+           \setCJKsansfont{\selected_kai_font}
+        \fi
+    \else
+        % --- Success: Source Han + LXGW ---
         \setCJKmainfont[
-            % Attempt to use WenKai Bold if installed, otherwise FakeBold
-            BoldFont       = LXGW WenKai Bold,
-            ItalicFont     = LXGW WenKai,
-            ItalicFeatures = {FakeSlant=0.2}
-        ]{LXGW WenKai}
-        \setCJKsansfont{LXGW WenKai}
-      }
-      {
-         \typeout{Hypo-Fonts: LXGW WenKai not found. Checking FandolSong...}
-         \IfFontExistsTF{FandolSong-Regular}
-         {
-            \setCJKmainfont[
-                BoldFont=FandolSong-Bold,
-                ItalicFont=FandolKai-Regular
-            ]{FandolSong-Regular}
-            \setCJKsansfont{FandolHei-Regular}
-         }
-         {
-            \typeout{Hypo-Fonts: Fandol fonts not found. Relying on ctex default.}
-         }
-      }
-      
-    \IfFontExistsTF{LXGW WenKai Mono}
-      {\setCJKmonofont{LXGW WenKai Mono}}
-      {\IfFontExistsTF{FandolFang-Regular}{\setCJKmonofont{FandolFang-Regular}}{}}
+            BoldFont       = \selected_serif_font\space Bold,
+            % Map Italic to Kaishu (LXGW) for Literature feel
+            ItalicFont     = \ifx\selected_kai_font\relax \selected_serif_font \else \selected_kai_font \fi,
+            ItalicFeatures = {\ifx\selected_kai_font\relax FakeSlant=0.2 \fi}
+        ]{\selected_serif_font}
+        
+        % Sans -> Noto Sans CJK SC
+        \IfFontExistsTF{Noto~Sans~CJK~SC}
+          { \setCJKsansfont[BoldFont=Noto~Sans~CJK~SC~Bold]{Noto~Sans~CJK~SC} }
+          { \setCJKsansfont{Source~Han~Sans~SC} }
+          
+        \typeout{Hypo-Fonts:~Using~\selected_serif_font\space~for~Literature.}
+    \fi
+
+    % 3. Explicitly Define Kaishu Family (Crucial for LitBox)
+    \ifx\selected_kai_font\relax
+    \else
+      % Redefine \kaishu to use our selected Kai font (LXGW ideally)
+      \setCJKfamilyfont{kai}[BoldFont=\selected_kai_font\space Bold]{\selected_kai_font}
+      % Ensure standard command works
+      \ProvideDocumentCommand{\kaishu}{}{}
+      \RenewDocumentCommand{\kaishu}{}{\CJKfamily{kai}}
+    \fi
+
+    % Monofont
+    \IfFontExistsTF{Noto~Sans~Mono~CJK~SC}
+      {\setCJKmonofont{Noto~Sans~Mono~CJK~SC}}
+      {\IfFontExistsTF{LXGW~WenKai~Mono}{\setCJKmonofont{LXGW~WenKai~Mono}}{}}
   }
 
 % ------------------------------------------------------------------------------

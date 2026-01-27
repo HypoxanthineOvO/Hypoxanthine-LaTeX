@@ -1,6 +1,24 @@
 # Changelog
 
 本文件记录版本更新内容（面向使用者）。
+## [Unreleased] 
+
+
+## v1.2.1 & v1.2.2 (2026-01-27)
+### 手动修复
+- 修复了大量 AI 无法修复的细节格式问题
+
+### Major Changes / 重大变更
+- **Hypo-Fonts**: 全局字体迁移至 **Noto/Source Han** 系列，移除对 Fandol 的默认依赖。
+    - **Tech Mode**: 统一使用 Noto Sans CJK SC (思源黑体) 作为正文与标题字体。
+    - **Lit Mode**: 使用 Noto Serif CJK SC (思源宋体) 作为正文，**LXGW WenKai (霞鹜文楷)** 作为引用与强调字体。
+- **Hypo-LitBox**: 诗歌 (`poem`) 与引用 (`quotepara`) 环境现在自动使用系统安装的 **LXGW WenKai (霞鹜文楷)** 渲染（如果可用）。
+
+### Build System & Fixes
+- **Makefile**: 默认开启 `SHELL_ESCAPE=1`，开箱即支持 `minted` 代码高亮与 `Hypo-Plot` 绘图。
+- **Hypo-Code**: 修复了传递 `linenos=false` 时引发的 `keyval Error`。
+- **Hypo-Fonts**: 修复了 Noto Sans Mono 在部分状态下缺少 Italic 特性的警告；修复了 `\kaishu` 重定义时的冲突问题。
+
 ## v1.2.0 (2026-01-26)
 
 ### Major Updates / 重大更新

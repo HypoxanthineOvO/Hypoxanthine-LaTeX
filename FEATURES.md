@@ -83,7 +83,16 @@ Hypoxanthine 是一个模块化的 LaTeX 框架，设计用于：
 
 ## 3. 核心模块与语法
 
-### 3.1 颜色与主题 (Colors & Schemes)
+### 3.1 字体策略 (Hypo-Fonts)
+- **Tech Mode** (`fontset=tech`, 默认): 
+    - 主字体: **Noto Sans CJK SC** (思源黑体)。
+    - 适用: 技术文档、幻灯片、速查表。
+- **Lit Mode** (`fontset=lit`): 
+    - 主字体: **Noto Serif CJK SC** (思源宋体)。
+    - 强调/引用: **LXGW WenKai** (霞鹜文楷)。
+    - 适用: 文学笔记、诗歌、文科论文。
+
+### 3.2 颜色与主题 (Colors & Schemes)
 - **方案**: `Base` (基础), `CN` (国风/莫兰迪), `Tech` (科技/深蓝), `Simple` (极简灰)。
 - **语义色**: 请使用以下代号而非硬编码颜色：
     - 主色: `HypoPrimary`
@@ -92,7 +101,7 @@ Hypoxanthine 是一个模块化的 LaTeX 框架，设计用于：
     - 背景: `HypoBackground` (或用于盒子的 `HypoSurface`)
     - 边框: `HypoBorder`
 
-### 3.2 盒子 (`Hypo-Box`)
+### 3.3 盒子 (`Hypo-Box`)
 使用基于 `tcolorbox` 的环境。
 **签名**: `\begin{env}{标题}{标签} ... \end{env}`.
 - `标签` 是可选的（如果不需要引用，可以留空 `{}`）。
@@ -110,7 +119,7 @@ Hypoxanthine 是一个模块化的 LaTeX 框架，设计用于：
 - `example` (成功色/绿色)
 - `note` (警告色/橙色)
 
-### 3.3 代码 (`Hypo-Code`)
+### 3.4 代码 (`Hypo-Code`)
 使用 `hypocode` 环境。**避免**使用标准的 `minted` 或 `lstlisting` 以确保可移植性。
 **签名**: `\begin{hypocode}[选项]{语言} ... \end{hypocode}`.
 
@@ -122,7 +131,7 @@ def hello():
 ```
 **重要**: `hypocode` 环境是鲁棒的，可在 Beamer 帧中安全使用（通过 `fragile`）。
 
-### 3.4 图标 (`Hypo-Icon`)
+### 3.5 图标 (`Hypo-Icon`)
 使用 `\HypoIcon{key}` 获取图标。
 **常用 Keys**:
 - **界面/操作**: `user`, `search`, `home`, `settings`, `check`, `warn`, `link`, `download`, `upload`
@@ -131,7 +140,7 @@ def hello():
 - **技术栈**: `python`, `java`, `linux`, `docker`, `git`, `react`, `vue`, `node`, `cpp`
 - **学术/联系**: `article`, `book`, `school`, `email`, `phone`
 
-### 3.5 图像 (`Hypo-Img`)
+### 3.6 图像 (`Hypo-Img`)
 使用 `\img` 获取简化的插图插入。
 **签名**: `\img[选项]{文件名}{标题}`.
 - 如果在选项中提供了 `label`，会自动生成 `fig:<label>`。
@@ -142,13 +151,13 @@ def hello():
 参见 \cref{fig:my_plot}。
 ```
 
-### 3.6 数学 (`Hypo-Math`)
+### 3.7 数学 (`Hypo-Math`)
 如果 `shorthand=true` (在 `Hypo-Note` 中默认开启)，则使用：
 - 集合: `\R`, `\N`, `\Z`
 - 定界符: `\Set{x}`, `\Paren{x}`, `\Abs{x}`
 - 物理 (如果检测到 `physics` 包): `\dd{x}`, `\pdv{f}{x}`, `\ket{\psi}`.
 
-### 3.7 绘图 (`Hypo-Plot`)
+### 3.8 绘图 (`Hypo-Plot`)
 直接内嵌 Python 绘图代码，或编译外部 TikZ 文件。
 
 **Python 绘图**:
