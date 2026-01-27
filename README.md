@@ -1,6 +1,6 @@
 # Hypoxanthine-LaTeX
 
-![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v1.2.2-brightgreen) ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v1.2.3-brightgreen) ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
 
 **Hypoxanthine-LaTeX** is a modular, engineering-oriented LaTeX framework for efficient document creation.
 **Hypoxanthine-LaTeX** 是一个模块化、工程化维护的个人 LaTeX 生态。

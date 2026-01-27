@@ -244,6 +244,10 @@ Hypoxanthine-LaTeX/
 * [x] **Fix**: Resolve `linenos=false` keyval error in Hypo-Code.
 * [x] **Fix**: Robust `\kaishu` definition avoiding ctex conflicts.
 
+#### v1.2.3 (Font Propagation Fix, 2026-01-27)
+
+* [x] **Fix**: Ensure `Hypo-LitNote` correctly passes `fontset=lit` to `Hypo-Fonts`.
+
 ### v1.3.0 (Planned)
 
 * [ ] **Label Auto-Generation**: Support ASCII title to label conversion (e.g., `\section{Introduction}` -> `sec:introduction`).

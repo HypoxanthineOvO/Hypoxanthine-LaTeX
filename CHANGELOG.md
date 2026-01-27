@@ -4,6 +4,10 @@
 ## [Unreleased] 
 
 
+## v1.2.3 (2026-01-27)
+- [FIX] **Hypo-LitNote**: 修复了 `fontset=lit` 选项未能正确传递给底层核心包的问题。现在文学笔记可正确加载 **思源宋体 (Noto Serif CJK SC)** 作为正文，而非之前的思源黑体。
+- [REFACTOR] **Hypo-Note-Core**: 优化了 `Hypo-Fonts` 的加载逻辑，使用 `\PassOptionsToPackage` 确保参数透传。
+
 ## v1.2.1 & v1.2.2 (2026-01-27)
 ### 手动修复
 - 修复了大量 AI 无法修复的细节格式问题

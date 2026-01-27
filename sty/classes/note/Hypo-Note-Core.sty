@@ -54,10 +54,10 @@
 \ExplSyntaxOff
 
 % Core 能力（无版式）
-\RequirePackage{Hypo-Fonts}
 \ExplSyntaxOn
-\HypoFontSetup{fontset=\g_hypo_core_fontset_tl}
+\PassOptionsToPackage{fontset=\g_hypo_core_fontset_tl}{Hypo-Fonts}
 \ExplSyntaxOff
+\RequirePackage{Hypo-Fonts}
 
 % Allow choosing a color scheme before loading Hypo-Colors.
 \ExplSyntaxOn

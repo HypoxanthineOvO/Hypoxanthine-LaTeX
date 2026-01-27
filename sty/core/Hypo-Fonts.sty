@@ -156,8 +156,8 @@
 
 \str_case:VnF \g_hypo_fonts_fontset_tl
   {
-    {tech} { \hypo_fonts_load_tech: }
-    {lit}  { \hypo_fonts_load_lit: }
+    {tech} { \typeout{Hypo-Fonts:~Executing~tech~strategy} \hypo_fonts_load_tech: }
+    {lit}  { \typeout{Hypo-Fonts:~Executing~lit~strategy} \hypo_fonts_load_lit: }
   }
   {
     % Default or unknown -> Tech strategy
