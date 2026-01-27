@@ -1,17 +1,19 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{sty/modules/Hypo-Slide-Instructor}[2026/01/26 v1.2.0 Instructor Module for Hypo-Slide]
+\ProvidesPackage{Hypo-Slide-Instructor}[2026/01/26 v1.2.0 Instructor Module for Hypo-Slide]
 
 \RequirePackage{expl3}
 \RequirePackage{xparse}
 \RequirePackage{tcolorbox}
 
 % Global container for cover instructors
+% NOTE: Must NOT use clist here because cover item content contains commas
+% (e.g. in \includegraphics options), which would split clist items.
 \ExplSyntaxOn
-\clist_new:N \g_hypo_instructor_clist
+\seq_new:N \g_hypo_instructor_seq
 
 % --- Variant 1: Cover Instructors (Compact) ---
 \NewDocumentCommand{\InstructorCover}{ O{} m m m }{
-    \clist_gput_right:Nn \g_hypo_instructor_clist {
+    \seq_gput_right:Nn \g_hypo_instructor_seq {
         \begin{minipage}{0.45\linewidth}
             \begin{columns}[onlytextwidth,T]
                 \column{0.25\linewidth}
@@ -32,7 +34,7 @@
 % Helper to check if instructors exist
 \cs_new_protected:Npn \hypo_if_instructors_exist:TF #1 #2
   {
-    \clist_if_empty:NTF \g_hypo_instructor_clist { #2 } { #1 }
+        \seq_if_empty:NTF \g_hypo_instructor_seq { #2 } { #1 }
   }
 
 \NewDocumentCommand{\IfInstructorsExist}{ m m }{
@@ -45,7 +47,7 @@
       {
         \vspace{1.5cm}
         \centering
-        \clist_use:Nn \g_hypo_instructor_clist { \hspace{0.5cm} }
+                \seq_use:Nn \g_hypo_instructor_seq { \hspace{0.5cm} }
       }
       {}
 }

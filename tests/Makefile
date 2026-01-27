@@ -40,7 +40,7 @@ slides: $(ASSET_PDF)
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Slide_School MAIN_FILE=integration/Slide_School.tex OUT_DIR=$(OUT_DIR) SHELL_ESCAPE=1 all
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Slide_Lab MAIN_FILE=integration/Slide_Lab.tex OUT_DIR=$(OUT_DIR) SHELL_ESCAPE=1 all
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Slide_Lit MAIN_FILE=integration/Slide_Lit.tex OUT_DIR=$(OUT_DIR) SHELL_ESCAPE=1 all
-	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Slide_Tutorial MAIN_FILE=integration/Slide_Tutorial.tex OUT_DIR=$(OUT_DIR) SHELL_ESCAPE=1 all
+	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Slide_Instructor MAIN_FILE=integration/Slide_Instructor.tex OUT_DIR=$(OUT_DIR) SHELL_ESCAPE=1 all
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Slide_Business MAIN_FILE=integration/Slide_Business.tex OUT_DIR=$(OUT_DIR) SHELL_ESCAPE=1 all
 
 $(ASSET_PDF): $(ASSET_TEX)

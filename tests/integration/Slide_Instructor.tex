@@ -1,11 +1,11 @@
 \documentclass[theme=school, aspectratio=169]{Hypo-Slide}
 \HypoSlideSetup{
   title={Instructor Demo},
-  subtitle={Using School Theme},
+  subtitle={Instructor as a base Slide component},
   date={\today}
 }
 
-% Cover Instructors
+% Cover Instructors (acts like a fully customized author area)
 \InstructorCover[../assets/avatar.png]{Hypoxanthine}{Lead Dev}{Expert in LaTeX \& AI}
 \InstructorCover{Assistant}{Support}{Handles Q\&A}
 
@@ -13,14 +13,13 @@
 \frame{\titlepage}
 
 \begin{InstructorList}
-    % Full Block Variants
-    \InstructorBlock[../assets/avatar.png]{Hypoxanthine}{Lead Developer}{
-        Hypoxanthine is the creator of this template.
-        He loves LaTeX and clean design.
-    }
-    \InstructorBlock{Assistant}{Support Team}{
-        Helps with answering student questions.
-    }
+  \InstructorBlock[../assets/avatar.png]{Hypoxanthine}{Lead Developer}{
+    Hypoxanthine is the creator of this template.
+    He loves LaTeX and clean design.
+  }
+  \InstructorBlock{Assistant}{Support Team}{
+    Helps with answering student questions.
+  }
 \end{InstructorList}
 
 \begin{frame}{Agenda}

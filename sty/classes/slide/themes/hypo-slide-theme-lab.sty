@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{sty/classes/slide/themes/hypo-slide-theme-lab}[2026/01/26 v1.2.0 Lab Theme]
+\ProvidesPackage{hypo-slide-theme-lab}[2026/01/26 v1.2.0 Lab Theme]
 
 % ==============================================================================
 % 1. Visual Identity (Dark Mode)
@@ -22,6 +22,10 @@
 
 % Accent: #38BDF8 (Sky 400)
 \definecolor{HypoDeepAccent}{HTML}{38BDF8}
+
+% Code block (light) for contrast on dark canvas
+\definecolor{HypoDeepCodeBg}{HTML}{1E293B} % #d9eafa (Slate 50)
+\definecolor{HypoDeepCodeInk}{HTML}{0F172A} % #0F172A (Slate 900)
 
 % Force Dark Mode visual
 \setbeamercolor{background canvas}{bg=HypoDeepBg}
@@ -94,6 +98,26 @@
        {\color{HypoDeepText}\insertframenumber{} / \inserttotalframenumber \hspace*{2em}}
     \end{beamercolorbox}%
   }%
+}
+
+% ==============================================================================
+% 4. Code blocks (Hypo-Code)
+% ==============================================================================
+% Hypo-Code loads minted/listings before the theme; override styles here.
+\setminted{
+  bgcolor=HypoDeepCodeBg,
+  style=monokai
+}
+
+\lstdefinestyle{hypo-code}{
+  basicstyle=\ttfamily\small\color{HypoDeepCodeInk},
+  backgroundcolor=\color{HypoDeepCodeBg},
+  frame=lines,
+  numberstyle=\tiny\color{HypoDeepCodeInk!70},
+  breaklines=true,
+  columns=fullflexible,
+  showstringspaces=false,
+  tabsize=4
 }
 
 % ==============================================================================

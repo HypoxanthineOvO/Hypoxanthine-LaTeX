@@ -24,7 +24,7 @@ endif
 # 让 TeX 能通过包名找到 sty/ 下的本地包（例如 \usepackage{Hypo-Note}）
 # 末尾的冒号用于保留 TeX 默认搜索路径。
 HYPO_PATH ?= .
-TEXINPUTS ?= .:$(HYPO_PATH)/sty//:
+TEXINPUTS := .:$(HYPO_PATH)/sty//:$(TEXINPUTS)
 export TEXINPUTS
 
 # 2. 伪目标定义

@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{sty/classes/slide/themes/hypo-slide-theme-lit}[2026/01/26 v1.2.0 Literature Theme]
+\ProvidesPackage{hypo-slide-theme-lit}[2026/01/26 v1.2.0 Literature Theme]
 
 % ==============================================================================
 % 1. Visual Identity (Serif & Warm)
@@ -84,31 +84,15 @@
 % Load LitBox for poem/quotepara support
 \RequirePackage{Hypo-LitBox}
 
-% Force some environments to be centered
-% Save original poem environment from Hypo-LitBox
-\let\oldpoem\poem
-\let\endoldpoem\endpoem
-
-% Redefine poem to be centered
-% Just use center environment directly on the inner content, or use varwidth
-% Redefine poem to be centered
-% Just use center environment directly on the inner content, or use varwidth
-\renewenvironment{poem}[1][]{
-  \begin{center}
-  \begin{varwidth}{0.8\linewidth}
-  \centering % Center text inside the block
-  \begin{oldpoem}[#1]
-}{
-  \end{oldpoem}
-  \end{varwidth}
-  \end{center}
+% Center poem content for Beamer: keep box width moderate and center both box and text.
+% (Safer than re-defining the environment and avoids token/argument issues.)
+\tcbset{
+  hypo lit poem/.append style={
+    width=0.82\linewidth,
+    halign=center,
+    center upper,
+    center
+  },
 }
-
-% Fix for varwidth
-\RequirePackage{varwidth}
-\endinput
-% Note: Hypo-LitBox might not be loaded, check first.
-% But Hypo-Slide.cls doesn't load Hypo-LitBox by default unless we add it. 
-% For now, trust the user to use standard beamer blocks or we can enhance Hypo-Box.
 
 \endinput

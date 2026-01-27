@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{sty/classes/slide/themes/hypo-slide-theme-school}[2026/01/26 v1.2.0 School Theme]
+\ProvidesPackage{hypo-slide-theme-school}[2026/01/26 v1.2.0 School Theme]
 
 % ==============================================================================
 % 1. Visual Identity (Colors & Fonts)
@@ -50,17 +50,22 @@
 \setbeamertemplate{footline}{%
   \leavevmode%
   \hbox{%
-    % Left: Author (Dark Gray) 20%
-    \begin{tcolorbox}[school footer=0.2\paperwidth, colback=HypoDarkGrey, coltext=white]
-      \usebeamerfont{author in head/foot}\insertshortauthor
+    % 1. Author: 使用 \tiny 缩小字体，并保持 halign=center
+    \begin{tcolorbox}[school footer=0.12\paperwidth, colback=HypoDarkGrey, coltext=white, halign=center]
+      {\usebeamerfont{author in head/foot}\tiny\insertshortauthor}
     \end{tcolorbox}%
-    % Middle: Title (White, red text) 50%
+    %
+    % 2. Middle: Title (保持不变)
     \begin{tcolorbox}[school footer=0.5\paperwidth, colback=white, coltext=HypoPrimary]
       \usebeamerfont{title in head/foot}\insertshorttitle
     \end{tcolorbox}%
-    % Right: Info (Red) 30% - Increased space for date
-    \begin{tcolorbox}[school footer=0.3\paperwidth, colback=HypoPrimary, coltext=white]
-      \insertshortdate{} \hspace*{0.5em} \insertframenumber{}
+    %
+    % 3. Right: Info - 缩小字体并控制间隔
+    \begin{tcolorbox}[school footer=0.38\paperwidth, colback=HypoPrimary, coltext=white]
+      {\usebeamerfont{date in head/foot}\tiny% <-- 改为 \tiny
+      % 如果想让日期和页码靠近，把 \hfill 换成具体的长度，例如 \hspace{2em}
+      % 或者保持 \hfill 但在左右两边加一点 padding
+      \makebox[\linewidth][c]{\insertshortdate \hspace{3em} \insertframenumber{}/\inserttotalframenumber}}
     \end{tcolorbox}%
   }%
 }
@@ -137,7 +142,7 @@
     \centering
     % Logo at Top Right (Manual Placement)
     \begin{tikzpicture}[remember picture,overlay]
-        \node[anchor=north east, yshift=-1cm, xshift=-1cm] at (current page.north east) {\HypoSlidePrintLogo};
+        \node[anchor=north east, yshift=0cm, xshift=0cm] at (current page.north east) {\HypoSlidePrintLogo};
     \end{tikzpicture}
     
     % Adaptive Layout
