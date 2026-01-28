@@ -183,7 +183,8 @@
   \fancyhead[RE]{\nouppercase{\leftmark}}
   \fancyhead[LO]{\nouppercase{\rightmark}}
 \else
-  \fancyhead[L]{\nouppercase{\rightmark}}
+  % User Request: Show "Chapter / Section" on the left header
+  \fancyhead[L]{\nouppercase{\leftmark\ \ \textbf{/}\ \ \rightmark}}
   \fancyhead[R]{\thepage}
 \fi
 

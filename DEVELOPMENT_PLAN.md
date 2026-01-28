@@ -1,6 +1,6 @@
 # Hypoxanthine-LaTeX Architecture & Development Plan
 
-**Version**: `v1.3.2` (Feature/Refinement Release)
+**Version**: `v1.3.3` (Header Optimization Release)
 **Date**: 2026-01-28
 **Status**: Released
 
@@ -267,6 +267,11 @@ Hypoxanthine-LaTeX/
 * [x] **Academic Layout**: Refactored to a minimalist style; removed unused `banner`/`lines` backgrounds.
 * [x] **Image Flow**: Refactored `classic` and `academic` to use flow-based image placement via `\vfill`, preventing text overlap.
 * [x] **Docs**: Comprehensive manual update (Chapter 8) and FEATURES update.
+
+#### v1.3.3 (Header Optimization, 2026-01-28)
+
+* [x] **Hypo-Note**: Left header now shows `Chapter / Section`.
+* [x] **Hypo-LitNote**: Left header now shows `Chapter  Section` (Chinese style spacing).
 
 ### v1.4.0 (Planning)
 

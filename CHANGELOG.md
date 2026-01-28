@@ -4,7 +4,11 @@
 ## [Unreleased] 
 
 
-## v1.3.2 (2026-01-28)
+## v1.3.3 (2026-01-28)
+
+### Header Layout Improvements
+- **Hypo-Note**: 页眉左侧现在采用 `Chapter / Section` 的组合显示（粗体 `/` 分隔），增强了导航性。
+- **Hypo-LitNote**: 页眉左侧现在采用 `Chapter　Section` 的组合显示（全角空格分隔），更加符合中文人文书籍的排版美学。
 
 ### Cover System Refinements & Minimalism
 - **Layout Enhancements**:

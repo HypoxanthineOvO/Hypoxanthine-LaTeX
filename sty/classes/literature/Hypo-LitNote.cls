@@ -202,7 +202,8 @@
   \fancyhead[RE]{\nouppercase{\leftmark}}
   \fancyhead[LO]{\nouppercase{\rightmark}}
 \else
-  \fancyhead[L]{\nouppercase{\rightmark}}
+  % User Request: Show "Chapter Section" (Chinese style)
+  \fancyhead[L]{\nouppercase{\leftmark\quad\quad\rightmark}}
   \fancyhead[R]{\thepage}
 \fi
 
