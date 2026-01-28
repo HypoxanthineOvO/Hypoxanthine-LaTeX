@@ -54,12 +54,16 @@ clean:
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) OUT_DIR=$(OUT_DIR) clean
 	latexmk -C -outdir=$(ASSET_DIR) $(ASSET_TEX)
 
+gallery: $(ASSET_PDF)
+	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=CoverGallery MAIN_FILE=CoverGallery.tex OUT_DIR=$(OUT_DIR) all
+
 watch:
 	$(MAKE) -f $(HYPO_MK) HYPO_PATH=$(HYPO_PATH) NAME=Main MAIN_FILE=integration/Main.tex OUT_DIR=$(OUT_DIR) watch
 
 help:
 	@echo "Hypoxanthine Tests"
 	@echo "  make       - Build mainline test PDF"
+	@echo "  make gallery - Build CoverGallery test PDF"
 	@echo "  make class - Build class test PDF"
 	@echo "  make chsh  - Build CHSH test PDF"
 	@echo "  make plot  - Build Hypo-Plot test PDF (needs python3 + tikz)"

@@ -24,12 +24,26 @@
     email={heyx2025@shanghaitech.edu.cn},
     homepage={https://github.com/HypoxanthineOvO},
     affiliation={ShanghaiTech University},
-    date={2026-01-27 (v1.2.3)}
+    date={2026-01-27 (v1.3.2)}
+}
+
+% 封面配置 (Hypo-Cover)
+\HypoCoverSetup{
+    style = modern,
+    background = sidebar,
+    color = HypoTech01DigitalBlue,
+    title = {Hypoxanthine},
+    subtitle = {The Modern LaTeX Framework},
+    author = {Yunxiang He},
+    version = {v1.3.2},
+    date = {\today}
 }
 
 % 额外加载：本文档需要演示 Hypo-LitBox 的效果
 % 注意：Hypo-LitBox 默认由 Hypo-LitNote 加载；在 Hypo-Note 下需手动引入
 \usepackage{Hypo-LitBox}
+% 加载封面模块以生成示例封面
+\usepackage{Hypo-Cover}
 \usepackage{booktabs} % Fix toprule/midrule/bottomrule undefined errors
 
 % 3. 文档正文
@@ -74,7 +88,7 @@ Hypoxanthine-LaTeX 是一套\HypoBF{工程化}的 LaTeX 解决方案。传统的
 
 推荐将本仓库作为 Git Submodule 引入你的项目，而非直接复制文件。这样可以随时通过 \HypoTT{git pull} 获取功能更新。
 
-\begin{hypocode}[linenos=false]{bash}
+\begin{hypocode}{bash}
 # 1. 引入子模块
 git submodule add git@github.com:HypoxanthineOvO/Hypoxanthine-LaTeX.git Hypoxanthine-LaTeX
 
@@ -110,7 +124,7 @@ python3 Hypoxanthine-LaTeX/scripts/hypo.py template note --dest ./my-notes
 
 使用 \HypoCS{HypoNoteSetup} 统一管理文档元数据。这些信息将用于生成封面 (\HypoCS{makecover}) 和 PDF 属性。
 
-\begin{hypocode}[linenos=false]{tex}
+\begin{hypocode}{tex}
 \HypoNoteSetup{
     title  = {文档主标题},
     subtitle = {副标题（可选）},
@@ -222,7 +236,7 @@ Hypoxanthine 摒弃了传统 LaTeX \HypoCode{\textbackslash newtheorem} 枯燥�
 
 \section{用法示例}
 
-\begin{hypocode}[linenos=false]{tex}
+\begin{hypocode}{tex}
 \begin{definition}{牛顿第二定律}{newton2}
     物体的加速度 $a$ 与所受合外力 $F$ 成正比，与质量 $m$ 成反比：
     \[ F = ma \]
@@ -308,7 +322,7 @@ def hello():
 \end{itemize}
 
 \subsection{示例}
-\begin{hypocode}[linenos=false]{tex}
+\begin{hypocode}{tex}
 \begin{algorithm}[H]
     \caption{求和算法}
     \KwIn{数组 $A$}
@@ -390,7 +404,7 @@ def hello():
     \item \HypoEnv{gather}: 多行居中（不强求对齐）。
 \end{itemize}
 
-\begin{hypocode}[linenos=false]{tex}
+\begin{hypocode}{tex}
 \begin{align}
     f(x) &= (x+1)^2 \\
          &= x^2 + 2x + 1
@@ -400,7 +414,7 @@ def hello():
 \subsection{分段函数}
 \HypoPkg{Hypo-Math} 预加载了 \HypoPkg{mathtools}，因此你可以使用增强的 \HypoEnv{cases*} 环境（第二列自动为文本模式）：
 
-\begin{hypocode}[linenos=false]{tex}
+\begin{hypocode}{tex}
 f(n) = \begin{cases*}
     n/2 & if $n$ is even \\
     3n+1 & if $n$ is odd
@@ -442,11 +456,61 @@ f(n) = \begin{cases*}
 
 \HypoPkg{Hypo-Plot} 同时提供了对 TikZ 外部化的简化封装：\HypoCS{HypoTikZFile}。
 
-\begin{hypocode}[linenos=false]{tex}
+\begin{hypocode}{tex}
 \HypoTikZFile[width=0.8\linewidth]{my_network}{assets/network.tikz}
 \end{hypocode}
 
 它会自动对比 \HypoTT{.tikz} 源文件的 MD5 指纹，仅在源文件变更时重新调用 \HypoTT{pdflatex} 编译该图。这对于包含大量 TikZ 图的大型文档能显著提升编译速度。
+
+\chapter{封面系统 (Cover System)}
+
+\section{设计意图}
+
+封面是文档的门面。Hypoxanthine v1.3.0 引入了全新的模块化封面系统 (\HypoPkg{Hypo-Cover})，旨在彻底解决 LaTeX 封面难以定制的痛点。
+系统将\HypoBF{版式 (Layout)}与\HypoBF{背景 (Background)}分离，允许用户自由组合出数十种风格。
+
+\section{基础用法}
+
+最简单的方式是使用 \HypoCS{makecover}。系统会自动读取 \HypoCS{HypoNoteSetup} 中的元数据生成封面。
+
+\begin{hypocode}{tex}
+\HypoNoteSetup{
+    title={我的笔记},
+    author={Hypoxanthine},
+    colorscheme=Tech
+}
+\makecover
+\end{hypocode}
+
+\section{高级定制 (\textbackslash HypoCoverSetup)}
+
+你可以通过 \HypoCS{HypoCoverSetup} 精细控制封面的外观。
+
+\begin{hypocode}{tex}
+\HypoCoverSetup{
+    style = modern,    % 布局风格
+    background = wave, % 背景纹理
+    color = HypoAccent % 覆盖默认主题色
+}
+\end{hypocode}
+
+\subsection{可用布局 (Styles)}
+\begin{description}
+    \item[\HypoTT{modern}] (默认) 不对称科技风。无衬线字体，大字号标题。适合技术文档。
+    \item[\HypoTT{classic}] 对称人文风。衬线字体，居中排版。适合书籍或正式报告。
+    \item[\HypoTT{academic}] 严谨学术风。包含页眉横线与机构 Logo 展示。
+\end{description}
+
+\subsection{可用背景 (Backgrounds)}
+\begin{itemize}
+    \item \HypoBF{Modern 专属}: \HypoTT{wave} (波浪), \HypoTT{sidebar} (侧边栏), \HypoTT{particle} (粒子), \HypoTT{grid} (网格)。
+    \item \HypoBF{Classic 专属}: \HypoTT{frame} (双线边框), \HypoTT{corner} (角标装饰)。
+    \item \HypoBF{Academic 专属}: \HypoTT{banner} (顶部通栏), \HypoTT{lines} (几何线条)。
+\end{itemize}
+
+\section{封面画廊}
+
+请参考 \HypoTT{tests/CoverGallery.pdf} 查看所有组合的实际渲染效果。
 
 \chapter{文学模式 (Literature Mode)}
 
@@ -474,7 +538,7 @@ f(n) = \begin{cases*}
 \subsection{诗歌环境 (poem)}
 背景极淡，适合摘录诗词。
 
-\begin{hypocode}[linenos=false]{tex}
+\begin{hypocode}{tex}
 \begin{poem}[title=静夜思]
     床前明月光，\\
     疑是地上霜。
@@ -489,7 +553,7 @@ f(n) = \begin{cases*}
 \subsection{引用段落 (quotepara)}
 适合摘录长段落，带有明显的左侧装饰。
 
-\begin{hypocode}[linenos=false]{tex}
+\begin{hypocode}{tex}
 \begin{quotepara}[title=瓦尔登湖]
     我步入丛林，因为我希望活得有意义...
 \end{quotepara}
@@ -500,7 +564,7 @@ f(n) = \begin{cases*}
 \end{quotepara}
 
 \subsection{行内微凸显 (InlineQuote)}
-\begin{hypocode}[linenos=false]{tex}
+\begin{hypocode}{tex}
 就像 \InlineQuote{这样} 在行内轻轻强调。
 \end{hypocode}
 效果：\InlineQuote{行内浅底强调效果}。
@@ -510,7 +574,7 @@ f(n) = \begin{cases*}
 \section{图像命令 (Img)}
 \HypoPkg{Hypo-Img} 提供了简化的插图命令：
 
-\begin{hypocode}[linenos=false]{tex}
+\begin{hypocode}{tex}
 \img[width=0.8\linewidth, label=myfig]{example-image}{测试图片}
 \end{hypocode}
 
@@ -564,6 +628,68 @@ Hypoxanthine 提供了基于 \HypoPkg{ctexbeamer} 的幻灯片类 \HypoCls{Hypo-
 \begin{itemize}
     \item \textbf{代码高亮}：在幻灯片中使用 \HypoEnv{hypocode} 时，必须为 \HypoEnv{frame} 添加 \texttt{[fragile]} 选项。
     \item \textbf{比例调节}：默认比例为 16:9。如需传统比例，请使用 \texttt{aspectratio=43}。
+\end{itemize}
+
+\chapter{封面系统 (Cover System)}
+
+\section{概述}
+
+Hypoxanthine 内置了全新的封面生成系统 (\HypoPkg{Hypo-Cover})。该系统采用 \HypoBF{Layout + Background} 的组合模式，支持零代码生成高定制化的专业封面。
+
+\begin{note}[label={default-cover}]
+    默认情况下，技术笔记 (\HypoCls{Hypo-Note}) 会使用 \HypoTT{modern} 布局；文学笔记 (\HypoCls{Hypo-LitNote}) 会使用 \HypoTT{classic} 布局。
+    如需自定义，请在 \HypoCS{makecover} 之前调用 \HypoCS{HypoCoverSetup}。
+\end{note}
+
+\section{API 接口}
+
+\begin{hypocode}{latex}
+\HypoCoverSetup{
+    % 核心选项
+    style      = modern,   % 版式: modern | classic | academic
+    background = wave,     % 背景: wave | sidebar | particle | frame | corner
+    color      = HypoBlue, % 主题色 (影响背景和标题)
+    
+    % 内容字段
+    title      = {Main Title},
+    subtitle   = {Optional Subtitle},
+    subject    = {Course Name / Subject},
+    author     = {Your Name},
+    affiliation= {Your Institute},
+    date       = {\today},
+    version    = {v1.0},
+    
+    % 图片支持
+    logo       = {path/to/logo.png},   % 右上角 (或合适位置) 的 Logo
+    image      = {path/to/hero.jpg},   % 封面中央的主题插图 (Central Hero Image)
+    
+    % 扩展字段 (Academic 版式专用)
+    extra      = {{Advisor: Prof. A}, {Lab: Room 101}}
+}
+\makecover
+\end{hypocode}
+
+\section{版式与推荐搭配}
+
+\subsection{Modern (现代科技)}
+\begin{itemize}
+    \item \HypoBF{风格}: 不对称排版，强调字体粗细对比，科技感强。
+    \item \HypoBF{推荐背景}: \HypoTT{wave} (默认), \HypoTT{sidebar}, \HypoTT{particle}。
+    \item \HypoBF{适用场景}: 技术笔记、开发者文档、软件手册。
+\end{itemize}
+
+\subsection{Classic (人文经典)}
+\begin{itemize}
+    \item \HypoBF{风格}: 居中排版，衬线字体，类似传统书籍或诗集封面。v1.3.1 更新后支持中央大图展示且不与文字重叠。
+    \item \HypoBF{推荐背景}: \HypoTT{frame} (双线框), \HypoTT{corner} (边角装饰), \HypoTT{none}。
+    \item \HypoBF{适用场景}: 文学随笔、书籍、个人文集。
+\end{itemize}
+
+\subsection{Academic (学术严谨)}
+\begin{itemize}
+    \item \HypoBF{风格}: 极简风格，信息层级分明。标题栏支持副标题、学科信息。v1.3.2 移除了所有花哨装饰，并优化了插图位置。
+    \item \HypoBF{推荐背景}: \HypoTT{none} (极致纯净)。
+    \item \HypoBF{适用场景}: 实验报告、课程论文、学术草稿。
 \end{itemize}
 
 \appendix

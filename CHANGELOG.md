@@ -4,6 +4,41 @@
 ## [Unreleased] 
 
 
+## v1.3.2 (2026-01-28)
+
+### Cover System Refinements & Minimalism
+- **Layout Enhancements**:
+    - **No-Overlap Logic**: `classic` 与 `academic` 版式现在会将 `image` 作为流式内容排版（Flow content），彻底避免其与标题文字重叠。
+    - **Academic Layout**: 改为极简风格，默认移除装饰性元素，更符合学术规范；插图（image）位置调整至标题下方，并改用动态间距（vfill）彻底解决插图过大导致的非正常分页问题。
+- **Cleanup**: 删除了 `banner` 和 `lines` 背景纹理，以保持系统清爽。
+- **UI**: 调整了 `wave` 和 `sidebar` 的不透明度，使背景更加深沉专业。
+
+## v1.3.1 (2026-01-28)
+
+### Cover System Refinements
+- **Classic Layout**:
+    - **UI Optimization**: 增加了内部边距，彻底解决 Frame 边框与文字/图片重叠的问题。
+    - **Central Image**: 新增对 `image` 字段的支持，用于在封面中央显示带有阴影效果（Drop Shadow）的主题配图。
+- **Academic Layout**:
+    - **Layout Fix**: 修复了顶部 Banner 与 Affiliation/Logo 重叠的严重视觉问题，采用更稳健的布局策略。
+- **General**:
+    - **Robustness**: 优化了 `Hypo-Cover.sty` 的内部依赖加载顺序，修复了某些情况下 `pgfkeys` 报错的问题。
+- [CHORE] **Hypo-Colors**: 为所有 `\definecolor` 添加了 `% #xxxxxx` 格式的注释，方便编辑器插件直接预览颜色。
+
+## v1.3.0 (2026-01-27)
+
+### Major Updates / 重大更新
+- **Hypo-Cover**: 全新重构的封面系统 (`sty/modules/Hypo-Cover.sty`)。
+    - **Architecture**: 分离 Layout (版式) 与 Background (纹理)，支持自由组合。
+    - **API**: 新增 `\HypoCoverSetup` 统一配置接口，支持 `style`, `background`, `logo` 等参数。
+    - **Themes**:
+        - `modern`: 科技感、不对称布局（默认）。支持 `wave`, `sidebar`, `particle`, `grid` 背景。
+        - `classic`: 人文感、居中衬线布局。支持 `frame`, `corner` 背景。
+        - `academic`: 严谨报告风格。支持 `banner`, `lines` 背景。
+    - **Error Handling**: 优雅处理缺失字段，支持自定义扩展 (`\NewHypoCoverStyle`)。
+
+
+
 ## v1.2.3 (2026-01-27)
 - [FIX] **Hypo-LitNote**: 修复了 `fontset=lit` 选项未能正确传递给底层核心包的问题。现在文学笔记可正确加载 **思源宋体 (Noto Serif CJK SC)** 作为正文，而非之前的思源黑体。
 - [REFACTOR] **Hypo-Note-Core**: 优化了 `Hypo-Fonts` 的加载逻辑，使用 `\PassOptionsToPackage` 确保参数透传。

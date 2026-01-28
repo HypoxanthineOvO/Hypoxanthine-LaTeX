@@ -1,0 +1,77 @@
+\documentclass[oneside,openany]{ctexbook}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+% Manually load the cover module (since it's not yet tied into Hypo-Note)
+\usepackage{Hypo-Colors}
+\usepackage{../sty/modules/Hypo-Cover}
+
+\begin{document}
+
+% ------------------------------------------------------------------------------
+% Test Case 1: Modern + Wave (Default Tech)
+% ------------------------------------------------------------------------------
+\HypoCoverSetup{
+    style = modern, background = wave, color = HypoBlueDark,
+    title = {Modern Wave}, subtitle = {Asymmetric Layout}, author = {User A}, date = {\today}
+}
+\makecover
+
+% Test Case 2: Modern + Sidebar
+\HypoCoverSetup{
+    style = modern, background = sidebar, color = HypoAmber,
+    title = {Modern Sidebar}, subtitle = {With Logo Placeholder}, 
+    logo = {example-image}
+}
+\makecover
+
+% Test Case 3: Modern + Particle
+\HypoCoverSetup{
+    style = modern, background = particle, color = HypoPurpleDark,
+    title = {Particle Effect}, subtitle = {Tech Dots},
+}
+\makecover
+
+% ------------------------------------------------------------------------------
+% Test Case 4: Classic + Frame (Lit)
+% ------------------------------------------------------------------------------
+\HypoCoverSetup{
+    style = classic, background = frame, color = HypoCN01DaiBlue,
+    title = {Classic Literature}, subtitle = {Double Frame Edition},
+    subject = {Poetry Collection}, author = {Poet X},
+}
+\makecover
+
+% Test Case 5: Classic + Corner
+\HypoCoverSetup{
+    style = classic, background = corner, color = black,
+    title = {Minimal Classic}, author = {Author Y},
+}
+\makecover
+
+% ------------------------------------------------------------------------------
+% Test Case 6: Academic (Pure Minimalist + Image)
+% ------------------------------------------------------------------------------
+\HypoCoverSetup{
+    style = academic, background = none, color = HypoGreyDark,
+    title = {Academic Deep Research}, subtitle = {Investigation of Everything},
+    subject = {Theoretical Physics}, affiliation = {University of LaTeX},
+    logo = {example-image-a}, author = {Research Lead},
+    image = {example-image}, % This should appear in flow
+    date = {Jan 2026}
+}
+\makecover
+
+% ------------------------------------------------------------------------------
+% Test Case 7: Classic + Central Image (New Feature)
+% ------------------------------------------------------------------------------
+\HypoCoverSetup{
+    style = classic, background = frame, color = HypoCN01DaiBlue,
+    title = {The Art of Cover}, subtitle = {Central Hero Image Test},
+    subject = {Design Principles}, author = {Typographer},
+    image = {example-image}, % This should appear in center flow
+    logo = {example-image-a} % This should be top right
+}
+\makecover
+
+\end{document}

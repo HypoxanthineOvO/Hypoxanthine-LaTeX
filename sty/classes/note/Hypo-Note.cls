@@ -225,9 +225,11 @@
 % (Hypo-Icon is now loaded by Hypo-Note-Core)
 
 % ------------------------------------------------------------------------------
-% Metadata + cover
+% Metadata + cover (Integrated with Hypo-Cover)
 % ------------------------------------------------------------------------------
 \RequirePackage{xparse}
+\RequirePackage{Hypo-Cover}
+
 \ExplSyntaxOn
 \tl_new:N \g_hypo_note_title_tl
 \tl_new:N \g_hypo_note_subtitle_tl
@@ -259,79 +261,20 @@
 \NewDocumentCommand \HypoSetAffiliation { m } { \HypoNoteSetup{affiliation={#1}} }
 \NewDocumentCommand \HypoSetDate { m } { \HypoNoteSetup{date={#1}} }
 
-\cs_new:Npn \hypo_note_hdr_title: {\tl_use:N \g_hypo_note_title_tl}
-\cs_new:Npn \hypo_note_hdr_author: {\tl_use:N \g_hypo_note_author_tl}
-
-\cs_new_protected:Npn \hypo_note_cover_line:nn #1 #2
-  {
-    \tl_if_blank:nTF {#2}
-      { }
-      { \par\noindent #1\,\texttt{#2} }
+% Auto-sync metadata to Hypo-Cover at document start
+\AtBeginDocument{
+  \HypoCoverSetup{
+    title = \tl_use:N \g_hypo_note_title_tl,
+    subtitle = \tl_use:N \g_hypo_note_subtitle_tl,
+    author = \tl_use:N \g_hypo_note_author_tl,
+    affiliation = \tl_use:N \g_hypo_note_affil_tl,
+    email = \tl_use:N \g_hypo_note_email_tl,
+    homepage = \tl_use:N \g_hypo_note_homepage_tl,
+    date = \tl_use:N \g_hypo_note_date_tl
   }
-
-\cs_new_protected:Npn \hypo_note_cover_date:n #1
-  {
-    {\small \noindent\makebox[\linewidth][c]{\strut #1}\par}
-  }
-
-\cs_new_protected:Npn \HypoNoteMakeCover
-  {
-    \bool_set_false:N \l_tmpa_bool
-    \tl_if_blank:VTF \g_hypo_note_title_tl { } { \bool_set_true:N \l_tmpa_bool }
-    \tl_if_blank:VTF \g_hypo_note_subtitle_tl { } { \bool_set_true:N \l_tmpa_bool }
-    \tl_if_blank:VTF \g_hypo_note_author_tl { } { \bool_set_true:N \l_tmpa_bool }
-    \tl_if_blank:VTF \g_hypo_note_affil_tl { } { \bool_set_true:N \l_tmpa_bool }
-    \tl_if_blank:VTF \g_hypo_note_email_tl { } { \bool_set_true:N \l_tmpa_bool }
-    \tl_if_blank:VTF \g_hypo_note_homepage_tl { } { \bool_set_true:N \l_tmpa_bool }
-
-    \bool_if:NF \l_tmpa_bool
-      {
-        \PackageWarningNoLine{Hypo-Note}{\string\makecover\space called but no metadata is set. Use \string\HypoNoteSetup\space first.}
-      }
-
-    \bool_if:NT \l_tmpa_bool
-      {
-        \begin{titlepage}
-          \thispagestyle{empty}
-          \centering
-          \vspace*{0.18\textheight}
-
-          \tl_if_blank:VTF \g_hypo_note_title_tl
-            { }
-            { {\Huge\bfseries \tl_use:N \g_hypo_note_title_tl\par} }
-          \tl_if_blank:VTF \g_hypo_note_subtitle_tl
-            { }
-            { \vspace{0.8em}{\Large \tl_use:N \g_hypo_note_subtitle_tl\par} }
-
-          \vspace{2.0em}
-
-          \tl_if_blank:VTF \g_hypo_note_author_tl
-            { }
-            { {\large \tl_use:N \g_hypo_note_author_tl\par} }
-          \tl_if_blank:VTF \g_hypo_note_affil_tl
-            { }
-            { \vspace{0.3em}{\normalsize \tl_use:N \g_hypo_note_affil_tl\par} }
-
-          \vfill
-
-          \begin{minipage}{0.85\textwidth}
-            \raggedright
-            \hypo_note_cover_line:nn {\HypoIcon{email}} {\tl_use:N \g_hypo_note_email_tl}
-            \hypo_note_cover_line:nn {\HypoIcon{homepage}} {\tl_use:N \g_hypo_note_homepage_tl}
-          \end{minipage}
-
-          \vspace{1.2em}
-
-          \tl_if_blank:VTF \g_hypo_note_date_tl
-            { \hypo_note_cover_date:n {\today} }
-            { \hypo_note_cover_date:n {\tl_use:N \g_hypo_note_date_tl} }
-
-        \end{titlepage}
-        \setcounter{page}{1}
-      }
-  }
-
-\NewDocumentCommand \makecover { } { \HypoNoteMakeCover }
+}
+% Note: \makecover is provided by Hypo-Cover
+\ExplSyntaxOff
 \ExplSyntaxOff
 
 \endinput

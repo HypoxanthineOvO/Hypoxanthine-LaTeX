@@ -175,6 +175,28 @@ plt.plot(x, np.sin(x), color=HYPO_PRIMARY) # 使用注入的主题色
 \HypoTikZFile[width=0.8\linewidth]{network_diagram}{assets/network.tikz}
 ```
 
+### 3.9 封面系统 (Hypo-Cover)
+全新模块化的封面生成系统，从 v1.3.0 起可用，v1.3.2 进行了大幅优化。
+**签名**: `\HypoCoverSetup{...}` + `\makecover`.
+
+**核心参数**:
+- `style`: 布局风格 (`modern`, `classic`, `academic`).
+- `background`: 背景装饰 (`wave`, `sidebar`, `particle`, `grid`, `frame`, `corner`). **注意**: `banner`, `lines` 已在 v1.3.2 移除.
+- `color`: 主题色 (默认 `HypoPrimary`).
+- `logo`: Logo 图片路径 (通常在右上角).
+- `image`: 中央/主配图 (Central Hero Image, v1.3.1 新增).
+
+```latex
+\HypoCoverSetup{
+    style=modern, background=wave,
+    title={文档标题}, subtitle={副标题},
+    subject={学科/类别}, author={作者},
+    date={\today}, logo={assets/logo.png},
+    image={assets/cover_art.jpg} % 封面大图
+}
+\makecover
+```
+
 ## 4. AI 最佳实践
 1.  **优先 `cref`**: 始终使用 `\cref{...}` 而非 `\ref{...}` 进行智能引用。
 2.  **使用相对路径**: 对于图片，假设标准结构（例如 `assets/`）。

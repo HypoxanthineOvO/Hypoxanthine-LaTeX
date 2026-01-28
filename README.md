@@ -1,6 +1,6 @@
 # Hypoxanthine-LaTeX
 
-![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v1.2.3-brightgreen) ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-v1.3.0-brightgreen) ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
 
 **Hypoxanthine-LaTeX** is a modular, engineering-oriented LaTeX framework for efficient document creation.
 **Hypoxanthine-LaTeX** 是一个模块化、工程化维护的个人 LaTeX 生态。
@@ -12,7 +12,7 @@
 本项目采用 **Core-Module-Class** 分层架构：
 
 - **Core (内核层)**: `sty/core/` - 提供数学符号、字体策略、品牌色等原子能力。
-- **Modules (组件层)**: `sty/modules/` - 按需加载的代码高亮、伪代码、绘图插件（Beamer Compatible）。
+- **Modules (组件层)**: `sty/modules/` - 按需加载的代码高亮、封面、伪代码、绘图插件（Beamer Compatible）。
 - **Classes (场景层)**: `sty/classes/` - 针对不同场景的预设基底。
   - **Hypo-Note**: 笔记 (based on `ctexbook`)
   - **Hypo-CHSH**: 速查表 (based on `ctexart`)
@@ -57,6 +57,7 @@ make
 
 ## 🧩 Key Features (Highlights)
 
+- **Cover System**: Modular `Hypo-Cover` with 3 layouts (Modern/Classic/Academic) and 8+ backgrounds.
 - **Semantic Colors**: Built-in schemes (`Base`, `CN`, `Tech`) with easy switching.
 - **5 Slide Themes**: Professional Beamer themes (School, Lab, Lit, Business, + Instructor Module).
 - **Robust Code**: `Hypo-Code` environment works in `beamer` frames.

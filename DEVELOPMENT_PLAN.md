@@ -1,7 +1,7 @@
 # Hypoxanthine-LaTeX Architecture & Development Plan
 
-**Version**: `v1.1.2` (Feature/Fix Release)
-**Date**: 2026-01-25
+**Version**: `v1.3.2` (Feature/Refinement Release)
+**Date**: 2026-01-28
 **Status**: Released
 
 ---
@@ -248,13 +248,32 @@ Hypoxanthine-LaTeX/
 
 * [x] **Fix**: Ensure `Hypo-LitNote` correctly passes `fontset=lit` to `Hypo-Fonts`.
 
-### v1.3.0 (Planned)
+### v1.3.0 (Released, 2026-01-27)
 
-* [ ] **Label Auto-Generation**: Support ASCII title to label conversion (e.g., `\section{Introduction}` -> `sec:introduction`).
-* [ ] **Cover Image Support**: Add Hero Image / Logo / Background interfaces to `\makecover`.
-* [ ] **New Entry: Hypo-LitPaper**: Strict literature paper class.
-* [ ] **Plot Improvements**: Better error handling and Windows support (Partial fixes in v1.1.2).
-* [ ] **Beamer Support**: Official Beamer theme or simplified usage guide with `Hypo-Code` / `Hypo-Box`.
+* [x] **Cover Architecture**: New modular system separating layouts and backgrounds.
+* [x] **Themes**: Implemented Modern, Classic, and Academic layouts.
+* [x] **Backgrounds**: Added 8+ variants (wave, sidebar, particle, grid, frame, corner, banner, lines).
+* [x] **API**: Unified `\HypoCoverSetup` and `\makecover` interface.
+* [x] **Docs**: Updated manual and gallery.
+
+#### v1.3.1 (Cover Refinements, 2026-01-28)
+
+* [x] **Classic Layout**: Fixed overlaps and added central `image` support (Drop Shadow).
+* [x] **Robustness**: Fixed `pgfkeys` loading order issues.
+* [x] **Chore**: Added hex comments to `Hypo-Colors`.
+
+#### v1.3.2 (Minimalism & Image Flow, 2026-01-28)
+
+* [x] **Academic Layout**: Refactored to a minimalist style; removed unused `banner`/`lines` backgrounds.
+* [x] **Image Flow**: Refactored `classic` and `academic` to use flow-based image placement via `\vfill`, preventing text overlap.
+* [x] **Docs**: Comprehensive manual update (Chapter 8) and FEATURES update.
+
+### v1.4.0 (Planning)
+
+* [ ] **Template Engine**: Improved `scripts/hypo template` with more interactive choices.
+* [ ] **Custom Backgrounds**: Documented API for users to add TikZ-based backgrounds via `\NewHypoCoverBackground`.
+* [ ] **Multilingual Support**: Better support for polyglossia/babel in non-CJK contexts.
+* [ ] **Beamer Compatibility**: Rethink `Hypo-Slide` core to reduce package conflicts.
 
 ### v1.x (Long Term)
 

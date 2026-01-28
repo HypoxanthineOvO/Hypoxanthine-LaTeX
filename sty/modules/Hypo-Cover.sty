@@ -1,0 +1,472 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{Hypo-Cover}[2026/01/27 v1.3.0 Hypoxanthine Cover System]
+
+\RequirePackage{expl3}
+\RequirePackage{l3keys2e}
+\RequirePackage{xparse}
+\RequirePackage{Hypo-Colors} % Ensure colors are available
+\RequirePackage{tikz}
+\usetikzlibrary{shadows}
+\RequirePackage{geometry}
+
+\ExplSyntaxOn
+
+% ==============================================================================
+% 1. Data Model (Storage)
+% ==============================================================================
+
+\tl_new:N \g_hypo_cover_style_tl
+\tl_new:N \g_hypo_cover_background_tl
+\tl_new:N \g_hypo_cover_color_tl
+
+% Metadata fields
+\tl_new:N \g_hypo_cover_title_tl
+\tl_new:N \g_hypo_cover_subtitle_tl
+\tl_new:N \g_hypo_cover_subject_tl
+\tl_new:N \g_hypo_cover_author_tl
+\tl_new:N \g_hypo_cover_affiliation_tl
+\tl_new:N \g_hypo_cover_email_tl
+\tl_new:N \g_hypo_cover_homepage_tl
+\tl_new:N \g_hypo_cover_date_tl
+\tl_new:N \g_hypo_cover_version_tl
+\tl_new:N \g_hypo_cover_logo_tl
+\tl_new:N \g_hypo_cover_image_tl
+
+% Extra metadata (List of key-value pairs or lines)
+\clist_new:N \g_hypo_cover_extra_clist
+
+% Defaults
+\tl_set:Nn \g_hypo_cover_style_tl { modern }
+\tl_set:Nn \g_hypo_cover_background_tl { none }
+\tl_set:Nn \g_hypo_cover_color_tl { HypoPrimary } % Default to primary
+
+% Messages
+\msg_new:nnn { hypo } { cover-style-not-found }
+  { Cover~style~`#1'~not~found.~Using~fallback. }
+\msg_new:nnn { hypo } { cover-bg-not-found }
+  { Cover~background~`#1'~not~found. }
+
+% ==============================================================================
+% 2. Interface (\HypoCoverSetup)
+% ==============================================================================
+
+\keys_define:nn { hypo / cover }
+  {
+    style       .tl_set:N = \g_hypo_cover_style_tl,
+    background  .tl_set:N = \g_hypo_cover_background_tl,
+    color       .tl_set:N = \g_hypo_cover_color_tl,
+    
+    title       .tl_set:N = \g_hypo_cover_title_tl,
+    subtitle    .tl_set:N = \g_hypo_cover_subtitle_tl,
+    subject     .tl_set:N = \g_hypo_cover_subject_tl,
+    author      .tl_set:N = \g_hypo_cover_author_tl,
+    affiliation .tl_set:N = \g_hypo_cover_affiliation_tl,
+    email       .tl_set:N = \g_hypo_cover_email_tl,
+    homepage    .tl_set:N = \g_hypo_cover_homepage_tl,
+    date        .tl_set:N = \g_hypo_cover_date_tl,
+    version     .tl_set:N = \g_hypo_cover_version_tl,
+    logo        .tl_set:N = \g_hypo_cover_logo_tl,
+    image       .tl_set:N = \g_hypo_cover_image_tl,
+    
+    extra       .clist_set:N = \g_hypo_cover_extra_clist,
+  }
+
+\NewDocumentCommand{\HypoCoverSetup}{m}
+  {
+    \keys_set:nn { hypo / cover } { #1 }
+    
+    % Sync standard LaTeX metadata if present (Optional, for compatibility)
+    \tl_if_empty:NF \g_hypo_cover_title_tl { \title{\g_hypo_cover_title_tl} }
+    \tl_if_empty:NF \g_hypo_cover_author_tl { \author{\g_hypo_cover_author_tl} }
+    \tl_if_empty:NF \g_hypo_cover_date_tl   { \date{\g_hypo_cover_date_tl} }
+  }
+
+% Getters for internal usage in themes
+\NewExpandableDocumentCommand{\HypoGetCover}{m}
+  {
+    \tl_use:c { g_hypo_cover_#1_tl }
+  }
+
+\NewDocumentCommand{\HypoIfCoverFieldTF}{m+m+m}
+  {
+    \tl_if_empty:cTF { g_hypo_cover_#1_tl } { #3 } { #2 }
+  }
+
+\NewDocumentCommand{\HypoIfCoverFieldT}{m+m}
+  {
+    \tl_if_empty:cF { g_hypo_cover_#1_tl } { #2 }
+  }
+
+% ==============================================================================
+% 3. Theming API (Registration)
+% ==============================================================================
+
+% Registry for styles and backgrounds
+\prop_new:N \g_hypo_cover_styles_prop
+\prop_new:N \g_hypo_cover_backgrounds_prop
+
+% \NewHypoCoverStyle{name}{implementation}
+\NewDocumentCommand{\NewHypoCoverStyle}{m+m}
+  {
+    \prop_gput:Nnn \g_hypo_cover_styles_prop { #1 } { #2 }
+  }
+
+% \NewHypoCoverBackground{name}{implementation (TikZ code or commands)}
+\NewDocumentCommand{\NewHypoCoverBackground}{m+m}
+  {
+    \prop_gput:Nnn \g_hypo_cover_backgrounds_prop { #1 } { #2 }
+  }
+
+% Helper to render the selected background
+\NewDocumentCommand{\HypoMakeCoverBackground}{}
+  {
+    \prop_get:NVNTF \g_hypo_cover_backgrounds_prop \g_hypo_cover_background_tl \l_tmpa_tl
+      { \l_tmpa_tl } % Execute the background code
+      { 
+        % If background not found (or none), do nothing unless it's an error?
+        \str_if_eq:VnF \g_hypo_cover_background_tl { none }
+          { \msg_warning:nnxxx { hypo } { cover-bg-not-found } { \g_hypo_cover_background_tl } { } { } }
+      }
+  }
+
+% ==============================================================================
+% 4. Helpers & Dependencies
+% ==============================================================================
+
+% Helper: Place content relative to page absolute coordinates
+\NewDocumentCommand{\HypoCoverBgBlock}{m}
+  {
+    \begin{tikzpicture}[remember~picture, overlay]
+      #1
+    \end{tikzpicture}
+  }
+
+% ==============================================================================
+% 5. Built-in Backgrounds
+% ==============================================================================
+
+% Background: None (Default)
+\NewHypoCoverBackground{none}{}
+
+% --- Modern Backgrounds ---
+
+% Background: Wave (TikZ Smooth Curve)
+\NewHypoCoverBackground{wave}{
+  \HypoCoverBgBlock{
+    \fill[\g_hypo_cover_color_tl, opacity=0.3] 
+      (current~page.south~west) -- ++(0, 6cm) 
+      sin ++(5cm, 2cm) cos ++(5cm, -2cm) sin ++(5cm, 2cm) cos ++(5cm, -2cm) 
+      -- (current~page.south~east) -- (current~page.south~west) -- cycle;
+      
+    \fill[\g_hypo_cover_color_tl, opacity=0.5] 
+      (current~page.south~west) -- ++(0, 4cm) 
+      sin ++(5cm, 1.5cm) cos ++(5cm, -1.5cm) sin ++(5cm, 1.5cm) cos ++(5cm, -1.5cm) 
+      -- (current~page.south~east) -- (current~page.south~west) -- cycle;
+  }
+}
+
+% Background: Sidebar
+\NewHypoCoverBackground{sidebar}{
+  \HypoCoverBgBlock{
+    \fill[\g_hypo_cover_color_tl!80] 
+      (current~page.north~west) rectangle ++(2cm, -\paperheight);
+    \fill[\g_hypo_cover_color_tl!40] 
+      ([xshift=2cm]current~page.north~west) rectangle ++(0.5cm, -\paperheight);
+  }
+}
+
+% Background: Particle
+\NewHypoCoverBackground{particle}{
+  \HypoCoverBgBlock{
+    \path[fill=\g_hypo_cover_color_tl, opacity=0.4] 
+      foreach \i in {1,...,50} {
+        % Draw mostly on the right half to avoid text overlap (0.4 to 1.0 width)
+        (current~page.south~west) ++(0.4\paperwidth + 0.6\paperwidth*rnd, \paperheight*rnd) circle (rnd*8pt)
+      };
+  }
+}
+
+% Background: Grid
+\NewHypoCoverBackground{grid}{
+  \HypoCoverBgBlock{
+    \draw[step=1cm, \g_hypo_cover_color_tl!20, very~thin] 
+      (current~page.south~west) grid (current~page.north~east);
+    \draw[step=5cm, \g_hypo_cover_color_tl!40, thin] 
+      (current~page.south~west) grid (current~page.north~east);
+  }
+}
+
+% --- Classic Backgrounds ---
+
+% Background: Frame (Double Border)
+\NewHypoCoverBackground{frame}{
+  \HypoCoverBgBlock{
+    \draw[\g_hypo_cover_color_tl, double, line~width=1pt] 
+      ([shift={(0.7in,-0.7in)}]current~page.north~west) 
+      rectangle 
+      ([shift={(-0.7in,0.7in)}]current~page.south~east);
+  }
+}
+
+% Background: Corner (Ornaments)
+\NewHypoCoverBackground{corner}{
+  \HypoCoverBgBlock{
+    \begin{scope}[\g_hypo_cover_color_tl, line~width=2pt]
+        % Top Left
+        \draw ([shift={(1cm,-2cm)}]current~page.north~west) |- ([shift={(2cm,-1cm)}]current~page.north~west);
+        % Bottom Right
+        \draw ([shift={(-1cm,2cm)}]current~page.south~east) |- ([shift={(-2cm,1cm)}]current~page.south~east);
+    \end{scope}
+  }
+}
+
+% --- Academic Backgrounds ---
+% (Deleted banner and lines per user request)
+
+
+% ==============================================================================
+% 6. Built-in Styles (Layouts)
+% ==============================================================================
+
+% Helper: Place Image (Crop & Fill)
+% #1: scale_opt (e.g., width=\paperwidth)
+% #2: image_path
+% #3: node_options (e.g., opacity=0.5)
+\NewDocumentCommand{\HypoCoverPlaceImage}{m m m}
+  {
+    \node[anchor=center, inner~sep=0pt, #3] at (current~page.center)
+      { \includegraphics[#1]{#2} };
+  }
+
+% ==============================================================================
+% 6. Built-in Styles (Layouts)
+% ==============================================================================
+
+% Layout: Modern (v2 - Hero)
+\NewHypoCoverStyle{modern}{
+  
+  % 1. Render Background
+  \HypoMakeCoverBackground
+  \thispagestyle{empty}
+  
+  \begin{tikzpicture}[remember~picture, overlay]
+  
+    % 2. Hero Image (if present)
+    % Strategy: If 'image' is set, we place it in the optical center or top half.
+    % We accept that it might be a full wallpaper if the user sets background=none.
+    \HypoIfCoverFieldT{image}{
+      \node[anchor=north, inner~sep=0pt] (hero) at ([yshift=-2cm]current~page.north)
+        {
+           % Simple constrain: Width = 0.85 paperwidth. 
+           % User is expected to provide a good aspect ratio or we clip?
+           % For v2.0, let's just stick to width constrain to avoid complex calc.
+           \includegraphics[width=0.85\paperwidth, keepaspectratio]{\HypoGetCover{image}}
+        };
+    }
+  
+    % 3. Logo (Top Right Anchor - Crucial!)
+    \HypoIfCoverFieldT{logo}{
+       \node[anchor=north~east, inner~sep=0pt] at ([shift={(-1cm, -1cm)}]current~page.north~east)
+         { \includegraphics[height=1.8cm, keepaspectratio]{\HypoGetCover{logo}} };
+    }
+  
+    % 4. Typography Block
+    % Position: Below Hero (if exists) or Fixed at roughly 1/3 page height.
+    % Fix: Shift x to 3.5cm to avoid overlap with sidebar (2.5cm width).
+    \node[anchor=west, text~width=0.75\paperwidth, align=flush~left] 
+        (titleblock) at ([shift={(3.5cm, -0.5\paperheight)}]current~page.north~west) 
+    {
+      \sffamily
+      
+      % Subject / Category
+      \HypoIfCoverFieldT{subject}{
+        { \Large \bfseries \MakeUppercase{\HypoGetCover{subject}} \par } 
+        \vspace{0.8em} 
+      }
+      
+      % Title (Huge)
+      { 
+        \fontsize{28}{36}\selectfont \bfseries 
+        \color{\g_hypo_cover_color_tl} 
+        \HypoGetCover{title} \par 
+      }
+      \vspace{0.8em}
+      
+      % Subtitle
+      \HypoIfCoverFieldT{subtitle}{
+        { \Large \bfseries \color{gray} \HypoGetCover{subtitle} \par }
+      }
+      
+      \vspace{3cm}
+      
+      % Bottom Metadata Grid
+      {
+        \large \color{black!80}
+        \textbf{\HypoGetCover{author}} \par 
+        \vspace{0.4em}
+        {\itshape \HypoGetCover{affiliation}} \par 
+        \vspace{1.5em}
+        
+        \HypoIfCoverFieldT{email}{ 
+            \small \ttfamily \color{gray} \HypoIcon{email} ~ \HypoGetCover{email} \par 
+        }
+        \HypoIfCoverFieldT{homepage}{ 
+            \small \ttfamily \color{gray} \HypoIcon{homepage} ~ \HypoGetCover{homepage} \par 
+        }
+        
+        \vspace{1.5em}
+        \HypoGetCover{date}
+      }
+    };
+    
+  \end{tikzpicture}
+  \clearpage
+}
+
+% Layout: Classic (v2.3 - The Book/Note)
+\NewHypoCoverStyle{classic}{
+  \HypoMakeCoverBackground
+  \begingroup
+    \thispagestyle{empty}
+    \centering
+    \rmfamily
+    
+    % 1. Logo (Top Right Corner - Branding) - Keep absolute
+    \HypoIfCoverFieldT{logo}{
+       \begin{tikzpicture}[remember~picture, overlay]
+         \node[anchor=north~east] at ([shift={(-1cm, -1cm)}]current~page.north~east)
+           { \includegraphics[height=1.5cm, keepaspectratio]{\HypoGetCover{logo}} };
+       \end{tikzpicture}
+    }
+
+    \vspace*{2cm}
+    
+    % Header / Subject (Small Caps, Spaced)
+    \HypoIfCoverFieldT{subject}{
+      { \Large \scshape \color{\g_hypo_cover_color_tl} \HypoGetCover{subject} \par } 
+      \vspace{2em}
+    }
+    
+    % Title (Huge Serif)
+    { \fontsize{40}{60}\selectfont \bfseries \HypoGetCover{title} \par }
+    
+    % Decoration Line
+    \vspace{1.5em}
+    \begin{center}
+      \textcolor{\g_hypo_cover_color_tl}{\rule{0.4\linewidth}{1pt}}
+    \end{center}
+    \vspace{1.5em}
+    
+    \HypoIfCoverFieldT{subtitle}{{ \Large \itshape \HypoGetCover{subtitle} \par }}
+    
+    \vfill
+
+    % 2. Central Image (Book Cover Art) - Now in flow
+    \HypoIfCoverFieldT{image}{
+       \begin{center}
+         \includegraphics[width=0.6\paperwidth, keepaspectratio]{\HypoGetCover{image}}
+       \end{center}
+       \vfill
+    }
+    
+    % Bottom Block (Author)
+    { \Large \bfseries \HypoGetCover{author} \par }
+    \vspace{0.8em}
+    \HypoIfCoverFieldT{affiliation}{{ \normalsize \scshape \HypoGetCover{affiliation} \par }}
+    
+    \vspace{2em}
+    { \small \HypoGetCover{date} \par }
+    
+    \vspace*{2cm} 
+  \endgroup
+  \clearpage
+}
+
+% Layout: Academic (v2.3 - The Report)
+\NewHypoCoverStyle{academic}{
+  \HypoMakeCoverBackground
+  \begingroup
+    \thispagestyle{empty}
+    
+    % Simple Header: Affiliation & Logo in flow
+    \noindent
+    \begin{minipage}[t]{0.7\textwidth}
+       \HypoIfCoverFieldT{affiliation}{
+          { \Large \bfseries \scshape \HypoGetCover{affiliation} \par }
+       }
+    \end{minipage}%
+    \hfill
+    \begin{minipage}[t]{0.25\textwidth}
+       \raggedleft
+       \HypoIfCoverFieldT{logo}{ 
+          \includegraphics[height=1.5cm, keepaspectratio]{\HypoGetCover{logo}} 
+       }
+    \end{minipage}
+    
+    \vspace{1em}
+    \hrule height 1pt
+    \vfill
+    
+    \begin{center}
+      
+      % Title Block
+      \begin{minipage}{0.85\textwidth}
+          \centering
+          \HypoIfCoverFieldT{subject}{{ \Large \sffamily \color{gray} \HypoGetCover{subject} \par } \vspace{0.5em}}
+          
+          \hrule height 2pt \vspace{0.8em}
+          
+          { \huge \bfseries \sffamily \HypoGetCover{title} \par }
+          
+          \vspace{0.8em} \hrule height 1pt
+          \vspace{1.5em}
+          \HypoIfCoverFieldT{subtitle}{{ \Large \HypoGetCover{subtitle} \par }}
+      \end{minipage}
+
+      \vfill
+
+      % Hero Image (Report Figure) - Optional
+      \HypoIfCoverFieldT{image}{
+         \includegraphics[width=0.45\paperwidth, keepaspectratio]{\HypoGetCover{image}} \par
+         \vfill
+      }
+      
+      \vfill
+      
+      % Metadata Table
+      \renewcommand{\arraystretch}{1.5}
+      \begin{tabular}{rl}
+        \textbf{Author:} & \HypoGetCover{author} \\
+        \textbf{Date:} & \HypoGetCover{date} \\
+        \HypoIfCoverFieldT{version}{\textbf{Version:} & \HypoGetCover{version} \\}
+      \end{tabular}
+    \end{center}
+    \vspace*{2cm}
+  \endgroup
+  \clearpage
+}
+
+% ==============================================================================
+% 7. Main Dispatch (\makecover)
+% ==============================================================================
+
+\ProvideDocumentCommand{\makecover}{}{}
+\RenewDocumentCommand{\makecover}{}
+  {
+    % Retrieve and execute the selected style code
+    \prop_get:NVNTF \g_hypo_cover_styles_prop \g_hypo_cover_style_tl \l_tmpa_tl
+      { \l_tmpa_tl }
+      { 
+         % Fallback
+         \begin{titlepage}
+           \begin{center}
+             \vspace*{4cm}
+             {\Huge \bfseries \HypoGetCover{title} \par}
+             \msg_warning:nnxxx { hypo } { cover-style-not-found } { \g_hypo_cover_style_tl } { } { }
+           \end{center}
+         \end{titlepage}
+      }
+  }
+
+\ExplSyntaxOff
+\endinput
