@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{Hypo-Plot}[2026/01/26 v1.2.0 Plotting Module]
+\ProvidesPackage{Hypo-Plot}[2026/01/30 v1.4.0 Plotting Module]
 
 \RequirePackage{expl3}
 \RequirePackage{xparse}
@@ -154,74 +154,88 @@
       { }
   }
 
+% -----------------------------------------------------------------------------
+% Graphics Inclusion Helpers (Refactored for readability)
+% -----------------------------------------------------------------------------
+
+% Helper: Check if options should be skipped (blank or 'undefined')
+\prg_new_conditional:Npnn \hypo_plot_opts_empty:N #1 { TF, T, F }
+  {
+    \tl_if_blank:VTF #1
+      { \prg_return_true: }
+      {
+        \tl_if_eq:VnTF #1 {undefined}
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+  }
+
+% Helper: Render file-not-found error box
+\cs_new_protected:Npn \hypo_plot_render_error_box:N #1
+  {
+    \fbox{
+      \begin{tabular}{l}
+        \ttfamily\bfseries Hypo-Plot~Error \\
+        \ttfamily Missing:~\tl_to_str:V #1 \\
+        \ttfamily Check~build/scripts/~logs
+      \end{tabular}
+    }
+  }
+
+% Helper: Include graphics with centering wrapper
+\cs_new_protected:Npn \hypo_plot_include_centered:nn #1#2
+  {
+    \par\noindent\hfil #1 \hfil\par
+  }
+
+% Main function: Include graphics with options
 \cs_new_protected:Npn \hypo_plot_include_graphics:nn #1#2
   {
     \group_begin:
-      % #1 contains pre-computed dimensions (like width=123.45pt), pass as-is
-      % #2 is the file path, expand to resolve expl3 tl vars
       \tl_set:Nn \l_tmpa_tl {#1}
       \tl_set:Nx \l_tmpb_tl {#2}
       \file_if_exist:VTF \l_tmpb_tl
-        {
-          % Avoid feeding keyval with 'undefined' (or an empty list).
-          \tl_if_blank:VTF \l_tmpa_tl
-            {
-              \bool_if:NTF \l_hypo_plot_centering_bool
-                { \par\noindent\hfil\includegraphics{\tl_use:N \l_tmpb_tl}\hfil\par }
-                { \includegraphics{\tl_use:N \l_tmpb_tl} }
-            }
-            {
-              \tl_if_eq:VnTF \l_tmpa_tl {undefined}
-                {
-                  \bool_if:NTF \l_hypo_plot_centering_bool
-                    { \par\noindent\hfil\includegraphics{\tl_use:N \l_tmpb_tl}\hfil\par }
-                    { \includegraphics{\tl_use:N \l_tmpb_tl} }
-                }
-                {
-                  % Expand option list BEFORE passing to \includegraphics
-                  % to ensure keyval parsers see the equals signs.
-                  \bool_if:NTF \l_hypo_plot_centering_bool
-                    {
-                      \par\noindent\hfil
-                      \use:x
-                        {
-                          \exp_not:N \includegraphics [ \tl_use:N \l_tmpa_tl ] { \tl_use:N \l_tmpb_tl }
-                        }
-                      \hfil\par
-                    }
-                    {
-                      \use:x
-                        {
-                          \exp_not:N \includegraphics [ \tl_use:N \l_tmpa_tl ] { \tl_use:N \l_tmpb_tl }
-                        }
-                    }
-                }
-            }
-        }
-        {
-          \bool_if:NTF \l_hypo_plot_centering_bool
-            {
-              \par\noindent\hfil
-              \fbox{
-                \begin{tabular}{l}
-                  \ttfamily\bfseries Hypo-Plot~Error \\
-                  \ttfamily Missing:~\tl_to_str:V \l_tmpb_tl \\
-                  \ttfamily Check~build/scripts/~logs
-                \end{tabular}
-              }
-              \hfil\par
-            }
-            {
-              \fbox{
-                \begin{tabular}{l}
-                  \ttfamily\bfseries Hypo-Plot~Error \\
-                  \ttfamily Missing:~\tl_to_str:V \l_tmpb_tl \\
-                  \ttfamily Check~build/scripts/~logs
-                \end{tabular}
-              }
-            }
-        }
+        { \hypo_plot_include_existing:NN \l_tmpa_tl \l_tmpb_tl }
+        { \hypo_plot_include_missing:N \l_tmpb_tl }
     \group_end:
+  }
+
+% Helper: Include existing file
+\cs_new_protected:Npn \hypo_plot_include_existing:NN #1#2
+  {
+    \hypo_plot_opts_empty:NTF #1
+      { \hypo_plot_include_bare:N #2 }
+      { \hypo_plot_include_with_opts:NN #1 #2 }
+  }
+
+% Helper: Include without options
+\cs_new_protected:Npn \hypo_plot_include_bare:N #1
+  {
+    \bool_if:NTF \l_hypo_plot_centering_bool
+      { \hypo_plot_include_centered:nn { \includegraphics{\tl_use:N #1} } {} }
+      { \includegraphics{\tl_use:N #1} }
+  }
+
+% Helper: Include with options
+\cs_new_protected:Npn \hypo_plot_include_with_opts:NN #1#2
+  {
+    \bool_if:NTF \l_hypo_plot_centering_bool
+      {
+        \par\noindent\hfil
+        \use:x { \exp_not:N \includegraphics [ \tl_use:N #1 ] { \tl_use:N #2 } }
+        \hfil\par
+      }
+      {
+        \use:x { \exp_not:N \includegraphics [ \tl_use:N #1 ] { \tl_use:N #2 } }
+      }
+  }
+
+% Helper: Handle missing file
+\cs_new_protected:Npn \hypo_plot_include_missing:N #1
+  {
+    \bool_if:NTF \l_hypo_plot_centering_bool
+      { \hypo_plot_include_centered:nn { \hypo_plot_render_error_box:N #1 } {} }
+      { \hypo_plot_render_error_box:N #1 }
   }
 
 % -----------------------------------------------------------------------------
@@ -340,14 +354,19 @@
     \hypo_plot_assemble_and_execute:
   }
 
-% Assemble header + body + footer and execute
-\cs_new_protected:Npn \hypo_plot_assemble_and_execute:
+% -----------------------------------------------------------------------------
+% Script Assembly Helpers (Refactored for readability)
+% -----------------------------------------------------------------------------
+
+% Helper: Write Python script header (imports + color injection)
+\cs_new_protected:Npn \hypo_plot_write_header:
   {
-    % Write header (use _tex path for \iow because outputdir changes working directory)
     \iow_open:Nn \l_hypo_plot_iow { \g_hypo_plot_script_tmp_tex_tl .header }
+    % Standard imports
     \iow_now:Nn \l_hypo_plot_iow { import~matplotlib.pyplot~as~plt }
     \iow_now:Nn \l_hypo_plot_iow { import~numpy~as~np }
     \iow_now:Nn \l_hypo_plot_iow { }
+    % Dynamic color injection
     \iow_now:Nx \l_hypo_plot_iow { \c_hash_str \c_hash_str ~---~Dynamic~Color~Injection~--- }
     \iow_now:Nx \l_hypo_plot_iow { HYPO_BLUE~=~" \c_hash_str \tl_use:N \l_hypo_plot_hex_blue_tl " }
     \iow_now:Nx \l_hypo_plot_iow { HYPO_RED~=~" \c_hash_str \tl_use:N \l_hypo_plot_hex_red_tl " }
@@ -355,31 +374,45 @@
     \iow_now:Nx \l_hypo_plot_iow { HYPO_ORANGE~=~" \c_hash_str \tl_use:N \l_hypo_plot_hex_orange_tl " }
     \iow_now:Nx \l_hypo_plot_iow { HYPO_PURPLE~=~" \c_hash_str \tl_use:N \l_hypo_plot_hex_purple_tl " }
     \iow_now:Nn \l_hypo_plot_iow { }
+    % Theme fingerprint (for cache invalidation)
     \iow_now:Nx \l_hypo_plot_iow { \c_hash_str \c_hash_str ~---~Theme~fingerprint~--- }
     \iow_now:Nx \l_hypo_plot_iow { \c_hash_str \c_hash_str ~\tl_use:N \g_hypo_plot_theme_fp_tl }
     \iow_now:Nx \l_hypo_plot_iow { \c_hash_str \c_hash_str ~dpi= \int_use:N \l_hypo_plot_dpi_int ,~figwidth= \tl_use:N \g_hypo_plot_figwidth_dec_tl ,~figheight= \tl_use:N \g_hypo_plot_figheight_dec_tl ,~format= \tl_use:N \l_hypo_plot_format_tl }
     \iow_now:Nn \l_hypo_plot_iow { }
+    % Figure setup
     \iow_now:Nn \l_hypo_plot_iow { plt.rcParams['font.family']~=~'sans-serif' }
     \iow_now:Nx \l_hypo_plot_iow { plt.figure(figsize=( \tl_use:N \g_hypo_plot_figwidth_dec_tl ,~ \tl_use:N \g_hypo_plot_figheight_dec_tl )) }
     \iow_now:Nn \l_hypo_plot_iow { }
     \iow_close:N \l_hypo_plot_iow
-    
-    % Write footer (use _tex path)
+  }
+
+% Helper: Write Python script footer (save figure)
+\cs_new_protected:Npn \hypo_plot_write_footer:
+  {
     \iow_open:Nn \l_hypo_plot_iow { \g_hypo_plot_script_tmp_tex_tl .footer }
     \iow_now:Nn \l_hypo_plot_iow { }
     \iow_now:Nn \l_hypo_plot_iow { plt.tight_layout() }
     \iow_now:Nx \l_hypo_plot_iow { plt.savefig(r" \tl_use:N \g_hypo_plot_output_shell_path_tl ",~bbox_inches='tight',~dpi= \int_use:N \l_hypo_plot_dpi_int ) }
     \iow_close:N \l_hypo_plot_iow
-    
-    % Concatenate all parts (use shell paths - relative to project root)
+  }
+
+% Helper: Concatenate header + body + footer into final script
+\cs_new_protected:Npn \hypo_plot_concat_script:
+  {
     \hypo_plot_shell_now:n
       { cat~" \g_hypo_plot_script_tmp_tl .header"~" \g_hypo_plot_script_tmp_tl .body"~" \g_hypo_plot_script_tmp_tl .footer"~>~" \g_hypo_plot_script_tmp_tl "~&&~rm~-f~" \g_hypo_plot_script_tmp_tl .header"~" \g_hypo_plot_script_tmp_tl .body"~" \g_hypo_plot_script_tmp_tl .footer" }
-    
-    % Move file if changed
+  }
+
+% Helper: Update script file only if changed (atomic compare-and-swap)
+\cs_new_protected:Npn \hypo_plot_update_script_if_changed:
+  {
     \hypo_plot_shell_now:n
       { if~cmp~-s~" \tl_use:N \g_hypo_plot_script_tmp_tl "~" \tl_use:N \g_hypo_plot_script_path_tl "~2>/dev/null;~then~rm~-f~" \tl_use:N \g_hypo_plot_script_tmp_tl ";~else~mv~-f~" \tl_use:N \g_hypo_plot_script_tmp_tl "~" \tl_use:N \g_hypo_plot_script_path_tl ";~fi }
-    
-    % Process if needed
+  }
+
+% Helper: Run Python script if output is stale
+\cs_new_protected:Npn \hypo_plot_run_python_if_needed:
+  {
     \hypo_plot_process_if_needed:nnn
       {\g_hypo_plot_script_tex_path_tl}
       {\g_hypo_plot_output_tex_path_tl}
@@ -387,7 +420,16 @@
         \exp_args:Nx \hypo_plot_shell_now:n
           { \tl_use:N \g_hypo_plot_python_bin_tl \c_space_tl " \tl_use:N \g_hypo_plot_script_path_tl " }
       }
-    
+  }
+
+% Main orchestrator: Assemble and execute Python plot script
+\cs_new_protected:Npn \hypo_plot_assemble_and_execute:
+  {
+    \hypo_plot_write_header:
+    \hypo_plot_write_footer:
+    \hypo_plot_concat_script:
+    \hypo_plot_update_script_if_changed:
+    \hypo_plot_run_python_if_needed:
     % Include generated graphics
     \hypo_plot_include_graphics:nn
       {\tl_use:N \g_hypo_plot_include_opts_tl}

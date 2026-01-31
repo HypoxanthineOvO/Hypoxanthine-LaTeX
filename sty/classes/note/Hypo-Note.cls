@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{Hypo-Note}[2026/01/26 v1.2.0 Hypoxanthine Note Class]
+\ProvidesClass{Hypo-Note}[2026/01/30 v1.4.0 Hypoxanthine Note Class]
 
 % Route options: pass Hypo-Note specific options to Hypo-Note-Core,
 % and pass everything else to the base class (ctexbook).
@@ -275,7 +275,6 @@
   }
 }
 % Note: \makecover is provided by Hypo-Cover
-\ExplSyntaxOff
 \ExplSyntaxOff
 
 \endinput

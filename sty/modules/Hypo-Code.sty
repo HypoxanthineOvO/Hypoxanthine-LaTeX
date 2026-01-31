@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{Hypo-Code}[2026/01/26 v1.2.0 Hypoxanthine Code]
+\ProvidesPackage{Hypo-Code}[2026/01/30 v1.4.0 Hypoxanthine Code]
 
 \RequirePackage{expl3}
 \RequirePackage{xparse}
@@ -79,27 +79,31 @@
         % Re-implementation: DO NOT use +v argument.
         % Instead, use \VerbatimEnvironment and manually construct the minted environment.
         % This is much safer for Beamer and other fragile contexts.
+        \tl_new:N \g_hypo_code_minted_opts_tl
+        
         \NewDocumentEnvironment{hypocode}{ O{} m }
             {
                 \hypo_code_options_set:n {#1}
                 \VerbatimEnvironment % Magic for fancyvrb/minted to find the end
                 
-                % Build options list
-                \tl_clear:N \l_tmpa_tl
-                \bool_if:NTF \l_hypo_code_linenos_bool
-                    { \tl_put_right:Nn \l_tmpa_tl { linenos } }
-                    { }
+                % Build options list using clist to avoid leading/trailing commas
+                \clist_clear:N \l_tmpa_clist
+                \bool_if:NT \l_hypo_code_linenos_bool
+                    { \clist_put_right:Nn \l_tmpa_clist { linenos } }
                 
-                \tl_if_blank:VTF \l_hypo_code_theme_tl
-                    { }
-                    { \tl_put_right:Nn \l_tmpa_tl { ,style=\l_hypo_code_theme_tl } }
+                \tl_if_blank:VF \l_hypo_code_theme_tl
+                    { \clist_put_right:Nx \l_tmpa_clist { style=\l_hypo_code_theme_tl } }
                 
-                \tl_if_blank:VTF \l_hypo_code_minted_extra_tl
-                    { }
-                    { \tl_put_right:Nn \l_tmpa_tl { ,\l_hypo_code_minted_extra_tl } }
+                \tl_if_blank:VF \l_hypo_code_minted_extra_tl
+                    { \clist_put_right:Nn \l_tmpa_clist { \l_hypo_code_minted_extra_tl } }
 
-                % Start the minted environment with expanded options
-                \begin{minted}[\l_tmpa_tl]{#2}
+                % Pre-expand options to global tl
+                \tl_gset:Nx \g_hypo_code_minted_opts_tl { \clist_use:Nn \l_tmpa_clist {,} }
+                
+                % Start minted: if options empty, omit [] entirely
+                \tl_if_blank:VTF \g_hypo_code_minted_opts_tl
+                    { \begin{minted}{#2} }
+                    { \begin{minted}[\g_hypo_code_minted_opts_tl]{#2} }
             }
             {
                 \end{minted}
