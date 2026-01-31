@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{Hypo-Note}[2026/01/30 v1.4.0 Hypoxanthine Note Class]
+\ProvidesClass{Hypo-Note}[2026/01/31 v1.4.1 Hypoxanthine Note Class]
 
 % Route options: pass Hypo-Note specific options to Hypo-Note-Core,
 % and pass everything else to the base class (ctexbook).
@@ -108,7 +108,7 @@
     colorscheme .initial:n = Base,
 
     fontset .tl_set:N = \g_hypo_note_opt_fontset_tl,
-    fontset .initial:n = tech,
+    fontset .initial:n = lit,
 
     unknown .code:n = { \hypo_note_collect_unknown_to_base:n {#1} },
   }

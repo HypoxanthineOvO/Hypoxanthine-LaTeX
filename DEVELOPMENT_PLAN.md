@@ -1,6 +1,6 @@
 # Hypoxanthine-LaTeX Architecture & Development Plan
 
-**Version**: `v1.4.0` (Refactoring Release)
+**Version**: `v1.4.1` (Refactoring Release)
 **Date**: 2026-01-30
 **Status**: Released
 
@@ -273,11 +273,11 @@ Hypoxanthine-LaTeX/
 * [x] **Hypo-Note**: Left header now shows `Chapter / Section`.
 * [x] **Hypo-LitNote**: Left header now shows `Chapter  Section` (Chinese style spacing).
 
-### v1.4.0 (Released, 2026-01-30)
+### v1.4.1 (Released, 2026-01-30)
 
 * [x] **Code Quality**: Removed duplicate `\ExplSyntaxOff` in `Hypo-Note.cls`.
 * [x] **Refactoring**: Split long functions in `Hypo-Plot.sty` into reusable helpers.
-* [x] **Version Bump**: Updated all 27 `.cls/.sty` files to v1.4.0.
+* [x] **Version Bump**: Updated all 27 `.cls/.sty` files to v1.4.1.
 
 ### v1.5.0 (Planning)
 

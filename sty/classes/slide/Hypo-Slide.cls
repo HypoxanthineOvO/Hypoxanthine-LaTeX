@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{Hypo-Slide}[2026/01/30 v1.4.0 Hypoxanthine Slide Class]
+\ProvidesClass{Hypo-Slide}[2026/01/31 v1.4.1 Hypoxanthine Slide Class]
 
 % ==============================================================================
 % 1. Option Handling

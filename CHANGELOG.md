@@ -4,7 +4,7 @@
 ## [Unreleased] 
 
 
-## v1.4.0 (2026-01-30)
+## v1.4.1 (2026-01-30)
 
 ### Bug Fixes
 - **Hypo-Code.sty**: 修复了当 `hypocode` 环境没有选项（如 `linenos=false`）时导致的 `keyval Error: undefined` 问题。使用 `clist` 正确构建选项列表，并在选项为空时不传递 `[]` 给 minted。
@@ -14,7 +14,7 @@
 - **Hypo-Plot.sty**: 将核心函数重构为可读性更高的辅助函数。
     - `\hypo_plot_include_graphics:nn` 分解为 6 个职责单一的辅助函数：`\hypo_plot_opts_empty:NTF`、`\hypo_plot_render_error_box:N`、`\hypo_plot_include_bare:N`、`\hypo_plot_include_with_opts:NN`、`\hypo_plot_include_missing:N`。
     - `\hypo_plot_assemble_and_execute:` 分解为 5 个辅助函数：`\hypo_plot_write_header:`、`\hypo_plot_write_footer:`、`\hypo_plot_concat_script:`、`\hypo_plot_update_script_if_changed:`、`\hypo_plot_run_python_if_needed:`。
-- **版本号**: 所有 27 个 `.cls/.sty` 文件版本号统一更新至 v1.4.0。
+- **版本号**: 所有 27 个 `.cls/.sty` 文件版本号统一更新至 v1.4.1。
 
 
 ## v1.3.3 (2026-01-28)

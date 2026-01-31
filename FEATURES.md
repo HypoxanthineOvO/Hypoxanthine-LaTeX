@@ -84,13 +84,13 @@ Hypoxanthine 是一个模块化的 LaTeX 框架，设计用于：
 ## 3. 核心模块与语法
 
 ### 3.1 字体策略 (Hypo-Fonts)
-- **Tech Mode** (`fontset=tech`, 默认): 
-    - 主字体: **Noto Sans CJK SC** (思源黑体)。
-    - 适用: 技术文档、幻灯片、速查表。
-- **Lit Mode** (`fontset=lit`): 
+- **Lit Mode** (`fontset=lit`, 默认): 
     - 主字体: **Noto Serif CJK SC** (思源宋体)。
     - 强调/引用: **LXGW WenKai** (霞鹜文楷)。
-    - 适用: 文学笔记、诗歌、文科论文。
+    - 适用: 笔记、文学、诗歌。
+- **Tech Mode** (`fontset=tech`): 
+    - 主字体: **Noto Sans CJK SC** (思源黑体)。
+    - 适用: 技术文档、幻灯片、速查表。
 
 ### 3.2 颜色与主题 (Colors & Schemes)
 - **方案**: `Base` (基础), `CN` (国风/莫兰迪), `Tech` (科技/深蓝), `Simple` (极简灰)。
